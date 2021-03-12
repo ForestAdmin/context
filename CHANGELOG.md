@@ -3,6 +3,14 @@
 
 ### Features
 
+* version ([a49122f](https://github.com/ForestAdmin/context/commit/a49122fafd29ab61e0617a31faa38605e3f9cbbc))
+* version ([8853d23](https://github.com/ForestAdmin/context/commit/8853d239b0afba7110d5877d36f12372360645f0))
+
+# 1.0.0 (2021-03-12)
+
+
+### Features
+
 * version ([8853d23](https://github.com/ForestAdmin/context/commit/8853d239b0afba7110d5877d36f12372360645f0))
 
 # 1.0.0 (2021-03-12)
