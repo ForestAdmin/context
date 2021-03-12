@@ -3,6 +3,17 @@
 
 ### Features
 
+* version ([65c14c7](https://github.com/ForestAdmin/context/commit/65c14c77b8909d0e31fed3c01c9b002e75eef54f))
+* version ([cc69b70](https://github.com/ForestAdmin/context/commit/cc69b7058a5f3f8bc5471edf3e6716fb8ad251af))
+* version ([c315304](https://github.com/ForestAdmin/context/commit/c3153041ec60be8eddc7d35d6919bff8c89964b5))
+* version ([a49122f](https://github.com/ForestAdmin/context/commit/a49122fafd29ab61e0617a31faa38605e3f9cbbc))
+* version ([8853d23](https://github.com/ForestAdmin/context/commit/8853d239b0afba7110d5877d36f12372360645f0))
+
+# 1.0.0 (2021-03-12)
+
+
+### Features
+
 * version ([cc69b70](https://github.com/ForestAdmin/context/commit/cc69b7058a5f3f8bc5471edf3e6716fb8ad251af))
 * version ([c315304](https://github.com/ForestAdmin/context/commit/c3153041ec60be8eddc7d35d6919bff8c89964b5))
 * version ([a49122f](https://github.com/ForestAdmin/context/commit/a49122fafd29ab61e0617a31faa38605e3f9cbbc))
