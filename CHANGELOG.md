@@ -3,6 +3,13 @@
 
 ### Features
 
+* version ([8853d23](https://github.com/ForestAdmin/context/commit/8853d239b0afba7110d5877d36f12372360645f0))
+
+# 1.0.0 (2021-03-12)
+
+
+### Features
+
 * add example ([bfb3d7c](https://github.com/ForestAdmin/context/commit/bfb3d7c8d457d7fda387506ceaabbeaeb80752c3))
 * context ([a4a4ca9](https://github.com/ForestAdmin/context/commit/a4a4ca9ee7a855688f4a6c82d879dd105772fe11))
 * context ([8bb9714](https://github.com/ForestAdmin/context/commit/8bb9714f087c869293d389079c633c4559b03675))
