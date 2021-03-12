@@ -11,9 +11,7 @@
     "test": "jest",
     "test:coverage": "jest --coverage"
   },
-  "files": [
-    "src"
-  ],
+  "files": ["src"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ForestAdmin/context.git"
