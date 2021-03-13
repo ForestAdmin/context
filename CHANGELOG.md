@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/ForestAdmin/context/compare/v1.0.0...v1.1.0) (2021-03-13)
+
+
+### Features
+
+* addFunctionFactory ([a8f8741](https://github.com/ForestAdmin/context/commit/a8f87418e9a2fea8525302a21581d6cd3877c641))
+
 # 1.0.0 (2021-03-12)
 
 
