@@ -2,18 +2,13 @@
 const Context = require('../../src/index');
 const Plan = require('../../src/plan');
 
-class FakeService {
-  constructor({ dependency }) {
-    this.dependency = dependency;
-  }
-}
-
 describe('Context > unit', () => {
   describe('constructor', () => {
     it('build a context with just an empty _bag', () => {
-      expect.assertions(1);
+      expect.assertions(2);
       const context = new Context();
       expect(context._bag).toStrictEqual({});
+      expect(context._privates).toStrictEqual([]);
     });
   });
   describe('get', () => {
@@ -118,7 +113,7 @@ describe('Context > unit', () => {
       expect(actualResult).toEqual(context);
     });
   });
-  describe('addFunctionFactory', () => {
+  describe('addFactoryMethod', () => {
     it('add a function from a factory method to the context', () => {
       expect.assertions(4);
 
@@ -132,7 +127,7 @@ describe('Context > unit', () => {
       context.get = jest.fn().mockReturnValue(contextBag);
       context.addFunction = jest.fn().mockReturnValue(context);
 
-      const actualResult = context.addFunctionFactory(name, factory, options);
+      const actualResult = context.addFactoryMethod(name, factory, options);
 
       expect(context.get).toHaveBeenCalledWith();
       expect(factory).toHaveBeenCalledWith(contextBag);
@@ -339,6 +334,12 @@ describe('Context > unit', () => {
     });
     it('can creates a singleton context', async () => {
       expect.assertions(3);
+
+      class FakeService {
+        constructor({ dependency }) {
+          this.dependency = dependency;
+        }
+      }
 
       Context.init((context) => context
         .addValue('dependency', 'dependencyValue')
