@@ -76,8 +76,8 @@ module.exports = class Context {
 
   addFunction(name, value, options) { return this.addValue(name, value, options); }
 
-  addFunctionFactory(name, functionFactory, options) {
-    return this.addFunction(name, functionFactory(this.get()), options);
+  addFunctionFactory(name, factory, options) {
+    return this.addFunction(name, factory(this.get()), options);
   }
 
   addClass(Class, options) {

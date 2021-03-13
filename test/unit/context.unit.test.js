@@ -118,6 +118,28 @@ describe('Context > unit', () => {
       expect(actualResult).toEqual(context);
     });
   });
+  describe('addFunctionFactory', () => {
+    it('add a function from a factory method to the context', () => {
+      expect.assertions(4);
+
+      const contextBag = Symbol('contextBag');
+      const fct = Symbol('fct');
+      const name = Symbol('name');
+      const factory = jest.fn().mockReturnValue(fct);
+      const options = Symbol('options');
+
+      const context = new Context();
+      context.get = jest.fn().mockReturnValue(contextBag);
+      context.addFunction = jest.fn().mockReturnValue(context);
+
+      const actualResult = context.addFunctionFactory(name, factory, options);
+
+      expect(context.get).toHaveBeenCalledWith();
+      expect(factory).toHaveBeenCalledWith(contextBag);
+      expect(context.addFunction).toHaveBeenCalledWith(name, fct, options);
+      expect(actualResult).toBe(context);
+    });
+  });
   describe('addClassesArray', () => {
     it('add an array with classes instances', () => {
       const name = 'myArrayInContext';
