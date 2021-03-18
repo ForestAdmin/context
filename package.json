@@ -23,7 +23,7 @@
     "dependancy",
     "injection"
   ],
-  "author": "Slim",
+  "author": "Sliman Medini <smedini@gmail.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/ForestAdmin/context/issues"
@@ -32,6 +32,7 @@
   "devDependencies": {
     "@commitlint/cli": "12.0.1",
     "@commitlint/config-conventional": "12.0.1",
+    "bull": "^3.20.1",
     "eslint": "7.21.0",
     "eslint-config-airbnb-base": "14.2.1",
     "eslint-plugin-import": "2.22.1",

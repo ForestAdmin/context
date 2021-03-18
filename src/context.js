@@ -45,7 +45,8 @@ module.exports = class Context {
     return Context.getInstance().get();
   }
 
-  static _getInstanceName(Class) {
+  static _getInstanceName(Class, { name } = {}) {
+    if (name) return name;
     const className = Class.name;
     return className.charAt(0).toLowerCase() + className.slice(1);
   }
@@ -76,25 +77,32 @@ module.exports = class Context {
 
   addFunction(name, value, options) { return this.addValue(name, value, options); }
 
-  addFactoryMethod(name, value, options) {
-    return this.addFunction(name, value(this.get()), options);
-  }
-
   addClass(Class, options) {
     return this.addValue(
-      Context._getInstanceName(Class),
-      this._instanciate(Class),
+      Context._getInstanceName(Class, options),
+      this._instanciate(Class, options),
       options,
     );
   }
 
-  _instanciate(Class) {
-    return new Class(this.get());
+  _instanciate(Class, { map } = {}) {
+    if (!map) return new Class(this.get());
+    return new Class(this._mapContext(map));
+  }
+
+  _mapContext(map) {
+    const bag = this.get();
+    if (!map) return bag;
+    return { ...bag, ...map(bag) };
   }
 
   addClassesArray(name, classesArray, options) {
     const instancesArray = classesArray.map((Class) => this._instanciate(Class));
     return this.addValue(name, instancesArray, options);
+  }
+
+  addFactoryMethod(name, value, options) {
+    return this.addFunction(name, value(this.get()), options);
   }
 
   addFactory(name, factory) {

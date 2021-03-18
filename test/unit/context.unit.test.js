@@ -175,14 +175,51 @@ describe('Context > unit', () => {
 
       const context = new Context();
       context.addValue = jest.fn(() => context);
+      // TODO mock _instanciate and test it separately
+      // TODO test _mapContext and mock where used
       context.get = jest.fn(() => dependanciesSymbol);
 
-      const actualResult = context.addClass(TestedClass);
+      const options = Symbol('options');
+      const actualResult = context.addClass(TestedClass, options);
 
       expect(context.get).toHaveBeenCalledWith();
       expect(context.addValue)
-        .toHaveBeenCalledWith('testedClass', new TestedClass(dependanciesSymbol), undefined);
+        .toHaveBeenCalledWith('testedClass', new TestedClass(dependanciesSymbol), options);
       expect(actualResult).toStrictEqual(context);
+    });
+
+    it('add a class instance to the context with a specific name', () => {
+      expect.assertions(1);
+
+      const context = new Context();
+      context.addValue = jest.fn();
+      context._instanciate = jest.fn();
+
+      context.addClass(class TestedClass {}, { name: 'specificName' });
+
+      expect(context.addValue).toHaveBeenCalledWith('specificName', undefined, { name: 'specificName' });
+    });
+
+    // TODO _instanciate nominal case
+
+    it('_instanciate with a mapper', () => {
+      expect.assertions(1);
+
+      const TestedClass = jest.fn();
+      const value = Symbol('value');
+      const unchangedValue = Symbol('unchangedValue');
+
+      const context = new Context();
+      context
+        .addValue('from', value)
+        .addValue('unchanged', unchangedValue)
+        ._instanciate(
+          TestedClass, { name: 'specificName', map: ({ from }) => ({ to: from }) },
+        );
+
+      expect(TestedClass).toHaveBeenCalledWith({
+        from: value, to: value, unchanged: unchangedValue,
+      });
     });
   });
   describe('with', () => {

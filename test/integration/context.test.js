@@ -43,6 +43,33 @@ describe('Context', () => {
     const { fakeClass } = context.get();
     expect(fakeClass instanceof FakeClass).toBe(true);
   });
+  it('should add a class with a specific name', () => {
+    expect.assertions(1);
+    class FakeClass {}
+    const context = new Context()
+      .addClass(FakeClass, { name: 'specificName' });
+    const { specificName } = context.get();
+    expect(specificName instanceof FakeClass).toBe(true);
+  });
+  it('should add a class two times with a context mapping', () => {
+    expect.assertions(2);
+    class FakeClass {
+      constructor({ param }) {
+        this.param = param;
+      }
+    }
+    const firstSymbol = Symbol('first');
+    const secondSymbol = Symbol('second');
+    const context = new Context()
+      .addValue('first', firstSymbol)
+      .addValue('second', secondSymbol)
+      .addClass(FakeClass, { name: 'one', map: ({ first }) => ({ param: first }) })
+      .addClass(FakeClass, { name: 'two', map: ({ second }) => ({ param: second }) });
+
+    const { one, two } = context.get();
+    expect(one.param).toBe(firstSymbol);
+    expect(two.param).toBe(secondSymbol);
+  });
   it('should limit private values access to current context', () => {
     expect.assertions(4);
 
