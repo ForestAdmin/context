@@ -1,3 +1,16 @@
+# [1.2.0](https://github.com/ForestAdmin/context/compare/v1.1.0...v1.2.0) (2021-04-02)
+
+
+### Bug Fixes
+
+* missing libs ([ae2da8d](https://github.com/ForestAdmin/context/commit/ae2da8de6ce14e08b1ad0c00b02fc83c912403b4))
+* test error ([3b11991](https://github.com/ForestAdmin/context/commit/3b1199140eaa3714c4d12b911d3e64491c6588a3))
+
+
+### Features
+
+* addFactoryFunction ([cf0bce6](https://github.com/ForestAdmin/context/commit/cf0bce6b3579d7372548ea70840cb54d2434ba11))
+
 # [1.1.0](https://github.com/ForestAdmin/context/compare/v1.0.0...v1.1.0) (2021-03-13)
 
 
