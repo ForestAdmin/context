@@ -16,7 +16,8 @@ describe('a sequelize plan', () => {
 
     const modelsPlan = newPlan()
       .addStep('models', (context) => context
-        .addValue('models', {})
-      )
+        .addValue('models', {}));
+
+    execute([sequelizePlan, modelsPlan]);
   });
 });
