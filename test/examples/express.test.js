@@ -41,9 +41,9 @@ describe('Examples > express app', () => {
         .addValue('port', 3457)
         .addInstance('app', require('express')())
         .addInstance('middlewareOne', (req, res, next) => next())
-        .addFactoryMethod('addEndpoint', ({ app }) => (method, path, ...middlewares) => app[method.toLowerCase()](path, ...middlewares))
+        .addFactoryFunction('addEndpoint', ({ app }) => (method, path, ...middlewares) => app[method.toLowerCase()](path, ...middlewares))
         .addClass(MyFirstExpressAdapter)
-        .addFactoryMethod('start', ({ app, port }) => () => {
+        .addFactoryFunction('start', ({ app, port }) => () => {
           return new Promise((resolve) => {
             const server = app.listen(port, () => {
               assertServerStarted(port);

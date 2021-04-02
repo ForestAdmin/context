@@ -120,17 +120,17 @@ describe('Context > unit', () => {
       const contextBag = Symbol('contextBag');
       const fct = Symbol('fct');
       const name = Symbol('name');
-      const factory = jest.fn().mockReturnValue(fct);
+      const functionFactory = jest.fn().mockReturnValue(fct);
       const options = Symbol('options');
 
       const context = new Context();
       context.get = jest.fn().mockReturnValue(contextBag);
       context.addFunction = jest.fn().mockReturnValue(context);
 
-      const actualResult = context.addFactoryMethod(name, factory, options);
+      const actualResult = context.addFactoryFunction(name, functionFactory, options);
 
       expect(context.get).toHaveBeenCalledWith();
-      expect(factory).toHaveBeenCalledWith(contextBag);
+      expect(functionFactory).toHaveBeenCalledWith(contextBag);
       expect(context.addFunction).toHaveBeenCalledWith(name, fct, options);
       expect(actualResult).toBe(context);
     });
@@ -163,65 +163,91 @@ describe('Context > unit', () => {
   });
   describe('addClass', () => {
     it('add a class instance to the context and return the context', () => {
-      expect.assertions(5);
+      Context._getInstanceNameBak = Context._getInstanceName;
+      Context._getInstanceName = jest.fn();
+      expect.assertions(4);
 
-      const dependanciesSymbol = Symbol('dependanciesSymbol');
-
-      class TestedClass {
-        constructor(dependancies) {
-          expect(dependancies).toStrictEqual(dependanciesSymbol);
-        }
-      }
-
+      const fakeClass = Symbol('fakeClass');
       const context = new Context();
+      const instance = Symbol('instance');
+      const instanceName = Symbol('instanceName');
+      const mappedContext = Symbol('mappedContext');
+      Context._getInstanceName.mockReturnValue(instanceName);
       context.addValue = jest.fn(() => context);
-      // TODO mock _instanciate and test it separately
-      // TODO test _mapContext and mock where used
-      context.get = jest.fn(() => dependanciesSymbol);
+      context._instanciate = jest.fn(() => instance);
+      context._mapContext = jest.fn(() => mappedContext);
 
       const options = Symbol('options');
-      const actualResult = context.addClass(TestedClass, options);
+      const actualResult = context.addClass(fakeClass, options);
 
-      expect(context.get).toHaveBeenCalledWith();
-      expect(context.addValue)
-        .toHaveBeenCalledWith('testedClass', new TestedClass(dependanciesSymbol), options);
+      expect(Context._getInstanceName).toHaveBeenCalledWith(fakeClass, options);
+      expect(context._instanciate).toHaveBeenCalledWith(fakeClass, options);
+      expect(context.addValue).toHaveBeenCalledWith(instanceName, instance, options);
       expect(actualResult).toStrictEqual(context);
-    });
 
-    it('add a class instance to the context with a specific name', () => {
-      expect.assertions(1);
-
-      const context = new Context();
-      context.addValue = jest.fn();
-      context._instanciate = jest.fn();
-
-      context.addClass(class TestedClass {}, { name: 'specificName' });
-
-      expect(context.addValue).toHaveBeenCalledWith('specificName', undefined, { name: 'specificName' });
-    });
-
-    // TODO _instanciate nominal case
-
-    it('_instanciate with a mapper', () => {
-      expect.assertions(1);
-
-      const TestedClass = jest.fn();
-      const value = Symbol('value');
-      const unchangedValue = Symbol('unchangedValue');
-
-      const context = new Context();
-      context
-        .addValue('from', value)
-        .addValue('unchanged', unchangedValue)
-        ._instanciate(
-          TestedClass, { name: 'specificName', map: ({ from }) => ({ to: from }) },
-        );
-
-      expect(TestedClass).toHaveBeenCalledWith({
-        from: value, to: value, unchanged: unchangedValue,
-      });
+      Context._getInstanceName = Context._getInstanceNameBak;
+      delete Context._getInstanceNameBak;
     });
   });
+
+  describe('_instanciate method', () => {
+    it('create and return an instance', () => {
+      const Class = jest.fn();
+
+      const context = new Context();
+      context.get = jest.fn();
+      context._instanciate(Class);
+
+      expect(context.get).toHaveBeenCalledWith();
+    });
+
+    it('create and return an instance with a mapped context', () => {
+      const Class = jest.fn();
+      const map = Symbol('map');
+
+      const context = new Context();
+      context._mapContext = jest.fn();
+      context._instanciate(Class, {map});
+
+      expect(context._mapContext).toHaveBeenCalledWith(map);
+    });
+  });
+
+  describe('_mapContext method', () => {
+    describe('without bag', () => {
+      it('returns the context bag', () => {
+        expect.assertions(2);
+        const context = new Context();
+        const val1 = Symbol('val1');
+        const val2 = Symbol('val2');
+        const bag = { val1, val2 };
+        context.get = jest.fn().mockReturnValue(bag);
+
+        const map = null;
+        const actualResult = context._mapContext(map);
+
+        expect(context.get).toHaveBeenCalledWith();
+        expect(actualResult).toBe(bag);
+      });
+    });
+    it('returns a context with mapped data', () => {
+      expect.assertions(2);
+
+      const context = new Context();
+      const val1 = Symbol('val1');
+      const val2 = Symbol('val2');
+      const bag = { val1, val2 };
+      context.get = jest.fn().mockReturnValue(bag);
+
+      const newVal1 = Symbol('newVal1');
+      const map = jest.fn().mockReturnValue({ val1: newVal1 });
+      const actualResult = context._mapContext(map);
+
+      expect(context.get).toHaveBeenCalledWith();
+      expect(actualResult).toStrictEqual({ val2, val1: newVal1 });
+    });
+  });
+
   describe('with', () => {
     describe('some valid work', () => {
       it('run the work with valid dependancy in parameter', () => {

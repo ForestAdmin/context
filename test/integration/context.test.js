@@ -16,6 +16,25 @@ class FakeService {
 }
 
 describe('Context', () => {
+  it('_instanciate with a mapper', () => {
+    expect.assertions(1);
+
+    const TestedClass = jest.fn();
+    const value = Symbol('value');
+    const unchangedValue = Symbol('unchangedValue');
+
+    const context = new Context();
+    context
+      .addValue('from', value)
+      .addValue('unchanged', unchangedValue)
+      ._instanciate(
+        TestedClass, { name: 'specificName', map: ({ from }) => ({ to: from }) },
+      );
+
+    expect(TestedClass).toHaveBeenCalledWith({
+      from: value, to: value, unchanged: unchangedValue,
+    });
+  });
   it('should add a value to a context', () => {
     expect.assertions(1);
     const context = new Context().addValue('port', 8080);

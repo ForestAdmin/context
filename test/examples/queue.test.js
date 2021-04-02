@@ -15,10 +15,12 @@ class StartJob {
 }
 
 describe('Example > queue', () => {
-  const context = new Context()
-    .addClass(StartJob);
-  const { startJob } = context;
+  it.skip('queue', () => {
+    const context = new Context()
+      .addClass(StartJob);
+    const { startJob } = context;
 
-  startJob.doThis('super', 'thing');
-  startJob.doThat('stuf');
+    startJob.doThis('super', 'thing');
+    startJob.doThat('stuf');
+  });
 });
