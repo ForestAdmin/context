@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/ForestAdmin/context/compare/v1.2.0...v1.3.0) (2021-05-06)
+
+
+### Features
+
+* assertPresent function ([c0e4fb0](https://github.com/ForestAdmin/context/commit/c0e4fb070ab15dc34f8c131cab33c5c6359a884b))
+
 # [1.2.0](https://github.com/ForestAdmin/context/compare/v1.1.0...v1.2.0) (2021-04-02)
 
 
