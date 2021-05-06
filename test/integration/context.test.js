@@ -32,7 +32,7 @@ describe('Context', () => {
       );
 
     expect(TestedClass).toHaveBeenCalledWith({
-      from: value, to: value, unchanged: unchangedValue,
+      from: value, to: value, unchanged: unchangedValue, assertPresent: expect.any(Function),
     });
   });
   it('should add a value to a context', () => {
@@ -181,6 +181,31 @@ describe('Context', () => {
         .get();
 
       expect(poolSize).toBe(6);
+    });
+  });
+
+  describe('assertPresent injection', () => {
+    describe('when dependency is present', () => {
+      it('should not throw', () => {
+        expect.assertions(1);
+        const { assertPresent, one } = new Context()
+          .addValue('one', 1)
+          .get();
+
+        expect(() => assertPresent({ one })).not.toThrow();
+      });
+    });
+
+    describe('when dependency is not present', () => {
+      it('should throw "missing dependency" error', () => {
+        expect.assertions(1);
+        const { assertPresent, one } = new Context()
+          .addValue('one', 1)
+          .get();
+
+        expect(() => assertPresent({ one, two: 2 }))
+          .toThrow('missing dependencies two');
+      });
     });
   });
 });

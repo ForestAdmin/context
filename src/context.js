@@ -3,6 +3,7 @@ const Plan = require('./plan');
 module.exports = class Context {
   constructor() {
     this._bag = {};
+    this._bag.assertPresent = this._assertPresent.bind(this);
     this._privates = [];
   }
 
@@ -53,6 +54,14 @@ module.exports = class Context {
 
   executePlan(plan) {
     return Context.execute(plan, this);
+  }
+
+  _assertPresent(requisites) {
+    const missings = Object
+      .keys(requisites)
+      .map((key) => (!this._bag[key] ? key : null))
+      .filter((key) => key);
+    if (missings.length > 0) throw new Error(`missing dependencies ${missings}`);
   }
 
   get() { return this._bag; }

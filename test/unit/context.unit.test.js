@@ -7,8 +7,30 @@ describe('Context > unit', () => {
     it('build a context with just an empty _bag', () => {
       expect.assertions(2);
       const context = new Context();
-      expect(context._bag).toStrictEqual({});
+      expect(context._bag).toStrictEqual({ assertPresent: expect.any(Function) });
       expect(context._privates).toStrictEqual([]);
+    });
+  });
+  describe('_assertPresent', () => {
+    describe('when all dependencies are present', () => {
+      it('should not throw', () => {
+        expect.assertions(0);
+        const context = new Context();
+        context._bag.testedService = Symbol('testedService');
+        context._assertPresent({ testedService: context._bag.testedService });
+      });
+    });
+    describe('when two dependencies are missing', () => {
+      it('should throw', () => {
+        expect.assertions(1);
+        const context = new Context();
+        expect(() => context._assertPresent({
+          testedServiceA: undefined,
+          testedServiceB: null,
+          testedServiceC: 0,
+          testedServiceD: '',
+        })).toThrow('missing dependencies testedServiceA,testedServiceB,testedServiceC,testedServiceD');
+      });
     });
   });
   describe('get', () => {
