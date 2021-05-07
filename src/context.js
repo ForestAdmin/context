@@ -86,9 +86,20 @@ module.exports = class Context {
 
   addFunction(name, value, options) { return this.addValue(name, value, options); }
 
+  /**
+   * @deprecated Use addUsingClass instead.
+   */
   addClass(Class, options) {
     return this.addValue(
       Context._getInstanceName(Class, options),
+      this._instanciate(Class, options),
+      options,
+    );
+  }
+
+  addUsingClass(name, Class, options) {
+    return this.addValue(
+      name,
       this._instanciate(Class, options),
       options,
     );

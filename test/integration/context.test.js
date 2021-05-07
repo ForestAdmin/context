@@ -62,6 +62,13 @@ describe('Context', () => {
     const { fakeClass } = context.get();
     expect(fakeClass instanceof FakeClass).toBe(true);
   });
+  it('should add an instance using a class to a context', () => {
+    expect.assertions(1);
+    class FakeClass {}
+    const context = new Context().addUsingClass('wow', FakeClass);
+    const { wow } = context.get();
+    expect(wow instanceof FakeClass).toBe(true);
+  });
   it('should add a class with a specific name', () => {
     expect.assertions(1);
     class FakeClass {}
