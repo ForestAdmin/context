@@ -62,6 +62,7 @@ module.exports = class Context {
       .map((key) => (!this._bag[key] ? key : null))
       .filter((key) => key);
     if (missings.length > 0) throw new Error(`missing dependencies ${missings}`);
+    return true;
   }
 
   get() { return this._bag; }

@@ -14,10 +14,11 @@ describe('Context > unit', () => {
   describe('_assertPresent', () => {
     describe('when all dependencies are present', () => {
       it('should not throw', () => {
-        expect.assertions(0);
+        expect.assertions(1);
         const context = new Context();
         context._bag.testedService = Symbol('testedService');
-        context._assertPresent({ testedService: context._bag.testedService });
+        const result = context._assertPresent({ testedService: context._bag.testedService });
+        expect(result).toBe(true);
       });
     });
     describe('when two dependencies are missing', () => {
