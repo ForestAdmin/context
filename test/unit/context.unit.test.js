@@ -213,6 +213,27 @@ describe('Context > unit', () => {
     });
   });
 
+  describe('addUsingClass', () => {
+    it('add a class instance to the context and return the context', () => {
+      expect.assertions(3);
+
+      const fakeClass = Symbol('fakeClass');
+      const instance = Symbol('instance');
+      const instanceName = Symbol('instanceName');
+      const options = Symbol('options');
+
+      const context = new Context();
+      context.addValue = jest.fn(() => context);
+      context._instanciate = jest.fn(() => instance);
+
+      const actualResult = context.addUsingClass(instanceName, fakeClass, options);
+
+      expect(context.addValue).toHaveBeenCalledWith(instanceName, instance, options);
+      expect(context._instanciate).toHaveBeenCalledWith(fakeClass, options);
+      expect(actualResult).toStrictEqual(context);
+    });
+  });
+
   describe('_instanciate method', () => {
     it('create and return an instance', () => {
       const Class = jest.fn();
