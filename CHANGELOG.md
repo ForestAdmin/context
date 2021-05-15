@@ -1,3 +1,11 @@
+# [1.4.0](https://github.com/ForestAdmin/context/compare/v1.3.0...v1.4.0) (2021-05-15)
+
+
+### Features
+
+* addUsingClass function ([2e13d69](https://github.com/ForestAdmin/context/commit/2e13d69ed9878f1793d168368ad46270ae585920))
+* addUsingClass function ([c12faac](https://github.com/ForestAdmin/context/commit/c12faacdce4a46cba172529156ca2d26c521e37d))
+
 # [1.3.0](https://github.com/ForestAdmin/context/compare/v1.2.0...v1.3.0) (2021-05-06)
 
 
