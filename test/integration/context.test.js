@@ -223,6 +223,33 @@ describe('Context', () => {
     });
   });
 
+  describe('dependancies graph', () => {
+    it('should give dependancies data', () => {
+      const context = new Context()
+        .addValue('one', 1)
+        .addValue('three', 3)
+        .addFactoryFunction('addOne', ({ assertPresent, one }) => {
+          assertPresent({ one });
+          return (value) => value + one;
+        })
+        .addFactoryFunction('addOneThenTree', ({ assertPresent, addOne, three }) => {
+          assertPresent({ addOne, three });
+          return (value) => addOne(value) + three;
+        });
+
+      const metadata = context.getMetadata();
+
+      const expectedMetaData = [
+        { name: 'one', type: 'value', requires: [] },
+        { name: 'three', type: 'value', requires: [] },
+        { name: 'addOne', type: 'function*', requires: ['one'] },
+        { name: 'addOneThenTree', type: 'function*', requires: ['addOne', 'three'] },
+      ];
+
+      expect(metadata).toStrictEqual(expectedMetaData);
+    });
+  });
+
   describe('executing the same plan twice', () => {
     it('produces two times the same context', () => {
       expect.assertions(1);
