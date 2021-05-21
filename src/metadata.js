@@ -5,7 +5,6 @@ module.exports = class Metadata {
   }
 
   add(name, type) {
-    console.log('add', name)
     this._data.push({ name, type, requires: [] });
     this._lastAdded = name;
   }
