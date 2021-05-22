@@ -5,26 +5,45 @@ const fetch = require('node-fetch');
 const { newPlan, execute } = require('../../../src');
 
 describe('Examples > Wrappers > express.js', () => {
-  class MyFirstExpressAdapter {
+  class GiveTheSecretHTTPAdapter {
     constructor({
-      assertPresent, addEndpoint, ensureAuthMiddleware, secret,
+      assertPresent, addHTTPEndpoint, ensureAuthenticated, secret,
     }) {
-      assertPresent({ addEndpoint, ensureAuthMiddleware, secret });
+      assertPresent({ addHTTPEndpoint, ensureAuthenticated, secret });
+
       this.secret = secret;
 
-      addEndpoint('GET', '/api/test', ensureAuthMiddleware, this.test.bind(this));
+      addHTTPEndpoint('GET', '/api/give/secret', ensureAuthenticated, this.giveTheSecret.bind(this));
     }
 
-    test(request, response) {
-      response.status(200).send({ secret: this.secret });
+    giveTheSecret() {
+      return { secret: this.secret };
     }
   }
 
-  describe('MyFirstExpressAdapter', () => {
+  const makeExpressMiddleware = (call) => (request, response, next) => {
+    try {
+      return Promise.resolve(call())
+        .then((result) => {
+          if (result === undefined) next();
+          else response.status(200).send(result);
+        })
+        .catch(next);
+    } catch (error) {
+      next(error);
+      return null;
+    }
+  };
+
+  const makeExpressMiddlewares = (callStack) => {
+    return callStack.map(makeExpressMiddleware);
+  };
+
+  describe('GiveTheSecretHTTPAdapter', () => {
     const getExpressAdapterContext = () => ({
       assertPresent: jest.fn(),
-      addEndpoint: jest.fn(),
-      ensureAuthMiddleware: Symbol('ensureAuthMiddleware'),
+      addHTTPEndpoint: jest.fn(),
+      ensureAuthenticated: Symbol('ensureAuthenticated'),
       secret: Symbol('secret'),
     });
 
@@ -32,21 +51,21 @@ describe('Examples > Wrappers > express.js', () => {
       it('check dependencies', () => {
         const context = getExpressAdapterContext();
 
-        new MyFirstExpressAdapter(context);
+        new GiveTheSecretHTTPAdapter(context);
 
         const { assertPresent } = context;
         expect(assertPresent).toHaveBeenCalledWith({ ...context, assertPresent: undefined });
       });
-      it('bind private \'/api/test\' route', () => {
+      it('bind private \'/api/give/secret\' route', () => {
         const context = getExpressAdapterContext();
 
-        new MyFirstExpressAdapter(context);
+        new GiveTheSecretHTTPAdapter(context);
 
-        const { addEndpoint, ensureAuthMiddleware } = context;
-        expect(addEndpoint).toHaveBeenCalledTimes(1);
-        expect(addEndpoint).toHaveBeenCalledWith(
+        const { addHTTPEndpoint, ensureAuthMiddleware } = context;
+        expect(addHTTPEndpoint).toHaveBeenCalledTimes(1);
+        expect(addHTTPEndpoint).toHaveBeenCalledWith(
           'GET',
-          '/api/test',
+          '/api/give/secret',
           ensureAuthMiddleware,
           expect.anything(),
         );
@@ -64,41 +83,48 @@ describe('Examples > Wrappers > express.js', () => {
           assertPresent({ express });
           return express();
         })
-        .addValue('secret', 'I love you')
-        .addValue('port', 3457)
-        .addInstance('ensureAuthMiddleware', (req, res, next) => next())
-        .addFactoryFunction('addEndpoint', ({ app }) => (method, path, ...middlewares) => app[method.toLowerCase()](path, ...middlewares))
-        .addUsingClass('expressAdapter', MyFirstExpressAdapter)
-        .addValue('serverHandle', {})
-        .addFactoryFunction('start', ({
+        .addFactoryFunction('addHTTPEndpoint', ({ app }) =>
+          (method, path, ...callStack) =>
+            app[method.toLowerCase()](path, ...makeExpressMiddlewares(callStack))))
+      .addStep('commands', (context) => context
+        .addValue('serverHandle', {}, { private: true })
+        .addFactoryFunction('startHTTP', ({
           assertPresent, http, app, serverHandle,
-        }) => () => {
+        }) => {
           assertPresent({ http, app, serverHandle });
-          const server = http.createServer(app).listen();
-          const { port } = server.address();
-          app.set('port', port);
-          serverHandle.get = () => server;
-          serverHandle.getPort = () => port;
+          return () => {
+            const server = http.createServer(app).listen();
+            const { port } = server.address();
+            app.set('port', port);
+            serverHandle.get = () => server;
+            serverHandle.getPort = () => port;
+          };
         })
-        .addFactoryFunction('stop', ({ assertPresent, serverHandle }) => {
+        .addFactoryFunction('stopHTTP', ({ assertPresent, serverHandle }) => {
           assertPresent({ serverHandle });
           return () => serverHandle.get().close();
         })
-        .addFactoryFunction('getPort', ({ assertPresent, serverHandle }) => {
+        .addFactoryFunction('getHTTPPort', ({ assertPresent, serverHandle }) => {
           assertPresent({ serverHandle });
           return () => serverHandle.getPort();
-        }));
+        }))
+      .addStep('commonMiddlewares', (context) => context
+        .addInstance('ensureAuthenticated', () => {}))
+      .addStep('business', (context) => context
+        .addValue('secret', 'I love you'))
+      .addStep('httpAdapters', (context) => context
+        .addUsingClass('expressAdapter', GiveTheSecretHTTPAdapter));
 
     it('should build a minimal working express app', async () => {
       const myApp = execute(myExpressPlan);
-      await myApp.start();
-      const port = myApp.getPort();
+      await myApp.startHTTP();
 
-      const answer = await fetch(`http://localhost:${port}/api/test`)
+      const { secret } = await fetch(`http://localhost:${myApp.getHTTPPort()}/api/give/secret`)
         .then((res) => res.json());
-      expect(answer.secret).toStrictEqual('I love you');
 
-      await myApp.stop();
+      expect(secret).toStrictEqual('I love you');
+
+      await myApp.stopHTTP();
     });
   });
 });
