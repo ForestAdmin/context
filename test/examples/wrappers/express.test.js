@@ -2,7 +2,7 @@
 /* eslint-disable no-new */
 const fetch = require('node-fetch');
 
-const { newPlan, execute } = require('../../src/index');
+const { newPlan, execute } = require('../../../src');
 
 class MyFirstExpressAdapter {
   constructor({

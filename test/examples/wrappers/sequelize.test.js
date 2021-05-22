@@ -1,6 +1,6 @@
 /* eslint-disable global-require */
 /* eslint-disable no-new */
-const { newPlan, execute } = require('../../src/index');
+const { newPlan, execute } = require('../../../src');
 
 describe('a sequelize plan', () => {
   it.skip('sequelize', () => {
