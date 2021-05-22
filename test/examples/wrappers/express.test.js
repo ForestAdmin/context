@@ -55,34 +55,50 @@ describe('Examples > Wrappers > express.js', () => {
   });
 
   describe('Express plan', () => {
-    it('should build a small express app', async () => {
-      const assertServerStarted = jest.fn();
+    const myExpressPlan = newPlan()
+      .addStep('libs', (context) => context
+        .addInstance('http', require('http'))
+        .addInstance('express', require('express')))
+      .addStep('express', (context) => context
+        .addFactoryFunction('app', ({ assertPresent, express }) => {
+          assertPresent({ express });
+          return express();
+        })
+        .addValue('secret', 'I love you')
+        .addValue('port', 3457)
+        .addInstance('ensureAuthMiddleware', (req, res, next) => next())
+        .addFactoryFunction('addEndpoint', ({ app }) => (method, path, ...middlewares) => app[method.toLowerCase()](path, ...middlewares))
+        .addUsingClass('expressAdapter', MyFirstExpressAdapter)
+        .addValue('serverHandle', {})
+        .addFactoryFunction('start', ({
+          assertPresent, http, app, serverHandle,
+        }) => () => {
+          assertPresent({ http, app, serverHandle });
+          const server = http.createServer(app).listen();
+          const { port } = server.address();
+          app.set('port', port);
+          serverHandle.get = () => server;
+          serverHandle.getPort = () => port;
+        })
+        .addFactoryFunction('stop', ({ assertPresent, serverHandle }) => {
+          assertPresent({ serverHandle });
+          return () => serverHandle.get().close();
+        })
+        .addFactoryFunction('getPort', ({ assertPresent, serverHandle }) => {
+          assertPresent({ serverHandle });
+          return () => serverHandle.getPort();
+        }));
 
-      const myExpressPlan = newPlan()
-        .addStep('express', (context) => context
-          .addValue('secret', 'I love you')
-          .addValue('port', 3457)
-          .addInstance('app', require('express')())
-          .addInstance('middlewareOne', (req, res, next) => next())
-          .addFactoryFunction('addEndpoint', ({ app }) => (method, path, ...middlewares) => app[method.toLowerCase()](path, ...middlewares))
-          .addUsingClass('expressAdapter', MyFirstExpressAdapter)
-          .addFactoryFunction('start', ({ app, port }) => () => {
-            return new Promise((resolve) => {
-              const server = app.listen(port, () => {
-                assertServerStarted(port);
-                resolve(server);
-              });
-            });
-          }));
-
+    it('should build a minimal working express app', async () => {
       const myApp = execute(myExpressPlan);
-      const server = await myApp.start();
-      expect(assertServerStarted).toHaveBeenCalledWith(3457);
+      await myApp.start();
+      const port = myApp.getPort();
 
-      const answer = await fetch('http://localhost:3457/api/test').then((res) => res.json());
+      const answer = await fetch(`http://localhost:${port}/api/test`)
+        .then((res) => res.json());
       expect(answer.secret).toStrictEqual('I love you');
 
-      server.close();
+      await myApp.stop();
     });
   });
 });
