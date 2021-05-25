@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/ForestAdmin/context/compare/v1.4.0...v1.5.0) (2021-05-25)
+
+
+### Features
+
+* addModule function ([f0444a6](https://github.com/ForestAdmin/context/commit/f0444a6a17fb35bc06e147c8b12be66996ad7ab2))
+
 # [1.4.0](https://github.com/ForestAdmin/context/compare/v1.3.0...v1.4.0) (2021-05-15)
 
 
