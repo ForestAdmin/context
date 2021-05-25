@@ -106,6 +106,8 @@ module.exports = class Context {
     );
   }
 
+  addModule(name, module, options) { return this.addValue(name, module, options); }
+
   _instanciate(Class, { map } = {}) {
     if (!map) return new Class(this.get());
     return new Class(this._mapContext(map));

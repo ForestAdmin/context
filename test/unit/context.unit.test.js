@@ -136,6 +136,17 @@ describe('Context > unit', () => {
       expect(actualResult).toEqual(context);
     });
   });
+  describe('addModule', () => {
+    it('add a module to the context', () => {
+      expect.assertions(2);
+      const context = new Context();
+      context.addValue = jest.fn(() => context);
+      const actualResult = context.addModule('key', 'value');
+
+      expect(context.addValue).toHaveBeenCalledWith('key', 'value', undefined);
+      expect(actualResult).toEqual(context);
+    });
+  });
   describe('addFactoryMethod', () => {
     it('add a function from a factory method to the context', () => {
       expect.assertions(4);

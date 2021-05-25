@@ -55,6 +55,13 @@ describe('Context', () => {
     const { func } = context.get();
     expect(func).toStrictEqual(fakeFunction);
   });
+  it('should add a module to a context', () => {
+    expect.assertions(1);
+    const fakeModule = Symbol('fakeModule');
+    const context = new Context().addModule('module', fakeModule);
+    const { module } = context.get();
+    expect(module).toStrictEqual(fakeModule);
+  });
   it('should add a class to a context', () => {
     expect.assertions(1);
     class FakeClass {}
