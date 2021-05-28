@@ -345,7 +345,7 @@ describe('Context > unit', () => {
       expect(Context.newPlan() instanceof Plan).toBe(true);
     });
   });
-  describe('executePlan', () => {
+  describe('execute', () => {
     describe('with a invalid build context', () => {
       it('with a string should throw error', () => {
         expect(() => Context.execute('bad-context'))
@@ -409,6 +409,21 @@ describe('Context > unit', () => {
         const { doubleOne } = Context.execute(myFirstBuildContext);
 
         expect(doubleOne()).toBe(2);
+      });
+
+      it('should replace a deep nested step', () => {
+        expect.assertions(1);
+
+        const { hello } =
+          Context.execute(
+            Context.newPlan()
+              .addStep('so', Context.newPlan()
+                .addStep('deep', Context.newPlan()
+                  .addStep('nested', (context) => context.addValue('hello', 'world'))))
+              .replace('so.deep.nested', (context) => context.addValue('hello', 'world2')),
+          );
+
+        expect(hello).toBe('world2');
       });
 
       it('executeBuildContext can changes a plan step', () => {
