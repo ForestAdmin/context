@@ -262,7 +262,7 @@ describe('Context > unit', () => {
 
       const context = new Context();
       context._mapContext = jest.fn();
-      context._instanciate(Class, {map});
+      context._instanciate(Class, { map });
 
       expect(context._mapContext).toHaveBeenCalledWith(map);
     });
