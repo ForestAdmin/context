@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/ForestAdmin/context/compare/v1.5.0...v1.6.0) (2021-05-30)
+
+
+### Features
+
+* using with function with many values ([a1d7a8f](https://github.com/ForestAdmin/context/commit/a1d7a8fe6c1f04f76cc07be379b1e0147c244a3a))
+
 # [1.5.0](https://github.com/ForestAdmin/context/compare/v1.4.0...v1.5.0) (2021-05-25)
 
 
