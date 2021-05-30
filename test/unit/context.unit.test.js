@@ -52,6 +52,24 @@ describe('Context > unit', () => {
       expect(context.get).toHaveBeenCalledWith();
       expect(actual).toBe('value');
     });
+    it('returns many values from the context bag', () => {
+      expect.assertions(2);
+      const context = new Context();
+      context.get = jest.fn()
+        .mockReturnValue({
+          key1: 'value1',
+          key2: 'value2',
+          key3: 'value3',
+        });
+
+      const actual = context.lookup(['key1', 'key2']);
+
+      expect(context.get).toHaveBeenCalledWith();
+      expect(actual).toStrictEqual({
+        key1: 'value1',
+        key2: 'value2',
+      });
+    });
   });
   describe('replace', () => {
     it('should replace a value with another', () => {

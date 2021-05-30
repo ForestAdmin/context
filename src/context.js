@@ -151,6 +151,14 @@ module.exports = class Context {
 
   lookup(name) {
     const bag = this.get();
+    if (Array.isArray(name)) {
+      const dependanciesArray = name.map((key) => bag[key]);
+      const dependanciesObject = {};
+      name.forEach((key, i) => {
+        dependanciesObject[key] = dependanciesArray[i];
+      });
+      return dependanciesObject;
+    }
     return bag[name];
   }
 };
