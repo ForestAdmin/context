@@ -22,11 +22,16 @@ module.exports = class Plan {
     return step;
   }
 
-  replace(key, plan) {
-    if (!this.has(key)) throw new Error(`Does not contain "${key}"`);
-    const parentPlan = this.step(key, -1);
-    const step = Plan._createStep(Plan._last(key), plan);
-    parentPlan._steps.splice(this._indexOf(key), 1, step);
+  replace(stepPath, replaceBy) {
+    if (!this.has(stepPath)) throw new Error(`Does not contain "${stepPath}"`);
+
+    const parentStep = this.step(stepPath, -1);
+    const stepKey = Plan._last(stepPath);
+    const existingStepIndex = parentStep._steps.findIndex(({ key }) => key === stepKey);
+    const newStep = Plan._createStep(stepKey, replaceBy);
+
+    parentStep._steps.splice(existingStepIndex, 1, newStep);
+
     return this;
   }
 
@@ -36,10 +41,6 @@ module.exports = class Plan {
 
   deliverSteps() {
     return Object.freeze(this._steps);
-  }
-
-  _indexOf(keyToFind) {
-    return this._steps.findIndex(({ key }) => key === keyToFind);
   }
 
   static _createStep(key, plan) {

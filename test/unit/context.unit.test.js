@@ -432,14 +432,15 @@ describe('Context > unit', () => {
       it('should replace a deep nested step', () => {
         expect.assertions(1);
 
-        const { hello } =
-          Context.execute(
-            Context.newPlan()
-              .addStep('so', Context.newPlan()
-                .addStep('deep', Context.newPlan()
-                  .addStep('nested', (context) => context.addValue('hello', 'world'))))
-              .replace('so.deep.nested', (context) => context.addValue('hello', 'world2')),
-          );
+        const plan = Context.newPlan()
+          .addStep('so', Context.newPlan()
+            .addStep('deep', Context.newPlan()
+              .addStep('other', (context) => context.addValue('other', 'value'))
+              .addStep('nested', (context) => context.addValue('hello', 'world'))));
+
+        plan.replace('so.deep.nested', (context) => context.addValue('hello', 'world2'));
+
+        const { hello } = Context.execute(plan);
 
         expect(hello).toBe('world2');
       });
