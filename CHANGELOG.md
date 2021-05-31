@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/ForestAdmin/context/compare/v1.6.1...v1.7.0) (2021-05-31)
+
+
+### Features
+
+* we can execute the same plan twice ([4a63769](https://github.com/ForestAdmin/context/commit/4a637699bfb8feba00d3ee4fe80fd4ad53875ef4))
+
 ## [1.6.1](https://github.com/ForestAdmin/context/compare/v1.6.0...v1.6.1) (2021-05-31)
 
 
