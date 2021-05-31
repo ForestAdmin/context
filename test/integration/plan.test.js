@@ -122,14 +122,10 @@ describe('Plan', () => {
   });
   describe('deliverSteps', () => {
     const plan = new Plan();
-    const value = Symbol('value');
-    const steps = { value };
+    const steps = Symbol('value');
     plan._steps = steps;
 
     const actualSteps = plan.deliverSteps();
-    actualSteps.touch = 'impossible';
-    expect(steps.touch).toStrictEqual(undefined);
-
-    expect(steps.value).toBe(value);
+    expect(actualSteps).toStrictEqual(steps);
   });
 });

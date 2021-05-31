@@ -222,4 +222,23 @@ describe('Context', () => {
       });
     });
   });
+
+  describe('executing the same plan twice', () => {
+    it('produces two times the same context', () => {
+      expect.assertions(1);
+
+      const plan = Context.newPlan()
+        .addStep('step1', (step1Context) => step1Context
+          .addInstance('hidden', 'toto', { private: true })
+          .addInstance('visible', 'visibleValue'))
+        .addStep('step2', (step1Context) => step1Context
+          .addInstance('hidden', 'toto', { private: true })
+          .addInstance('visible2', 'visibleValue2'));
+
+      const { assertPresent: v1, ...context1 } = Context.execute(plan);
+      const { assertPresent: v2, ...context2 } = Context.execute(plan);
+
+      expect(context1).toStrictEqual(context2);
+    });
+  });
 });

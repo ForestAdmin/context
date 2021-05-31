@@ -40,7 +40,7 @@ module.exports = class Plan {
   }
 
   deliverSteps() {
-    return Object.freeze(this._steps);
+    return this._steps;
   }
 
   static _createStep(key, plan) {
