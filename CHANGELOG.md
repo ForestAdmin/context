@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/ForestAdmin/context/compare/v1.6.0...v1.6.1) (2021-05-31)
+
+
+### Bug Fixes
+
+* replace bug when many elements were in parent step ([a12a1e9](https://github.com/ForestAdmin/context/commit/a12a1e96ec8abb9b1f8331017b6c38db40c70f7d))
+
 # [1.6.0](https://github.com/ForestAdmin/context/compare/v1.5.0...v1.6.0) (2021-05-30)
 
 
