@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/ForestAdmin/context/compare/v1.7.0...v1.7.1) (2021-06-01)
+
+
+### Bug Fixes
+
+* plan are immutable ([b584396](https://github.com/ForestAdmin/context/commit/b584396817b7dfba2f3067913e6bb11b83469249))
+
 # [1.7.0](https://github.com/ForestAdmin/context/compare/v1.6.1...v1.7.0) (2021-05-31)
 
 
