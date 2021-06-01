@@ -48,7 +48,6 @@ module.exports = class Plan {
       const step = clonedSteps[i];
       const { key, plan } = step;
       if (plan instanceof Plan) clonedSteps[i] = { key, plan: plan._clone() };
-      else if (Array.isArray(plan)) clonedSteps[i] = Plan._cloneSteps(step);
       else if (typeof plan === 'function') clonedSteps[i] = step; // no change
       else throw new Error('invalid step found');
     }

@@ -173,39 +173,55 @@ describe('Plan', () => {
     });
 
     it('can mock nested elements of a plan', () => {
+      const v1 = Symbol('value1');
+      const v2 = Symbol('value2');
+      const v3 = Symbol('value3');
+      const v4 = Symbol('value4');
+      const v5 = Symbol('value5');
+      const v6 = Symbol('value6');
+
       const plan = new Plan()
         .addStep('base', new Plan()
-          .addStep('one', (context) => context.addValue('one', () => 1))
-          .addStep('two', (context) => context.addValue('two', () => 2)))
+          .addStep('one', (context) => context.addValue('one', () => v1))
+          .addStep('two', (context) => context.addValue('two', () => v2)))
         .addStep('extension', new Plan()
-          .addStep('three', (context) => context.addValue('three', () => 3)));
+          .addStep('three', (context) => context.addValue('three', () => v3)));
 
-      const oneMock = jest.fn().mockReturnValue('hello');
       const modifiedPlan1 = plan
-        .replace('base.one', (context) => context.addValue('one', oneMock));
+        .replace('base.one', (context) => context.addValue('one', () => v4));
 
-      const oneMock2 = jest.fn().mockReturnValue('hello2');
-      plan
-        .replace('base.one', (context) => context.addValue('one', oneMock2));
+      const modifiedPlan2 = plan
+        .replace('base.one', (context) => context.addValue('one', () => v5));
 
-      const { one, two } = execute(modifiedPlan1);
+      const modifiedPlan3 = modifiedPlan2
+        .replace('base.two', (context) => context.addValue('two', () => v6));
 
-      const oneResult = one();
-      const twoResult = two();
+      const { one, two, three } = execute(plan);
+      const {
+        one: oneModifiedPlan1, two: twoModifiedPlan1, three: threeModifiedPlan1,
+      } = execute(modifiedPlan1);
+      const {
+        one: oneModifiedPlan2, two: twoModifiedPlan2, three: threeModifiedPlan2,
+      } = execute(modifiedPlan2);
+      const {
+        one: oneModifiedPlan3, two: twoModifiedPlan3, three: threeModifiedPlan3,
+      } = execute(modifiedPlan3);
 
-      expect(oneMock).toHaveBeenCalledWith();
-      expect(oneMock2).not.toHaveBeenCalledWith();
-      expect(oneResult).toBe('hello');
-      expect(twoResult).toBe(2);
+      expect(one()).toBe(v1);
+      expect(two()).toBe(v2);
+      expect(three()).toBe(v3);
+
+      expect(oneModifiedPlan1()).toBe(v4);
+      expect(twoModifiedPlan1()).toBe(v2);
+      expect(threeModifiedPlan1()).toBe(v3);
+
+      expect(oneModifiedPlan2()).toBe(v5);
+      expect(twoModifiedPlan2()).toBe(v2);
+      expect(threeModifiedPlan2()).toBe(v3);
+
+      expect(oneModifiedPlan3()).toBe(v5);
+      expect(twoModifiedPlan3()).toBe(v6);
+      expect(threeModifiedPlan3()).toBe(v3);
     });
   });
-
-  // describe('clone', () => {
-  //   it('should allow to have two plans from one', () => {
-  //     const plan = new Plan()
-  //       .addStep(new Plan()
-  //         .addStep())
-  //       .addStep()
-  //   });
-  // });
 });
