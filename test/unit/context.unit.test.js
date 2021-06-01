@@ -438,9 +438,10 @@ describe('Context > unit', () => {
               .addStep('other', (context) => context.addValue('other', 'value'))
               .addStep('nested', (context) => context.addValue('hello', 'world'))));
 
-        plan.replace('so.deep.nested', (context) => context.addValue('hello', 'world2'));
+        const modifiedPlan = plan
+          .replace('so.deep.nested', (context) => context.addValue('hello', 'world2'));
 
-        const { hello } = Context.execute(plan);
+        const { hello } = Context.execute(modifiedPlan);
 
         expect(hello).toBe('world2');
       });

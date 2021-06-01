@@ -199,4 +199,13 @@ describe('Plan', () => {
       expect(twoResult).toBe(2);
     });
   });
+
+  // describe('clone', () => {
+  //   it('should allow to have two plans from one', () => {
+  //     const plan = new Plan()
+  //       .addStep(new Plan()
+  //         .addStep())
+  //       .addStep()
+  //   });
+  // });
 });
