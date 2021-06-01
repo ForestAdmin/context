@@ -144,4 +144,29 @@ describe('Plan', () => {
     expect(context).toStrictEqual({ one: 1, two: 2 });
     expect(modifiedContext).toStrictEqual({ one: 'uno', two: 2 });
   });
+
+  describe('replace using mocks for testing', () => {
+    it('can mock elements of a plan', () => {
+      // plan métier ./init.js
+      const plan = new Plan()
+        .addStep('one', (context) => context.addValue('one', () => 1))
+        .addStep('two', (context) => context.addValue('two', () => 2));
+
+      // code de test: remplacement du plan ave des mocks
+      const oneMock = jest.fn().mockReturnValue('hello');
+      const modifiedPlan = plan
+        .replace('one', (context) => context.addValue('one', oneMock));
+
+      // Code de la commande mère: execution du plan
+      const { one, two } = execute(modifiedPlan);
+
+      // l'éxécution de la commande appelent des choses du contexte
+      const oneResult = one();
+      const twoResult = two();
+
+      expect(oneMock).toHaveBeenCalledWith();
+      expect(oneResult).toBe('hello');
+      expect(twoResult).toBe(2);
+    });
+  });
 });
