@@ -1,6 +1,7 @@
 /* eslint-disable  sonarjs/no-duplicate-string */
 
 const Plan = require('../../src/plan');
+const { execute } = require('../../src');
 
 describe('Plan', () => {
   it('constructor', () => {
@@ -127,5 +128,20 @@ describe('Plan', () => {
 
     const actualSteps = plan.deliverSteps();
     expect(actualSteps).toStrictEqual(steps);
+  });
+
+  describe('replace', () => {
+    const plan = new Plan()
+      .addStep('one', (context) => context.addValue('one', 1))
+      .addStep('two', (context) => context.addValue('two', 2));
+
+    const modifiedPlan = plan
+      .replace('one', (context) => context.addValue('one', 'uno'));
+
+    const { assertPresent: v1, ...context } = execute(plan);
+    const { assertPresent: v2, ...modifiedContext } = execute(modifiedPlan);
+
+    expect(context).toStrictEqual({ one: 1, two: 2 });
+    expect(modifiedContext).toStrictEqual({ one: 'uno', two: 2 });
   });
 });

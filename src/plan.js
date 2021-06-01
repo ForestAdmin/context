@@ -25,14 +25,21 @@ module.exports = class Plan {
   replace(stepPath, replaceBy) {
     if (!this.has(stepPath)) throw new Error(`Does not contain "${stepPath}"`);
 
-    const parentStep = this.step(stepPath, -1);
+    const clone = this.clone();
+    const parentStep = clone.step(stepPath, -1);
     const stepKey = Plan._last(stepPath);
     const existingStepIndex = parentStep._steps.findIndex(({ key }) => key === stepKey);
     const newStep = Plan._createStep(stepKey, replaceBy);
 
     parentStep._steps.splice(existingStepIndex, 1, newStep);
 
-    return this;
+    return clone;
+  }
+
+  clone() {
+    const clone = new Plan();
+    clone._steps = this._steps.slice();
+    return clone;
   }
 
   has(keyToFind) {
@@ -40,7 +47,7 @@ module.exports = class Plan {
   }
 
   deliverSteps() {
-    return this._steps;
+    return Object.freeze(this._steps);
   }
 
   static _createStep(key, plan) {
