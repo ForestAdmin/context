@@ -131,40 +131,70 @@ describe('Plan', () => {
   });
 
   describe('replace', () => {
-    const plan = new Plan()
-      .addStep('one', (context) => context.addValue('one', 1))
-      .addStep('two', (context) => context.addValue('two', 2));
+    it('can replace an element of a plan', () => {
+      const plan = new Plan()
+        .addStep('one', (context) => context.addValue('one', 1))
+        .addStep('two', (context) => context.addValue('two', 2));
 
-    const modifiedPlan = plan
-      .replace('one', (context) => context.addValue('one', 'uno'));
+      const modifiedPlan = plan
+        .replace('one', (context) => context.addValue('one', 'uno'));
 
-    const { assertPresent: v1, ...context } = execute(plan);
-    const { assertPresent: v2, ...modifiedContext } = execute(modifiedPlan);
+      const { assertPresent: v1, ...context } = execute(plan);
+      const { assertPresent: v2, ...modifiedContext } = execute(modifiedPlan);
 
-    expect(context).toStrictEqual({ one: 1, two: 2 });
-    expect(modifiedContext).toStrictEqual({ one: 'uno', two: 2 });
+      expect(context).toStrictEqual({ one: 1, two: 2 });
+      expect(modifiedContext).toStrictEqual({ one: 'uno', two: 2 });
+    });
   });
 
   describe('replace using mocks for testing', () => {
     it('can mock elements of a plan', () => {
-      // plan métier ./init.js
+      // business plan code
       const plan = new Plan()
         .addStep('one', (context) => context.addValue('one', () => 1))
         .addStep('two', (context) => context.addValue('two', () => 2));
 
-      // code de test: remplacement du plan ave des mocks
+      // testing code: replace something
       const oneMock = jest.fn().mockReturnValue('hello');
       const modifiedPlan = plan
         .replace('one', (context) => context.addValue('one', oneMock));
 
-      // Code de la commande mère: execution du plan
+      // executing plan
       const { one, two } = execute(modifiedPlan);
 
-      // l'éxécution de la commande appelent des choses du contexte
+      // using the context
+      const oneResult = one();
+      const twoResult = two();
+
+      // asserting on the context usage
+      expect(oneMock).toHaveBeenCalledWith();
+      expect(oneResult).toBe('hello');
+      expect(twoResult).toBe(2);
+    });
+
+    it('can mock nested elements of a plan', () => {
+      const plan = new Plan()
+        .addStep('base', new Plan()
+          .addStep('one', (context) => context.addValue('one', () => 1))
+          .addStep('two', (context) => context.addValue('two', () => 2)))
+        .addStep('extension', new Plan()
+          .addStep('three', (context) => context.addValue('three', () => 3)));
+
+      const oneMock = jest.fn().mockReturnValue('hello');
+      const modifiedPlan1 = plan
+        .replace('base.one', (context) => context.addValue('one', oneMock));
+
+      const oneMock2 = jest.fn().mockReturnValue('hello2');
+      plan
+        .replace('base.one', (context) => context.addValue('one', oneMock2));
+
+      const { one, two } = execute(modifiedPlan1);
+
       const oneResult = one();
       const twoResult = two();
 
       expect(oneMock).toHaveBeenCalledWith();
+      expect(oneMock2).not.toHaveBeenCalledWith();
       expect(oneResult).toBe('hello');
       expect(twoResult).toBe(2);
     });

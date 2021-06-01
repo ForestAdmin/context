@@ -25,7 +25,7 @@ module.exports = class Plan {
   replace(stepPath, replaceBy) {
     if (!this.has(stepPath)) throw new Error(`Does not contain "${stepPath}"`);
 
-    const clone = this.clone();
+    const clone = this._clone();
     const parentStep = clone.step(stepPath, -1);
     const stepKey = Plan._last(stepPath);
     const existingStepIndex = parentStep._steps.findIndex(({ key }) => key === stepKey);
@@ -36,10 +36,23 @@ module.exports = class Plan {
     return clone;
   }
 
-  clone() {
+  _clone() {
     const clone = new Plan();
-    clone._steps = this._steps.slice();
+    clone._steps = Plan._cloneSteps(this._steps);
     return clone;
+  }
+
+  static _cloneSteps(steps) {
+    const clonedSteps = steps.slice();
+    for (let i = 0; i < clonedSteps.length; i += 1) {
+      const step = clonedSteps[i];
+      const { key, plan } = step;
+      if (plan instanceof Plan) clonedSteps[i] = { key, plan: plan._clone() };
+      else if (Array.isArray(plan)) clonedSteps[i] = Plan._cloneSteps(step);
+      else if (typeof plan === 'function') clonedSteps[i] = step; // no change
+      else throw new Error('invalid step found');
+    }
+    return clonedSteps;
   }
 
   has(keyToFind) {
