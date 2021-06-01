@@ -1,3 +1,11 @@
+## [1.7.2](https://github.com/ForestAdmin/context/compare/v1.7.1...v1.7.2) (2021-06-01)
+
+
+### Bug Fixes
+
+* replace will create a deeply immutable plan ([7ca2211](https://github.com/ForestAdmin/context/commit/7ca2211089ecb91accb8692e7c41ff7fdd5f49da))
+* tests ([499d7e8](https://github.com/ForestAdmin/context/commit/499d7e89c3b40f20cec6da034d0a83803662c778))
+
 ## [1.7.1](https://github.com/ForestAdmin/context/compare/v1.7.0...v1.7.1) (2021-06-01)
 
 
