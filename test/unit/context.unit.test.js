@@ -273,6 +273,26 @@ describe('Context > unit', () => {
     });
   });
 
+  describe('addAllKeysFrom', () => {
+    it('should add all keys', () => {
+      const context = new Context();
+      context.addValue = jest.fn();
+      const value1 = Symbol('value1');
+      const value2 = Symbol('value2');
+      const object = {
+        key1: value1,
+        key2: value2,
+      };
+      const options = Symbol('options');
+
+      const result = context.addAllKeysFrom(object, options);
+
+      expect(context.addValue).toHaveBeenNthCalledWith(1, 'key1', value1, options);
+      expect(context.addValue).toHaveBeenNthCalledWith(2, 'key2', value2, options);
+      expect(result).toBe(context);
+    });
+  });
+
   describe('_instanciate method', () => {
     it('create and return an instance', () => {
       const Class = jest.fn();

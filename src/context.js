@@ -150,6 +150,13 @@ module.exports = class Context {
 
   addModule(name, module, options) { return this.addValue(name, module, options); }
 
+  addAllKeysFrom(object, options) {
+    Object
+      .entries(object)
+      .forEach(([name, value]) => this.addValue(name, value, options));
+    return this;
+  }
+
   _instanciate(Class, { map } = {}) {
     if (!map) return new Class(this.get());
     return new Class(this._mapContext(map));
