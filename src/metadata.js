@@ -15,11 +15,11 @@ module.exports = class Metadata {
 
   setRequisites(requisites) {
     // console.log('setRequisites', this._lastAdded, requisites)
-    if(!this._lastAdded) throw new Error(`setRequisites() without lastAdded. last seen '${this._lastSeen}'`)
+    if (!this._lastAdded) throw new Error(`setRequisites() without lastAdded. last seen '${this._lastSeen}'`);
 
     const lastAdded = this._lookup(this._lastAdded)
-    if(!lastAdded) throw new Error(`last added ${this._lastAdded} is not in data`)
-    if(lastAdded.requires.length > 0) throw new Error(`last added requires '${this._lastAdded}' not empty`)
+    if (!lastAdded) throw new Error(`last added ${this._lastAdded} is not in data`);
+    if (lastAdded.requires.length > 0) throw new Error(`last added requires '${this._lastAdded}' not empty`);
 
     lastAdded.requires = requisites;
 

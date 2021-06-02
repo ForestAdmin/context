@@ -59,7 +59,7 @@ module.exports = class Context {
   }
 
   _assertPresent(requisites) {
-    const keys = Object.keys(requisites)
+    const keys = Object.keys(requisites);
     const missings = keys
       .map((key) => (!this._bag[key] ? key : null))
       .filter((key) => key);
@@ -108,9 +108,10 @@ module.exports = class Context {
    * @deprecated Use addUsingClass instead.
    */
   addClass(Class, options) {
+    const name = Context._getInstanceName(Class, options);
     this._metadata.add(name, 'class');
     this._setNewValue(
-      Context._getInstanceName(Class, options),
+      name,
       this._instanciate(Class, options),
       options,
     );
@@ -126,7 +127,8 @@ module.exports = class Context {
 
   addFactoryFunction(name, factoryFunction, options) {
     this._metadata.add(name, 'function*');
-    const theFunction = factoryFunction(this.get());
+    const bag = this.get();
+    const theFunction = factoryFunction(bag);
     this._setNewValue(name, theFunction, options);
     return this;
   }
@@ -134,7 +136,8 @@ module.exports = class Context {
   addFactory(name, factory) {
     this._metadata.add(name, 'factory');
     const value = factory(this.get());
-    return this._setNewValue(name, value);
+    this._setNewValue(name, value);
+    return this;
   }
 
   addUsingClass(name, Class, options) {
