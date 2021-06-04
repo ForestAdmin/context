@@ -194,34 +194,6 @@ describe('Context > unit', () => {
       expect(result).toBe(context);
     });
   });
-  describe('addClassesArray', () => {
-    it('add an array with classes instances', () => {
-      const name = 'myArrayInContext';
-      class TestedClass1 {}
-      class TestedClass2 {}
-      const testClass1 = Symbol('testClass1');
-      const testClass2 = Symbol('testClass2');
-      const classesArray = [TestedClass1, TestedClass2];
-      const instancesArray = [testClass1, testClass2];
-      const options = Symbol('options');
-
-      const context = new Context();
-      context._metadata.add = jest.fn();
-      context._instanciate = jest.fn()
-        .mockReturnValueOnce(testClass1)
-        .mockReturnValueOnce(testClass2);
-      context._setNewValue = jest.fn().mockReturnValue(context);
-
-      const actualResult = context.addClassesArray(name, classesArray, options);
-
-      expect(context._metadata.add).toHaveBeenCalledWith(name, 'class[]');
-      expect(context._instanciate).toHaveBeenCalledTimes(2);
-      expect(context._instanciate).toHaveBeenCalledWith(TestedClass1);
-      expect(context._instanciate).toHaveBeenCalledWith(TestedClass2);
-      expect(context._setNewValue).toHaveBeenCalledWith(name, instancesArray, options);
-      expect(actualResult).toBe(context);
-    });
-  });
   describe('addClass', () => {
     it('add a class instance to the context and return the context', () => {
       expect.assertions(5);

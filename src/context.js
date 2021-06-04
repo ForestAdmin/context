@@ -115,13 +115,6 @@ module.exports = class Context {
     return this;
   }
 
-  addClassesArray(name, classesArray, options) {
-    this._metadata.add(name, 'class[]');
-    const instancesArray = classesArray.map((Class) => this._instanciate(Class));
-    this._setNewValue(name, instancesArray, options);
-    return this;
-  }
-
   addFactoryFunction(name, factoryFunction, options) {
     this._metadata.add(name, 'function*');
     const bag = this.get();
