@@ -239,11 +239,12 @@ describe('Context', () => {
     });
   });
 
-  describe('dependancies graph', () => {
-    it('should give dependancies data', () => {
+  describe('metadata', () => {
+    it('should give metadata', () => {
       const context = new Context()
         .addValue('one', 1)
-        .addValue('three', 3)
+        .addInstance('three', 3)
+        .addFunction('fct', () => {})
         .addFactoryFunction('addOne', ({ assertPresent, one }) => {
           assertPresent({ one });
           return (value) => value + one;
@@ -251,15 +252,20 @@ describe('Context', () => {
         .addFactoryFunction('addOneThenTree', ({ assertPresent, addOne, three }) => {
           assertPresent({ addOne, three });
           return (value) => addOne(value) + three;
-        });
+        })
+        .addUsingClass('classe', class Classe {})
+        .addFactory('factory', () => 7);
 
       const metadata = context.getMetadata();
 
       const expectedMetaData = [
         { name: 'one', type: 'value', requires: [] },
-        { name: 'three', type: 'value', requires: [] },
+        { name: 'three', type: 'instance', requires: [] },
+        { name: 'fct', type: 'function', requires: [] },
         { name: 'addOne', type: 'function*', requires: ['one'] },
         { name: 'addOneThenTree', type: 'function*', requires: ['addOne', 'three'] },
+        { name: 'classe', type: 'class', requires: [] },
+        { name: 'factory', type: 'factory', requires: [] },
       ];
 
       expect(metadata).toStrictEqual(expectedMetaData);
