@@ -1,20 +1,6 @@
 /* eslint-disable global-require, max-classes-per-file */
 const Context = require('../../src/index');
 
-const PUBLIC_VALUE = 'public value';
-
-class HiddenService {
-  constructor({ hidden }) {
-    this.hidden = hidden;
-  }
-}
-
-class FakeService {
-  constructor({ dependency }) {
-    this.dependency = dependency;
-  }
-}
-
 describe('Context', () => {
   it('_instanciate with a mapper', () => {
     expect.assertions(1);
@@ -43,6 +29,11 @@ describe('Context', () => {
   });
   it('should add an instance to a context', () => {
     expect.assertions(1);
+    class FakeService {
+      constructor({ dependency }) {
+        this.dependency = dependency;
+      }
+    }
     const fakeService = new FakeService({});
     const context = new Context().addInstance('instance', fakeService);
     const { instance } = context.get();
@@ -76,6 +67,24 @@ describe('Context', () => {
     const { wow } = context.get();
     expect(wow instanceof FakeClass).toBe(true);
   });
+  it('should add an object keys to a context', () => {
+    expect.assertions(1);
+    const { assertPresent, ...context } = new Context()
+      .addValue('zero', 0)
+      .addAllKeysFrom({
+        one: 1,
+        two: 2,
+      })
+      .addValue('three', 3)
+      .get();
+
+    expect(context).toStrictEqual({
+      zero: 0,
+      one: 1,
+      two: 2,
+      three: 3,
+    });
+  });
   it('should add a class with a specific name', () => {
     expect.assertions(1);
     class FakeClass {}
@@ -105,6 +114,7 @@ describe('Context', () => {
   });
   it('should limit private values access to current context', () => {
     expect.assertions(4);
+    const PUBLIC_VALUE = 'public value';
 
     class SameContextService {
       constructor({ secretValue, publicValue }) {
@@ -143,6 +153,12 @@ describe('Context', () => {
 
     it('private value is accessible from same step', () => {
       expect.assertions(1);
+
+      class HiddenService {
+        constructor({ hidden }) {
+          this.hidden = hidden;
+        }
+      }
 
       const { hiddenService } = Context.execute(Context.newPlan()
         .addStep('step1', (step1Context) => step1Context
@@ -220,6 +236,39 @@ describe('Context', () => {
         expect(() => assertPresent({ one, two: 2 }))
           .toThrow('missing dependencies two');
       });
+    });
+  });
+
+  describe('metadata', () => {
+    it('should give metadata', () => {
+      const context = new Context()
+        .addValue('one', 1)
+        .addInstance('three', 3)
+        .addFunction('fct', () => {})
+        .addFactoryFunction('addOne', ({ assertPresent, one }) => {
+          assertPresent({ one });
+          return (value) => value + one;
+        })
+        .addFactoryFunction('addOneThenTree', ({ assertPresent, addOne, three }) => {
+          assertPresent({ addOne, three });
+          return (value) => addOne(value) + three;
+        })
+        .addUsingClass('classe', class Classe {})
+        .addFactory('factory', () => 7);
+
+      const metadata = context.getMetadata();
+
+      const expectedMetaData = [
+        { name: 'one', type: 'value', requires: [] },
+        { name: 'three', type: 'instance', requires: [] },
+        { name: 'fct', type: 'function', requires: [] },
+        { name: 'addOne', type: 'function*', requires: ['one'] },
+        { name: 'addOneThenTree', type: 'function*', requires: ['addOne', 'three'] },
+        { name: 'classe', type: 'class', requires: [] },
+        { name: 'factory', type: 'factory', requires: [] },
+      ];
+
+      expect(metadata).toStrictEqual(expectedMetaData);
     });
   });
 

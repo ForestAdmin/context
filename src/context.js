@@ -1,10 +1,12 @@
 const Plan = require('./plan');
+const Metadata = require('./metadata');
 
 module.exports = class Context {
   constructor() {
     this._bag = {};
     this._bag.assertPresent = this._assertPresent.bind(this);
     this._privates = [];
+    this._metadata = new Metadata();
   }
 
   static newPlan() {
@@ -57,11 +59,12 @@ module.exports = class Context {
   }
 
   _assertPresent(requisites) {
-    const missings = Object
-      .keys(requisites)
+    const keys = Object.keys(requisites);
+    const missings = keys
       .map((key) => (!this._bag[key] ? key : null))
       .filter((key) => key);
     if (missings.length > 0) throw new Error(`missing dependencies ${missings}`);
+    this._metadata.setRequisites(keys);
     return true;
   }
 
@@ -78,35 +81,70 @@ module.exports = class Context {
     return this;
   }
 
-  addValue(name, value, options) {
-    if (this._bag[name]) throw new Error(`existing instance { key: '${name}'} in context`);
-    return this._setValue(name, value, options);
+  _setNewValue(name, value, options = {}) {
+    if (this._bag[name]) throw new Error(`existing { key: '${name}'} in context`);
+    this._setValue(name, value, options);
   }
 
-  addInstance(name, instance, options) { return this.addValue(name, instance, options); }
+  addValue(name, value, options) {
+    this._metadata.add(name, 'value');
+    this._setNewValue(name, value, options);
+    return this;
+  }
 
-  addFunction(name, value, options) { return this.addValue(name, value, options); }
+  addInstance(name, instance, options) {
+    this._metadata.add(name, 'instance');
+    this._setNewValue(name, instance, options);
+    return this;
+  }
+
+  addFunction(name, value, options) {
+    this._metadata.add(name, 'function');
+    this._setNewValue(name, value, options);
+    return this;
+  }
 
   /**
    * @deprecated Use addUsingClass instead.
    */
   addClass(Class, options) {
-    return this.addValue(
-      Context._getInstanceName(Class, options),
-      this._instanciate(Class, options),
-      options,
-    );
+    const name = Context._getInstanceName(Class, options);
+    this._metadata.add(name, 'class');
+    const instance = this._instanciate(Class, options);
+    this._setNewValue(name, instance, options);
+    return this;
+  }
+
+  addFactoryFunction(name, factoryFunction, options) {
+    this._metadata.add(name, 'function*');
+    const bag = this.get();
+    const theFunction = factoryFunction(bag);
+    this._setNewValue(name, theFunction, options);
+    return this;
+  }
+
+  addFactory(name, factory) {
+    this._metadata.add(name, 'factory');
+    const value = factory(this.get());
+    this._setNewValue(name, value);
+    return this;
   }
 
   addUsingClass(name, Class, options) {
-    return this.addValue(
-      name,
-      this._instanciate(Class, options),
-      options,
-    );
+    this._metadata.add(name, 'class');
+    const instance = this._instanciate(Class, options);
+    this._setNewValue(name, instance, options);
+    return this;
   }
 
   addModule(name, module, options) { return this.addValue(name, module, options); }
+
+  addAllKeysFrom(object, options) {
+    Object
+      .entries(object)
+      .forEach(([name, value]) => this.addValue(name, value, options));
+    return this;
+  }
 
   _instanciate(Class, { map } = {}) {
     if (!map) return new Class(this.get());
@@ -117,21 +155,6 @@ module.exports = class Context {
     const bag = this.get();
     if (!map) return bag;
     return { ...bag, ...map(bag) };
-  }
-
-  addClassesArray(name, classesArray, options) {
-    const instancesArray = classesArray.map((Class) => this._instanciate(Class));
-    return this.addValue(name, instancesArray, options);
-  }
-
-  addFactoryFunction(name, value, options) {
-    return this.addFunction(name, value(this.get()), options);
-  }
-
-  addFactory(name, factory) {
-    const context = this.get();
-    const value = factory(context);
-    return this.addValue(name, value);
   }
 
   invokeFactory(factoryId, instanceKey, parameters) {
@@ -160,5 +183,9 @@ module.exports = class Context {
       return dependanciesObject;
     }
     return bag[name];
+  }
+
+  getMetadata() {
+    return this._metadata.get();
   }
 };

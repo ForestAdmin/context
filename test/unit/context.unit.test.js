@@ -14,10 +14,12 @@ describe('Context > unit', () => {
   describe('_assertPresent', () => {
     describe('when all dependencies are present', () => {
       it('should not throw', () => {
-        expect.assertions(1);
+        expect.assertions(2);
         const context = new Context();
         context._bag.testedService = Symbol('testedService');
+        context._metadata.setRequisites = jest.fn();
         const result = context._assertPresent({ testedService: context._bag.testedService });
+        expect(context._metadata.setRequisites).toHaveBeenCalledWith(['testedService']);
         expect(result).toBe(true);
       });
     });
@@ -116,7 +118,7 @@ describe('Context > unit', () => {
         context._bag.key = value;
 
         expect(() => context.addValue('key', value))
-          .toThrow('existing instance { key: \'key\'} in context');
+          .toThrow('existing { key: \'key\'} in context');
       });
     });
     describe('with an existing value', () => {
@@ -134,23 +136,27 @@ describe('Context > unit', () => {
   });
   describe('addInstance', () => {
     it('add a instance to the context', () => {
-      expect.assertions(2);
+      expect.assertions(3);
       const context = new Context();
-      context.addValue = jest.fn(() => context);
-      const actualResult = context.addInstance('key', 'value');
+      context._metadata.add = jest.fn();
+      context._setNewValue = jest.fn();
+      const actualResult = context.addInstance('key', 'value', 'options');
 
-      expect(context.addValue).toHaveBeenCalledWith('key', 'value', undefined);
+      expect(context._setNewValue).toHaveBeenCalledWith('key', 'value', 'options');
+      expect(context._metadata.add).toHaveBeenCalledWith('key', 'instance');
       expect(actualResult).toEqual(context);
     });
   });
   describe('addFunction', () => {
     it('add a function to the context', () => {
-      expect.assertions(2);
+      expect.assertions(3);
       const context = new Context();
-      context.addValue = jest.fn(() => context);
-      const actualResult = context.addFunction('key', 'value');
+      context._metadata.add = jest.fn();
+      context._setNewValue = jest.fn();
+      const actualResult = context.addFunction('key', 'value', 'options');
 
-      expect(context.addValue).toHaveBeenCalledWith('key', 'value', undefined);
+      expect(context._setNewValue).toHaveBeenCalledWith('key', 'value', 'options');
+      expect(context._metadata.add).toHaveBeenCalledWith('key', 'function');
       expect(actualResult).toEqual(context);
     });
   });
@@ -167,74 +173,50 @@ describe('Context > unit', () => {
   });
   describe('addFactoryMethod', () => {
     it('add a function from a factory method to the context', () => {
-      expect.assertions(4);
+      expect.assertions(5);
 
-      const contextBag = Symbol('contextBag');
-      const fct = Symbol('fct');
       const name = Symbol('name');
-      const functionFactory = jest.fn().mockReturnValue(fct);
       const options = Symbol('options');
+      const bag = Symbol('bag');
 
       const context = new Context();
-      context.get = jest.fn().mockReturnValue(contextBag);
-      context.addFunction = jest.fn().mockReturnValue(context);
+      context._metadata.add = jest.fn();
+      context.get = jest.fn().mockReturnValue(bag);
+      const theFunction = Symbol('theFunction');
+      const factoryFunction = jest.fn().mockReturnValue(theFunction);
+      context._setNewValue = jest.fn();
+      const result = context.addFactoryFunction(name, factoryFunction, options);
 
-      const actualResult = context.addFactoryFunction(name, functionFactory, options);
-
+      expect(context._metadata.add).toHaveBeenCalledWith(name, 'function*');
       expect(context.get).toHaveBeenCalledWith();
-      expect(functionFactory).toHaveBeenCalledWith(contextBag);
-      expect(context.addFunction).toHaveBeenCalledWith(name, fct, options);
-      expect(actualResult).toBe(context);
-    });
-  });
-  describe('addClassesArray', () => {
-    it('add an array with classes instances', () => {
-      const name = 'myArrayInContext';
-      class TestedClass1 {}
-      class TestedClass2 {}
-      const testClass1 = Symbol('testClass1');
-      const testClass2 = Symbol('testClass2');
-      const classesArray = [TestedClass1, TestedClass2];
-      const instancesArray = [testClass1, testClass2];
-      const options = Symbol('options');
-
-      const context = new Context();
-      context._instanciate = jest.fn()
-        .mockReturnValueOnce(testClass1)
-        .mockReturnValueOnce(testClass2);
-      context.addValue = jest.fn().mockReturnValue(context);
-
-      const actualResult = context.addClassesArray(name, classesArray, options);
-
-      expect(context._instanciate).toHaveBeenCalledTimes(2);
-      expect(context._instanciate).toHaveBeenCalledWith(TestedClass1);
-      expect(context._instanciate).toHaveBeenCalledWith(TestedClass2);
-      expect(context.addValue).toHaveBeenCalledWith(name, instancesArray, options);
-      expect(actualResult).toBe(context);
+      expect(factoryFunction).toHaveBeenCalledWith(bag);
+      expect(context._setNewValue).toHaveBeenCalledWith(name, theFunction, options);
+      expect(result).toBe(context);
     });
   });
   describe('addClass', () => {
     it('add a class instance to the context and return the context', () => {
+      expect.assertions(5);
       Context._getInstanceNameBak = Context._getInstanceName;
-      Context._getInstanceName = jest.fn();
-      expect.assertions(4);
+      const instanceName = Symbol('instanceName');
+      Context._getInstanceName = jest.fn().mockReturnValue(instanceName);
 
       const fakeClass = Symbol('fakeClass');
-      const context = new Context();
       const instance = Symbol('instance');
-      const instanceName = Symbol('instanceName');
-      const mappedContext = Symbol('mappedContext');
-      Context._getInstanceName.mockReturnValue(instanceName);
-      context.addValue = jest.fn(() => context);
-      context._instanciate = jest.fn(() => instance);
-      context._mapContext = jest.fn(() => mappedContext);
-
       const options = Symbol('options');
+
+      const context = new Context();
+      context._metadata.add = jest.fn();
+
+      context._setNewValue = jest.fn(() => {});
+      context._instanciate = jest.fn(() => instance);
+
       const actualResult = context.addClass(fakeClass, options);
 
       expect(Context._getInstanceName).toHaveBeenCalledWith(fakeClass, options);
+      expect(context._metadata.add).toHaveBeenCalledWith(instanceName, 'class');
       expect(context._instanciate).toHaveBeenCalledWith(fakeClass, options);
-      expect(context.addValue).toHaveBeenCalledWith(instanceName, instance, options);
+      expect(context._setNewValue).toHaveBeenCalledWith(instanceName, instance, options);
       expect(actualResult).toStrictEqual(context);
 
       Context._getInstanceName = Context._getInstanceNameBak;
@@ -252,14 +234,34 @@ describe('Context > unit', () => {
       const options = Symbol('options');
 
       const context = new Context();
-      context.addValue = jest.fn(() => context);
+      context._setNewValue = jest.fn(() => context);
       context._instanciate = jest.fn(() => instance);
 
       const actualResult = context.addUsingClass(instanceName, fakeClass, options);
 
-      expect(context.addValue).toHaveBeenCalledWith(instanceName, instance, options);
+      expect(context._setNewValue).toHaveBeenCalledWith(instanceName, instance, options);
       expect(context._instanciate).toHaveBeenCalledWith(fakeClass, options);
       expect(actualResult).toStrictEqual(context);
+    });
+  });
+
+  describe('addAllKeysFrom', () => {
+    it('should add all keys', () => {
+      const context = new Context();
+      context.addValue = jest.fn();
+      const value1 = Symbol('value1');
+      const value2 = Symbol('value2');
+      const object = {
+        key1: value1,
+        key2: value2,
+      };
+      const options = Symbol('options');
+
+      const result = context.addAllKeysFrom(object, options);
+
+      expect(context.addValue).toHaveBeenNthCalledWith(1, 'key1', value1, options);
+      expect(context.addValue).toHaveBeenNthCalledWith(2, 'key2', value2, options);
+      expect(result).toBe(context);
     });
   });
 
@@ -577,23 +579,25 @@ describe('Context > unit', () => {
   });
   describe('createFactory', () => {
     it('should add the factory', () => {
-      const factoryId = 'factoryId';
+      const name = 'factoryId';
       const factoryMethod = Symbol('factoryMethod');
       const factory = jest.fn().mockReturnValue(factoryMethod);
       const context = new Context();
+      context._metadata.add = jest.fn();
 
       const contextBag = Symbol('contextBag');
       context.get = jest.fn().mockReturnValue(contextBag);
 
       const contextSymbol = Symbol('context');
-      context.addValue = jest.fn().mockReturnValue(contextSymbol);
+      context._setNewValue = jest.fn().mockReturnValue(contextSymbol);
 
-      const result = context.addFactory(factoryId, factory);
+      const result = context.addFactory(name, factory);
 
+      expect(context._metadata.add).toHaveBeenCalledWith(name, 'factory');
       expect(context.get).toHaveBeenCalledWith();
       expect(factory).toHaveBeenCalledWith(contextBag);
-      expect(context.addValue).toHaveBeenCalledWith(factoryId, factoryMethod);
-      expect(result).toBe(contextSymbol);
+      expect(context._setNewValue).toHaveBeenCalledWith(name, factoryMethod);
+      expect(result).toBe(context);
     });
   });
   describe('invokeFactory', () => {
