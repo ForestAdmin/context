@@ -110,11 +110,8 @@ module.exports = class Context {
   addClass(Class, options) {
     const name = Context._getInstanceName(Class, options);
     this._metadata.add(name, 'class');
-    this._setNewValue(
-      name,
-      this._instanciate(Class, options),
-      options,
-    );
+    const instance = this._instanciate(Class, options);
+    this._setNewValue(name, instance, options);
     return this;
   }
 
@@ -141,11 +138,10 @@ module.exports = class Context {
   }
 
   addUsingClass(name, Class, options) {
-    return this.addValue(
-      name,
-      this._instanciate(Class, options),
-      options,
-    );
+    this._metadata.add(name, 'class');
+    const instance = this._instanciate(Class, options);
+    this._setNewValue(name, instance, options);
+    return this;
   }
 
   addModule(name, module, options) { return this.addValue(name, module, options); }

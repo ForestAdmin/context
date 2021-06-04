@@ -262,12 +262,12 @@ describe('Context > unit', () => {
       const options = Symbol('options');
 
       const context = new Context();
-      context.addValue = jest.fn(() => context);
+      context._setNewValue = jest.fn(() => context);
       context._instanciate = jest.fn(() => instance);
 
       const actualResult = context.addUsingClass(instanceName, fakeClass, options);
 
-      expect(context.addValue).toHaveBeenCalledWith(instanceName, instance, options);
+      expect(context._setNewValue).toHaveBeenCalledWith(instanceName, instance, options);
       expect(context._instanciate).toHaveBeenCalledWith(fakeClass, options);
       expect(actualResult).toStrictEqual(context);
     });
