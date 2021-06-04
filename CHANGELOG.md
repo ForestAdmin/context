@@ -1,3 +1,18 @@
+# [1.8.0](https://github.com/ForestAdmin/context/compare/v1.7.2...v1.8.0) (2021-06-04)
+
+
+### Bug Fixes
+
+* tests ([3cddbf0](https://github.com/ForestAdmin/context/commit/3cddbf0ab75e90f72d003a60a739681dac2beaf9))
+* tests ([0a6d9dc](https://github.com/ForestAdmin/context/commit/0a6d9dcbad4bf0ac236bdacfd433e4149379eea9))
+
+
+### Features
+
+* introduce addAllKeysFrom ([106b348](https://github.com/ForestAdmin/context/commit/106b3488111535b016a25cc06b968a8d85c1cebb))
+* introduce metadata ([a56a4cb](https://github.com/ForestAdmin/context/commit/a56a4cba8ec1c051e7e8ebec07795a7923199f16))
+* metadata ([467ce05](https://github.com/ForestAdmin/context/commit/467ce05e08da550c7cd82be6d5b4037849883b94))
+
 ## [1.7.2](https://github.com/ForestAdmin/context/compare/v1.7.1...v1.7.2) (2021-06-01)
 
 
