@@ -8,6 +8,7 @@ describe('generate the dependancies graph', () => {
   it('write a file structure matching a plan', () => {
     // eslint-disable-next-line no-unused-vars
     class PlanWritter extends Plan {
+      // eslint-disable-next-line class-methods-use-this
       metadataHook(entries) {
         fs.rmdirSync(join(__dirname, 'generated'), { recursive: true });
         entries.forEach(({ path: entryPath, name: entryName, type, requires }) => {
