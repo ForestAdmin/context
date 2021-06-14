@@ -10,7 +10,7 @@ describe('generate the dependancies graph', () => {
     class PlanWritter extends Plan {
       // eslint-disable-next-line class-methods-use-this
       metadataHook(entries) {
-        fs.rmdirSync(join(__dirname, 'generated'), { recursive: true });
+        fs.rmdirSync(join(__dirname, 'generated/'), { recursive: true });
         entries.forEach(({ path: entryPath, name: entryName, type, requires }) => {
           if (type === 'step') {
             const folder = join(__dirname, 'generated', ...entryPath.split('/'));
