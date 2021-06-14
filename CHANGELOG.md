@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/ForestAdmin/context/compare/v1.8.0...v1.9.0) (2021-06-14)
+
+
+### Features
+
+* addStep feature ([#4](https://github.com/ForestAdmin/context/issues/4)) ([66727c1](https://github.com/ForestAdmin/context/commit/66727c131f3e4a508f4c2d5033524707c83aee58))
+
 # [1.8.0](https://github.com/ForestAdmin/context/compare/v1.7.2...v1.8.0) (2021-06-04)
 
 
