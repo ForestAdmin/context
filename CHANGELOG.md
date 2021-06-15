@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/ForestAdmin/context/compare/v1.9.0...v1.10.0) (2021-06-15)
+
+
+### Features
+
+* allow to replace from other function or other plan ([#5](https://github.com/ForestAdmin/context/issues/5)) ([3bc1d7b](https://github.com/ForestAdmin/context/commit/3bc1d7b4f5a17388cb4331f9dcd194e554043641))
+
 # [1.9.0](https://github.com/ForestAdmin/context/compare/v1.8.0...v1.9.0) (2021-06-14)
 
 
