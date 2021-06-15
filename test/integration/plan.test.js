@@ -154,6 +154,34 @@ describe('Plan', () => {
       expect(() => execute((plan) => plan.replace('BAD_NAME')))
         .toThrow('entry not found: \'BAD_NAME\'');
     });
+
+    it('should replace a value from another function', () => {
+      const plans = [
+        (plan) => plan.addValue('key', 'value'),
+        (plan) => plan.replace('key', 'new-value'),
+      ];
+      const { key } = execute(plans);
+      expect(key).toBe('new-value');
+    });
+
+    it('should replace a value from another nested function', () => {
+      const plans = [
+        (plan) => plan
+          .addStep('step', (planStep) => planStep.addValue('key', 'value')),
+        (plan) => plan.replace('step/key', 'new-value'),
+      ];
+      const { key } = execute(plans);
+      expect(key).toBe('new-value');
+    });
+
+    it('should replace a value from another plan', () => {
+      const plans = [
+        newPlan().addValue('key', 'value'),
+        (plan) => plan.replace('key', 'new-value'),
+      ];
+      const { key } = execute(plans);
+      expect(key).toBe('new-value');
+    });
   });
 
   describe('addXXX methods', () => {

@@ -10,8 +10,8 @@ module.exports = class Plan {
     return new Plan(...args);
   }
 
-  static init(plan) {
-    Plan.execute(plan, Plan._instance = new Context());
+  static init(item) {
+    Plan.execute(item, Plan._instance = new Context());
   }
 
   static inject() {
@@ -19,32 +19,39 @@ module.exports = class Plan {
     return Plan._instance.get();
   }
 
-  static execute(plan, context = new Context(), _deep = 0) {
-    if (!plan) throw new Error('missing plan');
-    const planIsAFunction = typeof plan === 'function';
-    const planIsAPlan = plan instanceof Plan;
-    const planIsAnArray = Array.isArray(plan);
-    const planIsInvalid = !planIsAFunction && !planIsAnArray && !planIsAPlan;
+  static execute(item, context = new Context()) {
+    if (!item) throw new Error('missing item');
 
-    if (planIsAFunction) {
-      const planFunction = plan;
-      const newPlan = Plan.newPlan();
-      planFunction(newPlan);
-      Plan.execute(newPlan, context, _deep + 1);
-    } else if (planIsAPlan) {
-      plan
-        ._getEntries()
-        .forEach((entry) => Plan.applyEntry(entry, context));
-      if (_deep === 0) context.flushPrivates('');
-    } else if (planIsAnArray) {
-      const deeper = _deep + 1;
-      plan.forEach((step) => Plan.execute(step, context, deeper));
-    } else if (planIsInvalid) {
-      throw new Error(`Invalid plan: received '${typeof plan}' instead of 'Plan', 'function' or 'Array'`);
+    Plan
+      ._mergeItem(item, Plan.newPlan())
+      ._getEntries()
+      .forEach((entry) => Plan.applyEntry(entry, context));
+
+    context.flushPrivates('');
+    if (item.metadataHook) item.metadataHook(context.getMetadata());
+    return context.get();
+  }
+
+  static _mergeItem(item, plan) {
+    if (!item) throw new Error('missing item');
+    const itemIsAnArray = Array.isArray(item);
+    const itemIsAFunction = typeof item === 'function';
+    const itemIsAPlan = item instanceof Plan;
+    const itemIsInvalid = !itemIsAFunction && !itemIsAnArray && !itemIsAPlan;
+
+    if (itemIsAnArray) {
+      item.forEach((subitem) => {
+        plan = Plan._mergeItem(subitem, plan);
+      });
+    } else if (itemIsAFunction) {
+      plan = item(plan);
+    } else if (itemIsAPlan) {
+      plan = Plan.newPlan([...plan._getEntries(), ...item._getEntries()]);
+    } else if (itemIsInvalid) {
+      throw new Error(`Invalid plan: received '${typeof item}' instead of 'Plan', 'function' or 'Array'`);
     }
 
-    if (_deep === 0 && plan.metadataHook) plan.metadataHook(context.getMetadata());
-    return context.get();
+    return plan;
   }
 
   static applyEntry(entry, context) {
