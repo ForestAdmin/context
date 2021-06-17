@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/ForestAdmin/context/compare/v1.10.0...v1.11.0) (2021-06-17)
+
+
+### Features
+
+* allow to add plan or array or function inside plan steps ([38bdbbc](https://github.com/ForestAdmin/context/commit/38bdbbc8a4f87ca8ffcbb45faca55c73d4859335))
+
 # [1.10.0](https://github.com/ForestAdmin/context/compare/v1.9.0...v1.10.0) (2021-06-15)
 
 
