@@ -21,6 +21,15 @@ describe('Plan', () => {
     expect(key).toBe('value');
   });
 
+  it('assertPresent with init/inject', () => {
+    init((plan) => plan.addValue('key', 'value'));
+    const { assertPresent, key } = inject();
+
+    assertPresent({ key });
+
+    expect(key).toBe('value');
+  });
+
   describe('execute', () => {
     it('should execute a plan instance', () => {
       const { one } = execute(newPlan().addValue('one', 1));

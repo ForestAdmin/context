@@ -7,6 +7,11 @@ module.exports = class Context {
     this._metadata = new Metadata();
   }
 
+  seal() {
+    this.flushPrivates('');
+    this._metadata.seal();
+  }
+
   get() { return this._bag; }
 
   getMetadata() {

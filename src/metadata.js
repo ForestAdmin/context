@@ -2,6 +2,11 @@ module.exports = class Metadata {
   constructor() {
     this._data = [];
     this._lastAdded = null;
+    this.sealed = false;
+  }
+
+  seal() {
+    this.sealed = true;
   }
 
   add(path, name, type, value, options) {
@@ -14,6 +19,7 @@ module.exports = class Metadata {
   }
 
   setRequisites(names) {
+    if (this.sealed) return;// can happen when assertPresent come from inject().
     if (!this._lastAdded) throw new Error(`setRequisites() without lastAdded. last seen '${this._lastSeen}'`);
 
     const lastAdded = this._lookup(this._lastAdded);

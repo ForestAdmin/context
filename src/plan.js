@@ -11,12 +11,12 @@ module.exports = class Plan {
   }
 
   static init(item) {
-    Plan.execute(item, Plan._instance = new Context());
+    Plan.execute(item, Plan._context = new Context());
   }
 
   static inject() {
-    if (!Plan._instance) throw new Error('Context not initiated');
-    return Plan._instance.get();
+    if (!Plan._context) throw new Error('Context not initiated');
+    return Plan._context.get();
   }
 
   static execute(item, context = new Context()) {
@@ -27,7 +27,7 @@ module.exports = class Plan {
       ._getEntries()
       .forEach((entry) => Plan.applyEntry(entry, context));
 
-    context.flushPrivates('');
+    context.seal();
     if (item.metadataHook) item.metadataHook(context.getMetadata());
     return context.get();
   }
