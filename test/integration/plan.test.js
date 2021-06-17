@@ -466,6 +466,20 @@ describe('Plan', () => {
 
       expect(entries).toStrictEqual(expectedEntries);
     });
+    it('should keep a valid entries with a nested plan step', () => {
+      const entries = newPlan()
+        .addStep('zero', newPlan()
+          .addStep('first', newPlan()
+            .addValue('one', 'value')))
+        ._getEntries();
+
+      const expectedEntries = [
+        { path: 'zero', name: stepNameSymbol, type: 'step-in', value: 'zero' },
+        { path: 'zero/first', name: stepNameSymbol, type: 'step-in', value: 'first' },
+        { path: 'zero/first', name: 'one', type: 'value', value: 'value' },
+      ];
+      expect(entries).toStrictEqual(expectedEntries);
+    });
   });
 
   describe('should handle private options', () => {
@@ -586,6 +600,46 @@ describe('Plan', () => {
       const { assertPresent: v2, ...context2 } = execute(plan);
 
       expect(context1).toStrictEqual(context2);
+    });
+  });
+
+  describe('enhanced addStep', () => {
+    it('should add a plan as a plan step', () => {
+      const { one } = execute((plan) => plan
+        .addStep('first', newPlan()
+          .addValue('one', 'value')));
+
+      expect(one).toBe('value');
+    });
+    it('should add a plan array as a plan step', () => {
+      const { one, two } = execute((plan) => plan
+        .addStep('first', [
+          newPlan().addValue('one', 'value'),
+          newPlan().addValue('two', 'other-value'),
+        ]));
+      expect(one).toBe('value');
+      expect(two).toBe('other-value');
+    });
+    it('should add a plan as a nested plan step', () => {
+      const { one } = execute(
+        (plan) => plan
+          .addStep('zero', newPlan()
+            .addStep('first', newPlan()
+              .addValue('one', 'value'))),
+      );
+      expect(one).toBe('value');
+    });
+    it('should replace a value inside a plan inside a nested plan step', () => {
+      const { one } = execute([
+        newPlan()
+          .addStep('zero', newPlan()
+            .addStep('first', newPlan()
+              .addValue('one', 'value'))),
+        (plan) => plan
+          .replace('zero/first/one', 'other-value'),
+      ]);
+
+      expect(one).toBe('other-value');
     });
   });
 });

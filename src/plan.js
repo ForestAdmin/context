@@ -46,7 +46,7 @@ module.exports = class Plan {
     } else if (itemIsAFunction) {
       plan = item(plan);
     } else if (itemIsAPlan) {
-      plan = Plan.newPlan([...plan._getEntries(), ...item._getEntries()]);
+      plan = Plan.newPlan([...plan._getEntries(), ...plan._prefixPaths(item._getEntries())]);
     } else if (itemIsInvalid) {
       throw new Error(`Invalid plan: received '${typeof item}' instead of 'Plan', 'function' or 'Array'`);
     }
@@ -89,6 +89,12 @@ module.exports = class Plan {
       default:
         throw new Error(`invalid entry ${path} ${name}`);
     }
+  }
+
+  _prefixPaths(entries) {
+    if (this._stepsWalk.length === 0) return entries;
+    const prefix = this._stepsWalk.join('/');
+    return entries.map(({ path, ...rest }) => ({ path: `${prefix}${path.length > 0 ? '/' : ''}${path}`, ...rest }));
   }
 
   _addEntry(name, type, value, options) {
@@ -157,10 +163,10 @@ module.exports = class Plan {
     return new Plan(newEntries);
   }
 
-  addStep(name, stepFunction, options) {
+  addStep(name, item, options) {
     this._stepsWalk.push(name);
     this._addEntry(Symbol('step-in'), 'step-in', name, options);
-    const plan = stepFunction(this);
+    const plan = Plan._mergeItem(item, this);
     this._addEntry(Symbol('step-out'), 'step-out', name, options);
     this._stepsWalk.pop();
     return plan;
