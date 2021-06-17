@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/ForestAdmin/context/compare/v1.11.0...v1.12.0) (2021-06-17)
+
+
+### Features
+
+* assertPresent can be called after inject ([39db39e](https://github.com/ForestAdmin/context/commit/39db39eff48ac40e469c02645537a4a1f19a9f02))
+
 # [1.11.0](https://github.com/ForestAdmin/context/compare/v1.10.0...v1.11.0) (2021-06-17)
 
 
