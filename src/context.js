@@ -88,7 +88,11 @@ module.exports = class Context {
 
   addModule(path, name, module, options) {
     this._metadata.add(path, name, 'module', module, options);
-    this._setNewValue(name, module, options);
+    this._setNewValue(
+      name,
+      (typeof module === 'function') ? module() : module,
+      options,
+    );
     return this;
   }
 

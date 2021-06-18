@@ -10,6 +10,12 @@ module.exports = class Plan {
     return new Plan(...args);
   }
 
+  /**
+   * This is useful in legacy code only.
+   * It's to keep a context in a singleton (retrieved via inject()).
+   * A context in a singleton is usefull to be used in files that are not in the context.
+   * @param item
+   */
   static init(item) {
     Plan.execute(item, Plan._context = new Context());
   }

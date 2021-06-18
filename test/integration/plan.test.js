@@ -9,60 +9,414 @@ describe('Plan', () => {
 
   it('constructor', () => {
     const entries = Symbol('entries');
+
     const plan = newPlan(entries);
+
     expect(plan._entries).toStrictEqual(entries);
     expect(plan._stepsWalk).toStrictEqual([]);
   });
 
-  it('init/inject', () => {
-    init((plan) => plan.addValue('key', 'value'));
-    const { key } = inject();
+  describe('execute a plan', () => {
+    it('execute a plan instance', () => {
+      const plan = newPlan().addValue('one', 1);
 
-    expect(key).toBe('value');
-  });
+      const { one } = execute(plan);
 
-  it('assertPresent with init/inject', () => {
-    init((plan) => plan.addValue('key', 'value'));
-    const { assertPresent, key } = inject();
-
-    assertPresent({ key });
-
-    expect(key).toBe('value');
-  });
-
-  describe('execute', () => {
-    it('should execute a plan instance', () => {
-      const { one } = execute(newPlan().addValue('one', 1));
       expect(one).toBe(1);
     });
-    it('should execute a plan function', () => {
-      const { one } = execute((plan) => plan.addValue('one', 1));
+
+    it('execute a plan function', () => {
+      const planFunction = (plan) => plan.addValue('one', 1);
+
+      const { one } = execute(planFunction);
+
       expect(one).toBe(1);
     });
-    it('should execute a plan function array', () => {
-      const { one, two } = execute([
-        (plan) => plan.addValue('one', 1),
-        (plan) => plan.addFactoryFunction('two', (({ one: o }) => 2 * o)),
-      ]);
+
+    it('execute a plan function array', () => {
+      const planA = (plan) => plan.addValue('one', 1);
+      const planB = (plan) => plan.addFactoryFunction('doubleOfOne', (({ one: o }) => 2 * o));
+
+      const { one, doubleOfOne } = execute([planA, planB]);
+
       expect(one).toBe(1);
-      expect(two).toBe(2);
+      expect(doubleOfOne).toBe(2);
     });
-    it('should execute a mixed plan array', () => {
-      const { one, two } = execute([
-        (plan) => plan.addValue('one', 1),
-        newPlan().addFactoryFunction('two', (({ one: o }) => 2 * o)),
-      ]);
+
+    it('execute a mix', () => {
+      const planA = (plan) => plan.addValue('one', 1);
+      const planB = newPlan().addFactoryFunction('doubleOfOne', (({ one: o }) => 2 * o));
+
+      const { one, doubleOfOne } = execute([planA, planB]);
+
       expect(one).toBe(1);
-      expect(two).toBe(2);
+      expect(doubleOfOne).toBe(2);
     });
-    it('should throw an invalidPlan', () => {
+
+    it('throw an invalidPlan', () => {
       expect(() => execute('BAD_PLAN'))
         .toThrow('Invalid plan: received \'string\' instead of \'Plan\', \'function\' or \'Array\'');
+    });
+
+    describe('executing the same plan twice', () => {
+      it('produces two times the same context', () => {
+        expect.assertions(1);
+
+        const plan = newPlan()
+          .addStep('step1', (step1Context) => step1Context
+            .addInstance('visible', 'visibleValue'))
+          .addStep('step2', (step1Context) => step1Context
+            .addInstance('visible2', 'visibleValue2'));
+
+        const { assertPresent: v1, ...context1 } = execute(plan);
+        const { assertPresent: v2, ...context2 } = execute(plan);
+
+        expect(context1).toStrictEqual(context2);
+      });
+    });
+  });
+
+  describe('init/inject', () => {
+    it('nominal case', () => {
+      const planFunction = (plan) => plan.addValue('key', 'value');
+
+      init(planFunction);
+      const { key } = inject();
+
+      expect(key).toBe('value');
+    });
+
+    it('check that assertPresent is defined with init/inject', () => {
+      init((plan) => plan.addValue('key', 'value'));
+      const { assertPresent, key } = inject();
+      assertPresent({ key });
+      expect(key).toBe('value');
+    });
+  });
+
+  describe('the "addXXX" methods', () => {
+    it('add a value', () => {
+      expect.assertions(1);
+
+      const plan = (rootPlan) => rootPlan.addValue('key', 'value');
+
+      const { key } = execute(plan);
+      expect(key).toBe('value');
+    });
+
+    it('add an instance', () => {
+      expect.assertions(1);
+      const instance = Symbol('instance');
+
+      const plan = (rootPlan) => rootPlan.addInstance('key', instance);
+
+      const { key } = execute(plan);
+      expect(key).toBe(instance);
+    });
+
+    it('add an function', () => {
+      expect.assertions(1);
+      const fct = Symbol('fct');
+
+      const plan = (rootPlan) => rootPlan.addFunction('key', fct);
+
+      const { key } = execute(plan);
+      expect(key).toBe(fct);
+    });
+
+    it('add a class deprecated', () => {
+      expect.assertions(1);
+      class FakeClass {}
+
+      const { fakeClass } = execute(newPlan().addClass(FakeClass));
+
+      expect(fakeClass instanceof FakeClass).toBe(true);
+    });
+
+    it('add a class', () => {
+      expect.assertions(1);
+      class FakeClass {}
+
+      const { fakeClass } = execute(newPlan().addUsingClass('fakeClass', FakeClass));
+
+      expect(fakeClass instanceof FakeClass).toBe(true);
+    });
+
+    it('add a class two times with a context mapping', () => {
+      expect.assertions(2);
+      class FakeClass {
+        constructor({ param }) {
+          this.param = param;
+        }
+      }
+      const firstSymbol = Symbol('first');
+      const secondSymbol = Symbol('second');
+      const { one, two } = execute(newPlan()
+        .addValue('first', firstSymbol)
+        .addValue('second', secondSymbol)
+        .addClass(FakeClass, { name: 'one', map: ({ first }) => ({ param: first }) })
+        .addClass(FakeClass, { name: 'two', map: ({ second }) => ({ param: second }) }));
+
+      expect(one.param).toBe(firstSymbol);
+      expect(two.param).toBe(secondSymbol);
+    });
+
+    it('add a factory function', () => {
+      expect.assertions(1);
+      const myFactoryFunction = ({ key }) => key + 1;
+
+      const planWithFactoryFunction = (plan) => plan
+        .addValue('key', 1)
+        .addFactoryFunction('keyPlusOne', myFactoryFunction);
+
+      const { keyPlusOne } = execute(planWithFactoryFunction);
+      expect(keyPlusOne).toBe(2);
+    });
+
+    describe('add a module', () => {
+      it('add a module function', () => {
+        expect.assertions(1);
+        const planWithAModule = newPlan()
+          .addModule('fs', () => require('fs'));
+
+        const { fs } = execute(planWithAModule);
+
+        expect(fs).toBe(require('fs'));
+      });
+
+      it('add a module', () => {
+        expect.assertions(1);
+        const planWithAModule = newPlan()
+          .addModule('fs', require('fs'));
+
+        const { fs } = execute(planWithAModule);
+
+        expect(fs).toBe(require('fs'));
+      });
+    });
+
+    it('add an object keys', () => {
+      expect.assertions(1);
+      const planUsingObjectKeys = newPlan()
+        .addValue('zero', 0)
+        .addAllKeysFrom({
+          one: 1,
+          two: 2,
+        })
+        .addValue('three', 3);
+
+      const { assertPresent, ...context } = execute(planUsingObjectKeys);
+
+      expect(context).toStrictEqual({
+        zero: 0,
+        one: 1,
+        two: 2,
+        three: 3,
+      });
+    });
+
+    it('add a step', () => {
+      expect.assertions(1);
+      const subPlan = (firstStepPlan) => firstStepPlan.addValue('key', 'value');
+      const planWithAStep = (rootPlan) => rootPlan.addStep('the-first-step', subPlan);
+
+      const { key } = execute(planWithAStep);
+
+      expect(key).toBe('value');
+    });
+
+    describe('enhanced addStep', () => {
+      it('add a plan function as a step', () => {
+        const firstPlan = (plan) => plan.addValue('one', 'value');
+        const planUsingFirstPlan = (plan) => plan
+          .addStep('first', firstPlan);
+
+        const { one } = execute(planUsingFirstPlan);
+
+        expect(one).toBe('value');
+      });
+
+      it('add a plan as a step', () => {
+        const firstPlan = newPlan().addValue('one', 'value');
+        const planUsingFirstPlan = (plan) => plan
+          .addStep('first', firstPlan);
+
+        const { one } = execute(planUsingFirstPlan);
+
+        expect(one).toBe('value');
+      });
+
+      it('add a plan function array as a step', () => {
+        const fragmentA = (plan) => plan.addValue('one', 'value');
+        const fragmentB = (plan) => plan.addValue('two', 'other-value');
+        const planArray = [fragmentA, fragmentB];
+
+        const { one, two } = execute((plan) => plan.addStep('first', planArray));
+
+        expect(one).toBe('value');
+        expect(two).toBe('other-value');
+      });
+
+      it('add a plan array as a step', () => {
+        const fragmentA = newPlan().addValue('one', 'value');
+        const fragmentB = newPlan().addValue('two', 'other-value');
+        const planArray = [fragmentA, fragmentB];
+
+        const { one, two } = execute((plan) => plan.addStep('first', planArray));
+
+        expect(one).toBe('value');
+        expect(two).toBe('other-value');
+      });
+
+      it('add a plan as a nested plan step', () => {
+        const { one } = execute(
+          (plan) => plan
+            .addStep('zero', newPlan()
+              .addStep('first', newPlan()
+                .addValue('one', 'value'))),
+        );
+        expect(one).toBe('value');
+      });
+    });
+
+    it('runs a callback "with" specific context element', () => {
+      const callback = jest.fn();
+      const planWithCallback = (plan) => plan
+        .addValue('key', 'value')
+        .with('key', callback);
+
+      expect(callback).not.toHaveBeenCalled();
+
+      execute(planWithCallback);
+
+      expect(callback).toHaveBeenCalledWith('value');
+    });
+
+    it('runs a callback "with" specific context elements', () => {
+      const callback = jest.fn();
+      const planWithCallback = (plan) => plan
+        .addValue('key', 'value')
+        .addValue('key2', 'value2')
+        .with(['key', 'key2'], callback);
+
+      expect(callback).not.toHaveBeenCalled();
+
+      execute(planWithCallback);
+
+      expect(callback)
+        .toHaveBeenCalledWith({
+          key: 'value',
+          key2: 'value2',
+        });
+    });
+  });
+
+  describe('private scope', () => {
+    it('a global private is not exposed to context', () => {
+      expect.assertions(1);
+
+      const plan = newPlan()
+        .addValue('hidden', 'toto', { private: true });
+      const { hidden } = execute(plan);
+
+      expect(hidden).toBe(undefined);
+    });
+
+    it('a private value in step is not exposed to context', () => {
+      expect.assertions(1);
+
+      const plan = newPlan()
+        .addStep('step1', (step1Context) => step1Context
+          .addInstance('hidden', 'toto', { private: true }));
+      const { hidden } = execute(plan);
+
+      expect(hidden).toBe(undefined);
+    });
+
+    it('private value is accessible from same step', () => {
+      expect.assertions(1);
+
+      class HiddenService {
+        constructor({ privateValue }) {
+          this._privateValue = privateValue;
+        }
+      }
+
+      const { hiddenService } = execute(newPlan()
+        .addStep('step1', (step1Context) => step1Context
+          .addValue('privateValue', 'toto', { private: true })
+          .addUsingClass('hiddenService', HiddenService)));
+
+      expect(hiddenService._privateValue).toBe('toto');
+    });
+
+    it('a value from a private step is not exposed to context ', () => {
+      expect.assertions(1);
+
+      const plan = newPlan()
+        .addStep('main',
+          (planMain) => planMain.addStep(
+            'privateStep',
+            (privateStep) => privateStep.addValue('invisibleKey', 'invisibleValue'),
+            { private: true },
+          ));
+
+      const context = new Context();
+      const { invisibleKey } = execute(plan, context);
+
+      expect(invisibleKey).toBeUndefined();
+    });
+
+    it('private value is not exposed to other steps', () => {
+      expect.assertions(7);
+
+      const receiveUndefined = jest.fn();
+      const receiveTheValue = jest.fn();
+
+      const plan = newPlan()
+        .addStep('root', (rootPlan) => rootPlan
+          .addValue('rootPrivate', 'value seen by root and sons', { private: true })
+          .addStep('step_0', (step0plan) => step0plan
+            .addStep('step_0_1', (step1Plan) => step1Plan
+              .addValue('step01Private', 'visible only in step_0_1', { private: true })
+              .with('step01Private', receiveTheValue)
+              .with('rootPrivate', receiveTheValue))
+            .with('step01Private', receiveUndefined))
+          .addStep('step_1', (step2Plan) => step2Plan
+            .with('step01Private', receiveUndefined)
+            .with('rootPrivate', receiveTheValue)));
+
+      const {
+        rootPrivate, step01Private,
+      } = execute(plan);
+
+      expect(rootPrivate).toBeUndefined();
+      expect(step01Private).toBeUndefined();
+
+      expect(receiveTheValue).toHaveBeenNthCalledWith(1, 'visible only in step_0_1');
+      expect(receiveTheValue).toHaveBeenNthCalledWith(2, 'value seen by root and sons');
+      expect(receiveTheValue).toHaveBeenNthCalledWith(3, 'value seen by root and sons');
+      expect(receiveUndefined).toHaveBeenNthCalledWith(1, undefined);
+      expect(receiveUndefined).toHaveBeenNthCalledWith(2, undefined);
+    });
+
+    it('not private value is accessible from other steps', () => {
+      expect.assertions(1);
+
+      const step2hiddenNotAccessibleFunction = jest.fn();
+
+      execute(newPlan()
+        .addStep('step1', (step1Context) => step1Context
+          .addInstance('hidden', 'toto', { private: false }))
+        .addStep('step2', (step2Context) => step2Context
+          .with('hidden', step2hiddenNotAccessibleFunction)));
+
+      expect(step2hiddenNotAccessibleFunction).toHaveBeenCalledWith('toto');
     });
   });
 
   describe('replace', () => {
-    it('should correctly replace a value in a plan', () => {
+    it('correctly replace a value in a plan', () => {
       const plan = newPlan()
         .addValue('key', 'previous')
         .replace('key', 'now');
@@ -71,7 +425,26 @@ describe('Plan', () => {
       expect(key).toBe('now');
     });
 
-    it('should correctly replace a step in a plan', () => {
+    it('should throw when entry is not found', () => {
+      expect(() => execute((plan) => plan.replace('BAD_NAME')))
+        .toThrow('entry not found: \'BAD_NAME\'');
+    });
+
+    it('replace a value inside a plan inside a nested plan step', () => {
+      const planA = newPlan()
+        .addStep('zero', newPlan()
+          .addStep('first', newPlan()
+            .addValue('one', 'value')));
+
+      const planAChanger = (plan) => plan
+        .replace('zero/first/one', 'other-value');
+
+      const { one } = execute([planA, planAChanger]);
+
+      expect(one).toBe('other-value');
+    });
+
+    it('correctly replace a step in a plan', () => {
       const plan = newPlan()
         .addStep('first', (context) => context.addValue('one', () => 1))
         .addStep('second', (context) => context.addValue('two', () => 2));
@@ -92,7 +465,7 @@ describe('Plan', () => {
       expect(twoResult).toBe(2);
     });
 
-    it('should replace step and values in chain and nested', () => {
+    it('replace step and values in chain and nested', () => {
       const v1 = Symbol('value1');
       const v2 = Symbol('value2');
       const v3 = Symbol('value3');
@@ -144,7 +517,7 @@ describe('Plan', () => {
       expect(threeModifiedPlan3()).toBe(v3);
     });
 
-    it('should keep initial the plan non-muted', () => {
+    it('keep initial the plan non-muted', () => {
       const plan = newPlan()
         .addStep('first', (context) => context.addValue('one', 1))
         .addStep('second', (context) => context.addValue('two', 2));
@@ -159,12 +532,7 @@ describe('Plan', () => {
       expect(modifiedContext).toStrictEqual({ one: 'uno', two: 2 });
     });
 
-    it('should throw when entry is not found', () => {
-      expect(() => execute((plan) => plan.replace('BAD_NAME')))
-        .toThrow('entry not found: \'BAD_NAME\'');
-    });
-
-    it('should replace a value from another function', () => {
+    it('replace a value from another function', () => {
       const plans = [
         (plan) => plan.addValue('key', 'value'),
         (plan) => plan.replace('key', 'new-value'),
@@ -173,17 +541,18 @@ describe('Plan', () => {
       expect(key).toBe('new-value');
     });
 
-    it('should replace a value from another nested function', () => {
+    it('replace a value from another nested function', () => {
       const plans = [
         (plan) => plan
-          .addStep('step', (planStep) => planStep.addValue('key', 'value')),
+          .addStep('step', (planStep) => planStep
+            .addValue('key', 'value')),
         (plan) => plan.replace('step/key', 'new-value'),
       ];
       const { key } = execute(plans);
       expect(key).toBe('new-value');
     });
 
-    it('should replace a value from another plan', () => {
+    it('replace a value from another plan', () => {
       const plans = [
         newPlan().addValue('key', 'value'),
         (plan) => plan.replace('key', 'new-value'),
@@ -193,120 +562,8 @@ describe('Plan', () => {
     });
   });
 
-  describe('addXXX methods', () => {
-    it('should add a value', () => {
-      expect.assertions(1);
-      const plan = (rootPlan) => rootPlan.addValue('key', 'value');
-      const { key } = execute(plan);
-      expect(key).toBe('value');
-    });
-    it('should add an instance', () => {
-      expect.assertions(1);
-      const instance = Symbol('instance');
-      const plan = (rootPlan) => rootPlan.addInstance('key', instance);
-      const { key } = execute(plan);
-      expect(key).toBe(instance);
-    });
-    it('should add an function', () => {
-      expect.assertions(1);
-      const fct = Symbol('fct');
-      const plan = (rootPlan) => rootPlan.addFunction('key', fct);
-      const { key } = execute(plan);
-      expect(key).toBe(fct);
-    });
-    it('should add a class deprecated', () => {
-      expect.assertions(1);
-      class FakeClass {}
-      const { fakeClass } = execute(newPlan().addClass(FakeClass));
-      expect(fakeClass instanceof FakeClass).toBe(true);
-    });
-    it('should add a class', () => {
-      expect.assertions(1);
-      class FakeClass {}
-      const { fakeClass } = execute(newPlan().addUsingClass('fakeClass', FakeClass));
-      expect(fakeClass instanceof FakeClass).toBe(true);
-    });
-    it('should add a factory function', () => {
-      expect.assertions(1);
-      const factoryFunction = ({ key }) => key + 1;
-      const { keyPlusOne } = execute(newPlan()
-        .addValue('key', 1)
-        .addFactoryFunction('keyPlusOne', factoryFunction));
-      expect(keyPlusOne).toBe(2);
-    });
-    it('should add a module', () => {
-      expect.assertions(1);
-      const { fs } = execute(newPlan()
-        .addModule('fs', require('fs')));
-      expect(fs).toBe(require('fs'));
-    });
-    it('should add an object keys', () => {
-      expect.assertions(1);
-      const { assertPresent, ...context } = execute(newPlan()
-        .addValue('zero', 0)
-        .addAllKeysFrom({
-          one: 1,
-          two: 2,
-        })
-        .addValue('three', 3));
-
-      expect(context).toStrictEqual({
-        zero: 0,
-        one: 1,
-        two: 2,
-        three: 3,
-      });
-    });
-    it('should add a step', () => {
-      expect.assertions(1);
-      const plan = (rootPlan) => rootPlan
-        .addStep('the-first-step', (firstStepPlan) => firstStepPlan
-          .addValue('key', 'value'));
-      const { key } = execute(plan);
-      expect(key).toBe('value');
-    });
-    it('should run a "with" function with one values', () => {
-      const callback = jest.fn();
-      execute((plan) => plan
-        .addValue('key', 'value')
-        .with('key', callback));
-      expect(callback).toHaveBeenCalledWith('value');
-    });
-    it('should run a "with" function with many values', () => {
-      const callback = jest.fn();
-      execute((plan) => plan
-        .addValue('key', 'value')
-        .addValue('key2', 'value2')
-        .with(['key', 'key2'], callback));
-      expect(callback)
-        .toHaveBeenCalledWith({
-          key: 'value',
-          key2: 'value2',
-        });
-    });
-  });
-
-  it('should add a class two times with a context mapping', () => {
-    expect.assertions(2);
-    class FakeClass {
-      constructor({ param }) {
-        this.param = param;
-      }
-    }
-    const firstSymbol = Symbol('first');
-    const secondSymbol = Symbol('second');
-    const { one, two } = execute(newPlan()
-      .addValue('first', firstSymbol)
-      .addValue('second', secondSymbol)
-      .addClass(FakeClass, { name: 'one', map: ({ first }) => ({ param: first }) })
-      .addClass(FakeClass, { name: 'two', map: ({ second }) => ({ param: second }) }));
-
-    expect(one.param).toBe(firstSymbol);
-    expect(two.param).toBe(secondSymbol);
-  });
-
-  describe('adding to entries and replacements', () => {
-    it('should replace a simple value', () => {
+  describe('check plan entries (plan internal data)', () => {
+    it('replace a simple value', () => {
       const options = Symbol('options');
       const entries = newPlan()
         .addValue('one', 1, options)
@@ -328,7 +585,7 @@ describe('Plan', () => {
 
       expect(entries).toStrictEqual(expectedEntries);
     });
-    it('should add anything to a plan', () => {
+    it('add anything to a plan', () => {
       const options = Symbol('options');
       const st1Value = Symbol('st1Value');
       const subSt1Value = Symbol('subSt1Value');
@@ -381,7 +638,7 @@ describe('Plan', () => {
 
       expect(entries).toStrictEqual(expectedEntries);
     });
-    it('should replace a nested value', () => {
+    it('replace a nested value', () => {
       const options = Symbol('options');
       const entries = newPlan()
         .addStep(
@@ -409,7 +666,7 @@ describe('Plan', () => {
 
       expect(entries).toStrictEqual(expectedEntries);
     });
-    it('should replace a deep nested value', () => {
+    it('replace a deep nested value', () => {
       const options = Symbol('options');
       const entries = newPlan()
         .addStep('root', (rootPlan) => rootPlan
@@ -440,7 +697,7 @@ describe('Plan', () => {
 
       expect(entries).toStrictEqual(expectedEntries);
     });
-    it('should replace a step', () => {
+    it('replace a step', () => {
       const options = Symbol('options');
       const entries = newPlan()
         .addStep('root', (rootPlan) => rootPlan
@@ -475,7 +732,7 @@ describe('Plan', () => {
 
       expect(entries).toStrictEqual(expectedEntries);
     });
-    it('should keep a valid entries with a nested plan step', () => {
+    it('keep a valid entries with a nested plan step', () => {
       const entries = newPlan()
         .addStep('zero', newPlan()
           .addStep('first', newPlan()
@@ -488,167 +745,6 @@ describe('Plan', () => {
         { path: 'zero/first', name: 'one', type: 'value', value: 'value' },
       ];
       expect(entries).toStrictEqual(expectedEntries);
-    });
-  });
-
-  describe('should handle private options', () => {
-    it('global private value is not exposed to context', () => {
-      expect.assertions(1);
-
-      const plan = newPlan()
-        .addValue('hidden', 'toto', { private: true });
-      const { hidden } = execute(plan);
-
-      expect(hidden).toBe(undefined);
-    });
-
-    it('private value in step is not exposed to context', () => {
-      expect.assertions(1);
-
-      const plan = newPlan()
-        .addStep('step1', (step1Context) => step1Context
-          .addInstance('hidden', 'toto', { private: true }));
-      const { hidden } = execute(plan);
-
-      expect(hidden).toBe(undefined);
-    });
-
-    it('private value is accessible from same step', () => {
-      expect.assertions(1);
-
-      class HiddenService {
-        constructor({ privateValue }) {
-          this._privateValue = privateValue;
-        }
-      }
-
-      const { hiddenService } = execute(newPlan()
-        .addStep('step1', (step1Context) => step1Context
-          .addValue('privateValue', 'toto', { private: true })
-          .addUsingClass('hiddenService', HiddenService)));
-
-      expect(hiddenService._privateValue).toBe('toto');
-    });
-
-    it('should not expose to context a value from a private step', () => {
-      expect.assertions(1);
-
-      const plan = newPlan()
-        .addStep('main',
-          (planMain) => planMain.addStep(
-            'privateStep',
-            (privateStep) => privateStep.addValue('invisibleKey', 'invisibleValue'),
-            { private: true },
-          ));
-
-      const context = new Context();
-      const { invisibleKey } = execute(plan, context);
-
-      expect(invisibleKey).toBeUndefined();
-    });
-
-    it('private value is not accessible from other steps', () => {
-      expect.assertions(7);
-
-      const receiveUndefined = jest.fn();
-      const receiveTheValue = jest.fn();
-
-      const plan = newPlan()
-        .addStep('root', (rootPlan) => rootPlan
-          .addValue('rootPrivate', 'value seen by root and sons', { private: true })
-          .addStep('step_0', (step0plan) => step0plan
-            .addStep('step_0_1', (step1Plan) => step1Plan
-              .addValue('step01Private', 'visible only in step_0_1', { private: true })
-              .with('step01Private', receiveTheValue)
-              .with('rootPrivate', receiveTheValue))
-            .with('step01Private', receiveUndefined))
-          .addStep('step_1', (step2Plan) => step2Plan
-            .with('step01Private', receiveUndefined)
-            .with('rootPrivate', receiveTheValue)));
-
-      const {
-        rootPrivate, step01Private,
-      } = execute(plan);
-
-      expect(rootPrivate).toBeUndefined();
-      expect(step01Private).toBeUndefined();
-
-      expect(receiveTheValue).toHaveBeenNthCalledWith(1, 'visible only in step_0_1');
-      expect(receiveTheValue).toHaveBeenNthCalledWith(2, 'value seen by root and sons');
-      expect(receiveTheValue).toHaveBeenNthCalledWith(3, 'value seen by root and sons');
-      expect(receiveUndefined).toHaveBeenNthCalledWith(1, undefined);
-      expect(receiveUndefined).toHaveBeenNthCalledWith(2, undefined);
-    });
-
-    it('not private value is accessible from other steps', () => {
-      expect.assertions(1);
-
-      const step2hiddenNotAccessibleFunction = jest.fn();
-
-      execute(newPlan()
-        .addStep('step1', (step1Context) => step1Context
-          .addInstance('hidden', 'toto', { private: false }))
-        .addStep('step2', (step2Context) => step2Context
-          .with('hidden', step2hiddenNotAccessibleFunction)));
-
-      expect(step2hiddenNotAccessibleFunction).toHaveBeenCalledWith('toto');
-    });
-  });
-
-  describe('executing the same plan twice', () => {
-    it('produces two times the same context', () => {
-      expect.assertions(1);
-
-      const plan = newPlan()
-        .addStep('step1', (step1Context) => step1Context
-          .addInstance('visible', 'visibleValue'))
-        .addStep('step2', (step1Context) => step1Context
-          .addInstance('visible2', 'visibleValue2'));
-
-      const { assertPresent: v1, ...context1 } = execute(plan);
-      const { assertPresent: v2, ...context2 } = execute(plan);
-
-      expect(context1).toStrictEqual(context2);
-    });
-  });
-
-  describe('enhanced addStep', () => {
-    it('should add a plan as a plan step', () => {
-      const { one } = execute((plan) => plan
-        .addStep('first', newPlan()
-          .addValue('one', 'value')));
-
-      expect(one).toBe('value');
-    });
-    it('should add a plan array as a plan step', () => {
-      const { one, two } = execute((plan) => plan
-        .addStep('first', [
-          newPlan().addValue('one', 'value'),
-          newPlan().addValue('two', 'other-value'),
-        ]));
-      expect(one).toBe('value');
-      expect(two).toBe('other-value');
-    });
-    it('should add a plan as a nested plan step', () => {
-      const { one } = execute(
-        (plan) => plan
-          .addStep('zero', newPlan()
-            .addStep('first', newPlan()
-              .addValue('one', 'value'))),
-      );
-      expect(one).toBe('value');
-    });
-    it('should replace a value inside a plan inside a nested plan step', () => {
-      const { one } = execute([
-        newPlan()
-          .addStep('zero', newPlan()
-            .addStep('first', newPlan()
-              .addValue('one', 'value'))),
-        (plan) => plan
-          .replace('zero/first/one', 'other-value'),
-      ]);
-
-      expect(one).toBe('other-value');
     });
   });
 });
