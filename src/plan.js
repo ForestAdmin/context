@@ -3,6 +3,8 @@ const { sep, relative, join } = require('path');
 
 const Context = require('./context');
 
+const METADATA_HOOK = 'metadata-hook';
+
 module.exports = class Plan {
   constructor(_entries = []) {
     this._entries = _entries;
@@ -115,7 +117,7 @@ module.exports = class Plan {
       case 'step-out':
         context.closeStep(path, value, options);
         break;
-      case 'metadata-hook':
+      case METADATA_HOOK:
         value(context.getMetadata());
         break;
       default:
@@ -269,7 +271,7 @@ module.exports = class Plan {
   }
 
   addMetadataHook(hook) {
-    this._addEntry(Symbol('metadata-hook'), 'metadata-hook', hook);
+    this._addEntry(Symbol(METADATA_HOOK), METADATA_HOOK, hook);
     return this;
   }
 };
