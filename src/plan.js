@@ -1,13 +1,39 @@
+const fs = require('fs');
+const { sep, relative, join } = require('path');
+
 const Context = require('./context');
+
+const METADATA_HOOK = 'metadata-hook';
 
 module.exports = class Plan {
   constructor(_entries = []) {
     this._entries = _entries;
     this._stepsWalk = [];
+    this._metadataHook = null;
   }
 
   static newPlan(...args) {
     return new Plan(...args);
+  }
+
+  static makeWriteFilesystem(...basePath) {
+    return (entries) => {
+      entries.forEach(({ path: entryPath, name: entryName, type, requires }) => {
+        if (type === 'step') {
+          const folder = join(...basePath, ...entryPath.split('/'));
+          fs.mkdirSync(folder, { recursive: true });
+        } else {
+          const filename = `${entryName}.js`;
+          const filepath = join(...basePath, ...entryPath.split('/'), filename);
+          const requirePaths = requires
+            .map(({ path, name }) => `${join(relative(entryPath, path), name)}`)
+            .map((path) => (path.startsWith('.') ? path : `.${sep}${path}`));
+          const fileContent = `${requirePaths.map((require) => `require('${require}');`).join('\n')}\n\nmodule.exports = 'hello!';\n`;
+
+          fs.writeFileSync(filepath, fileContent);
+        }
+      });
+    };
   }
 
   /**
@@ -25,16 +51,15 @@ module.exports = class Plan {
     return Plan._context.get();
   }
 
-  static execute(item, context = new Context()) {
-    if (!item) throw new Error('missing item');
+  static execute(plan, context = new Context()) {
+    if (!plan) throw new Error('missing item');
 
     Plan
-      ._mergeItem(item, Plan.newPlan())
+      ._mergeItem(plan, Plan.newPlan())
       ._getEntries()
       .forEach((entry) => Plan.applyEntry(entry, context));
 
     context.seal();
-    if (item.metadataHook) item.metadataHook(context.getMetadata());
     return context.get();
   }
 
@@ -91,6 +116,9 @@ module.exports = class Plan {
         break;
       case 'step-out':
         context.closeStep(path, value, options);
+        break;
+      case METADATA_HOOK:
+        value(context.getMetadata());
         break;
       default:
         throw new Error(`invalid entry ${path} ${name}`);
@@ -240,5 +268,10 @@ module.exports = class Plan {
 
   _getEntries() {
     return this._entries;
+  }
+
+  addMetadataHook(hook) {
+    this._addEntry(Symbol(METADATA_HOOK), METADATA_HOOK, hook);
+    return this;
   }
 };
