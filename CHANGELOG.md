@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/ForestAdmin/context/compare/v1.12.0...v1.13.0) (2021-06-21)
+
+
+### Features
+
+* write dependancies graph to files ([#7](https://github.com/ForestAdmin/context/issues/7)) ([2226eb7](https://github.com/ForestAdmin/context/commit/2226eb7128a17dfd00e4a9de8673a7443cef0c85))
+
 # [1.12.0](https://github.com/ForestAdmin/context/compare/v1.11.0...v1.12.0) (2021-06-17)
 
 
