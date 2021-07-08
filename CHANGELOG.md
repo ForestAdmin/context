@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/ForestAdmin/context/compare/v1.13.0...v1.14.0) (2021-07-08)
+
+
+### Features
+
+* introduce addUsingFunction method ([b02342c](https://github.com/ForestAdmin/context/commit/b02342cd7f3ff63af62831f62056d0b0b67c0272))
+
 # [1.13.0](https://github.com/ForestAdmin/context/compare/v1.12.0...v1.13.0) (2021-06-21)
 
 
