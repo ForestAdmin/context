@@ -1,6 +1,6 @@
 module.exports = (context) => context
   .addValue('serverHandle', {}, { private: true })
-  .addFactoryFunction('startHTTP', ({
+  .addUsingFunction('startHTTP', ({
     assertPresent, http, app, serverHandle,
   }) => {
     assertPresent({ http, app, serverHandle });
@@ -12,11 +12,11 @@ module.exports = (context) => context
       serverHandle.getPort = () => port;
     };
   })
-  .addFactoryFunction('stopHTTP', ({ assertPresent, serverHandle }) => {
+  .addUsingFunction('stopHTTP', ({ assertPresent, serverHandle }) => {
     assertPresent({ serverHandle });
     return () => serverHandle.get().close();
   })
-  .addFactoryFunction('getHTTPPort', ({ assertPresent, serverHandle }) => {
+  .addUsingFunction('getHTTPPort', ({ assertPresent, serverHandle }) => {
     assertPresent({ serverHandle });
     return () => serverHandle.getPort();
   });

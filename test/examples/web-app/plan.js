@@ -12,7 +12,7 @@ module.exports = (plan) => plan
         .addInstance('http', () => require('http'))
         .addInstance('express', () => require('express')))
       .addStep('app', (context) => context
-        .addFactoryFunction('app', makeExpressApp)
-        .addFactoryFunction('addHTTPEndpoint', makeExpressAddHTTPEndPoint))
+        .addUsingFunction('app', makeExpressApp)
+        .addUsingFunction('addHTTPEndpoint', makeExpressAddHTTPEndPoint))
       .addStep('commands', makeCommands)))
   .addStep('http-adapter', (planAdapter) => planAdapter);

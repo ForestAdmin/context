@@ -103,7 +103,7 @@ module.exports = class Plan {
         context.addUsingClass(path, name, value, options);
         break;
       case 'function*':
-        context.addFactoryFunction(path, name, value, options);
+        context.addUsingFunction(path, name, value, options);
         break;
       case 'module':
         context.addModule(path, name, value, options);
@@ -244,7 +244,7 @@ module.exports = class Plan {
     return className.charAt(0).toLowerCase() + className.slice(1);
   }
 
-  addFactoryFunction(name, factoryFunction, options) {
+  addUsingFunction(name, factoryFunction, options) {
     this._addEntry(name, 'function*', factoryFunction, options);
     return this;
   }

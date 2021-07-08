@@ -12,7 +12,7 @@ describe('a sequelize plan', () => {
         })
         // eslint-disable-next-line global-require
         .addValue('Sequelize', require('sequelize'))
-        .addFactoryFunction('sequelize', ({ databaseUrl, options, Sequelize }) => new Sequelize(databaseUrl, options)));
+        .addUsingFunction('sequelize', ({ databaseUrl, options, Sequelize }) => new Sequelize(databaseUrl, options)));
 
     const modelsPlan = newPlan()
       .addStep('models', (context) => context

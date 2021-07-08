@@ -71,7 +71,7 @@ module.exports = class Context {
     return this;
   }
 
-  addFactoryFunction(path, name, factoryFunction, options) {
+  addUsingFunction(path, name, factoryFunction, options) {
     this._metadata.add(path, name, 'function*', factoryFunction, options);
     const bag = this.get();
     const theFunction = factoryFunction(bag);

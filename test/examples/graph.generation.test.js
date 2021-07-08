@@ -8,7 +8,7 @@ describe('generate the dependancies graph', () => {
           .addValue('one', 1, { private: true })
           .addStep('stepB', (planS1) => planS1
             .addValue('two', 2)
-            .addFactoryFunction(
+            .addUsingFunction(
               'plusOne',
               ({ assertPresent, one, two }) => assertPresent({ one, two }) && (() => one + two),
             ), { private: true })));

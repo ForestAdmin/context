@@ -35,7 +35,7 @@ describe('Plan', () => {
 
     it('execute a plan function array', () => {
       const planA = (plan) => plan.addValue('one', 1);
-      const planB = (plan) => plan.addFactoryFunction('doubleOfOne', (({ one: o }) => 2 * o));
+      const planB = (plan) => plan.addUsingFunction('doubleOfOne', (({ one: o }) => 2 * o));
 
       const { one, doubleOfOne } = execute([planA, planB]);
 
@@ -45,7 +45,7 @@ describe('Plan', () => {
 
     it('execute a mix', () => {
       const planA = (plan) => plan.addValue('one', 1);
-      const planB = newPlan().addFactoryFunction('doubleOfOne', (({ one: o }) => 2 * o));
+      const planB = newPlan().addUsingFunction('doubleOfOne', (({ one: o }) => 2 * o));
 
       const { one, doubleOfOne } = execute([planA, planB]);
 
@@ -167,7 +167,7 @@ describe('Plan', () => {
 
       const planWithFactoryFunction = (plan) => plan
         .addValue('key', 1)
-        .addFactoryFunction('keyPlusOne', myFactoryFunction);
+        .addUsingFunction('keyPlusOne', myFactoryFunction);
 
       const { keyPlusOne } = execute(planWithFactoryFunction);
       expect(keyPlusOne).toBe(2);
@@ -602,7 +602,7 @@ describe('Plan', () => {
         .addValue('one', 1, options)
         .addInstance('three', 3, options)
         .addFunction('fct', fct, options)
-        .addFactoryFunction('addOne', addOneFct, options)
+        .addUsingFunction('addOne', addOneFct, options)
         .addUsingClass('classe', classe, options)
         .addModule('module', module, options)
         .addStep('st1', (planSt1) => planSt1
