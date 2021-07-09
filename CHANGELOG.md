@@ -1,3 +1,10 @@
+# [1.15.0](https://github.com/ForestAdmin/context/compare/v1.14.0...v1.15.0) (2021-07-09)
+
+
+### Features
+
+* allow lazy function in addUsingClass ([d5a08fc](https://github.com/ForestAdmin/context/commit/d5a08fc546faf11c4d9bfa69a4d69dbf936ba621))
+
 # [1.14.0](https://github.com/ForestAdmin/context/compare/v1.13.0...v1.14.0) (2021-07-08)
 
 
