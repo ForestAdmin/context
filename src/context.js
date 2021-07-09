@@ -102,8 +102,9 @@ module.exports = class Context {
   }
 
   _instanciate(Class, { map } = {}) {
-    if (!map) return new Class(this.get());
-    return new Class(this._mapContext(map));
+    const RealClass = Class.toString().startsWith('class') ? Class : Class();
+    if (!map) return new RealClass(this.get());
+    return new RealClass(this._mapContext(map));
   }
 
   _mapContext(map) {

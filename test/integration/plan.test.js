@@ -142,6 +142,15 @@ describe('Plan', () => {
       expect(fakeClass instanceof FakeClass).toBe(true);
     });
 
+    it('add lazily a class', () => {
+      expect.assertions(1);
+      class FakeClass {}
+
+      const { fakeClass } = execute(newPlan().addUsingClass('fakeClass', () => FakeClass));
+
+      expect(fakeClass instanceof FakeClass).toBe(true);
+    });
+
     it('add a class two times with a context mapping', () => {
       expect.assertions(2);
       class FakeClass {
