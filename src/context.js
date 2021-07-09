@@ -53,9 +53,19 @@ module.exports = class Context {
     this._setValue(name, value, options);
   }
 
+  addReplacement(path, name, value, options) {
+    this._metadata.add(path, name, 'replacement', value, options);
+    this._setNewValue(name, value, options);
+    return this;
+  }
+
   addValue(path, name, value, options) {
     this._metadata.add(path, name, 'value', value, options);
-    this._setNewValue(name, value, options);
+    this._setNewValue(
+      name,
+      (typeof value === 'function') ? value() : value,
+      options,
+    );
     return this;
   }
 

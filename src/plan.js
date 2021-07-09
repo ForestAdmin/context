@@ -90,6 +90,9 @@ module.exports = class Plan {
       path, type, name, value, options,
     } = entry;
     switch (type) {
+      case 'replacement':
+        context.addReplacement(path, name, value, options);
+        break;
       case 'value':
         context.addValue(path, name, value, options);
         break;
@@ -169,7 +172,7 @@ module.exports = class Plan {
 
     const replaced = this._entries[replacedIndex];
     const replacingEntry = {
-      path, name, type: 'value', value, options, replaced,
+      path, name, type: 'replacement', value, options, replaced,
     };
     const newEntries = this._entries.slice();
     newEntries.splice(replacedIndex, 1, replacingEntry);
@@ -189,7 +192,7 @@ module.exports = class Plan {
     const replacingEntries = Object
       .entries(valueObject)
       .map(([key, value]) => ({
-        path: absolutePath, name: key, type: 'value', value, options,
+        path: absolutePath, name: key, type: 'replacement', value, options,
       }));
     replacingEntries[0].replaced = replacedSteps;
     const newEntries = this._entries.slice();

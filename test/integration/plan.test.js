@@ -104,6 +104,15 @@ describe('Plan', () => {
       expect(key).toBe('value');
     });
 
+    it('add a value lazily', () => {
+      expect.assertions(1);
+
+      const plan = (rootPlan) => rootPlan.addValue('key', () => 'value');
+
+      const { key } = execute(plan);
+      expect(key).toBe('value');
+    });
+
     it('add an instance', () => {
       expect.assertions(1);
       const instance = Symbol('instance');
@@ -455,8 +464,8 @@ describe('Plan', () => {
 
     it('correctly replace a step in a plan', () => {
       const plan = newPlan()
-        .addStep('first', (context) => context.addValue('one', () => 1))
-        .addStep('second', (context) => context.addValue('two', () => 2));
+        .addStep('first', (context) => context.addFunction('one', () => 1))
+        .addStep('second', (context) => context.addFunction('two', () => 2));
 
       const oneMock = jest.fn().mockReturnValue('hello');
       const modifiedPlan = plan
@@ -484,10 +493,10 @@ describe('Plan', () => {
 
       const plan = newPlan()
         .addStep('base', (planBase) => planBase
-          .addStep('one', (planOne) => planOne.addValue('one', () => v1))
-          .addStep('two', (planTwo) => planTwo.addValue('two', () => v2)))
+          .addStep('one', (planOne) => planOne.addFunction('one', () => v1))
+          .addStep('two', (planTwo) => planTwo.addFunction('two', () => v2)))
         .addStep('extension', (planExtension) => planExtension
-          .addStep('three', (planThree) => planThree.addValue('three', () => v3)));
+          .addStep('three', (planThree) => planThree.addFunction('three', () => v3)));
 
       const modifiedPlan1 = plan
         .replace('base/one/one', () => v4);
@@ -583,7 +592,7 @@ describe('Plan', () => {
         {
           path: '',
           name: 'one',
-          type: 'value',
+          type: 'replacement',
           options,
           value: 2,
           replaced: {
@@ -663,7 +672,7 @@ describe('Plan', () => {
         {
           path: 'step1',
           name: 'one',
-          type: 'value',
+          type: 'replacement',
           options,
           value: 2,
           replaced: {
@@ -692,7 +701,7 @@ describe('Plan', () => {
         {
           path: 'root/stepA/stepB',
           name: 'one',
-          type: 'value',
+          type: 'replacement',
           options,
           value: 2,
           replaced: {
@@ -721,7 +730,7 @@ describe('Plan', () => {
         {
           path: 'root',
           name: 'yes',
-          type: 'value',
+          type: 'replacement',
           options,
           value: 'no',
           replaced: [
@@ -735,7 +744,7 @@ describe('Plan', () => {
             { path: 'root', name: stepNameSymbol, type: 'step-out', value: 'root' },
           ],
         }, {
-          path: 'root', name: 'white', type: 'value', options, value: 'black',
+          path: 'root', name: 'white', type: 'replacement', options, value: 'black',
         },
       ];
 
