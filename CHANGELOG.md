@@ -1,3 +1,10 @@
+# [1.16.0](https://github.com/ForestAdmin/context/compare/v1.15.0...v1.16.0) (2021-07-09)
+
+
+### Features
+
+* allow addValue to be lazy ([695598a](https://github.com/ForestAdmin/context/commit/695598aa8e3dd0442632bd9de838845adcfa79e9))
+
 # [1.15.0](https://github.com/ForestAdmin/context/compare/v1.14.0...v1.15.0) (2021-07-09)
 
 
