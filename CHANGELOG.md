@@ -1,3 +1,10 @@
+# [1.17.0](https://github.com/ForestAdmin/context/compare/v1.16.0...v1.17.0) (2021-07-16)
+
+
+### Features
+
+* allow addInstance to be lazy ([f3238fb](https://github.com/ForestAdmin/context/commit/f3238fb207f3ac7c4ddd988373d1f3d3648dec3b))
+
 # [1.16.0](https://github.com/ForestAdmin/context/compare/v1.15.0...v1.16.0) (2021-07-09)
 
 
