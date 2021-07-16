@@ -182,8 +182,8 @@ describe('Plan', () => {
       const { one, two } = execute(newPlan()
         .addValue('first', firstSymbol)
         .addValue('second', secondSymbol)
-        .addClass(FakeClass, { name: 'one', map: ({ first }) => ({ param: first }) })
-        .addClass(FakeClass, { name: 'two', map: ({ second }) => ({ param: second }) }));
+        .addUsingClass('one', FakeClass, { map: ({ first }) => ({ param: first }) })
+        .addUsingClass('two', FakeClass, { map: ({ second }) => ({ param: second }) }));
 
       expect(one.param).toBe(firstSymbol);
       expect(two.param).toBe(secondSymbol);
