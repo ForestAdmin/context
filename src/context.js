@@ -63,7 +63,7 @@ module.exports = class Context {
     this._metadata.add(path, name, 'value', value, options);
     this._setNewValue(
       name,
-      (typeof value === 'function') ? value() : value,
+      (typeof value === 'function') ? value(this.get()) : value,
       options,
     );
     return this;
@@ -71,7 +71,11 @@ module.exports = class Context {
 
   addInstance(path, name, instance, options) {
     this._metadata.add(path, name, 'instance', instance, options);
-    this._setNewValue(name, instance, options);
+    this._setNewValue(
+      name,
+      (typeof instance === 'function') ? instance(this.get()) : instance,
+      options,
+    );
     return this;
   }
 

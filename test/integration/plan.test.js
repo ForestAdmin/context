@@ -123,6 +123,16 @@ describe('Plan', () => {
       expect(key).toBe(instance);
     });
 
+    it('add an instance lazily', () => {
+      expect.assertions(1);
+      const instance = Symbol('instance');
+
+      const plan = (rootPlan) => rootPlan.addInstance('key', () => instance);
+
+      const { key } = execute(plan);
+      expect(key).toBe(instance);
+    });
+
     it('add an function', () => {
       expect.assertions(1);
       const fct = Symbol('fct');
