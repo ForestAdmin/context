@@ -76,6 +76,7 @@ module.exports = class Plan {
       });
     } else if (itemIsAFunction) {
       plan = item(plan);
+      if (!plan) throw new Error('a plan function should return a plan');
     } else if (itemIsAPlan) {
       plan = Plan.newPlan([...plan._getEntries(), ...plan._prefixPaths(item._getEntries())]);
     } else if (itemIsInvalid) {

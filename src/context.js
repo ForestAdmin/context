@@ -18,7 +18,8 @@ module.exports = class Context {
     return this._metadata.get();
   }
 
-  _assertPresent(requisites) {
+  _assertPresent(requisites, rest) {
+    if (rest) throw new Error('Only one parameter should be specified.');
     const keys = Object.keys(requisites);
     const missings = keys
       .map((key) => (!this._bag[key] ? key : null))
