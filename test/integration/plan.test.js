@@ -9,11 +9,48 @@ describe('Plan', () => {
 
   it('constructor', () => {
     const entries = Symbol('entries');
+    const verbose = Symbol('verbose');
 
-    const plan = newPlan(entries);
+    const plan = newPlan(entries, verbose);
 
     expect(plan._entries).toStrictEqual(entries);
     expect(plan._stepsWalk).toStrictEqual([]);
+    expect(plan._verbose).toBe(verbose);
+  });
+
+  describe('verbose mode', () => {
+    it('saves the addValue stack', () => {
+      expect.assertions(1);
+      const plan = newPlan(undefined, true)
+        .addValue('value', 1);
+
+      expect(plan._getEntries()[0].stack)
+        .toMatch(/.*test\/integration\/plan\.test\.js/);
+    });
+    it('print the *failing* addFunction stack when executing a plan', () => {
+      expect.assertions(1);
+      const notAFunction = Symbol('not-a function');
+      const plan = newPlan(undefined, true)
+        .addUsingFunction('my-failing-function', notAFunction);
+
+      try {
+        execute(plan);
+      } catch (error) {
+        expect(error.stack).toMatch(/.*Plan\.addUsingFunction/);
+      }
+    });
+    it('print nothing when verbose deactivated', () => {
+      expect.assertions(1);
+      const notAFunction = Symbol('not-a function');
+      const plan = newPlan()
+        .addUsingFunction('my-failing-function', notAFunction);
+
+      try {
+        execute(plan);
+      } catch (error) {
+        expect(error.stack).toMatch(/.*Problem origin - verbose-not-activated/);
+      }
+    });
   });
 
   describe('execute a plan', () => {

@@ -6,10 +6,11 @@ const Context = require('./context');
 const METADATA_HOOK = 'metadata-hook';
 
 module.exports = class Plan {
-  constructor(_entries = []) {
+  constructor(_entries = [], verbose = false) {
     this._entries = _entries;
     this._stepsWalk = [];
     this._metadataHook = null;
+    this._verbose = verbose;
   }
 
   static newPlan(...args) {
@@ -42,8 +43,8 @@ module.exports = class Plan {
    * A context in a singleton is usefull to be used in files that are not in the context.
    * @param item
    */
-  static init(item) {
-    Plan.execute(item, Plan._context = new Context());
+  static init(item, verbose) {
+    Plan.execute(item, Plan._context = new Context(), verbose);
   }
 
   static inject() {
@@ -51,11 +52,11 @@ module.exports = class Plan {
     return Plan._context.get();
   }
 
-  static execute(plan, context = new Context()) {
+  static execute(plan, context = new Context(), verbose = false) {
     if (!plan) throw new Error('missing item');
 
     Plan
-      ._mergeItem(plan, Plan.newPlan())
+      ._mergeItem(plan, Plan.newPlan(undefined, verbose))
       ._getEntries()
       .forEach((entry) => Plan.applyEntry(entry, context));
 
@@ -87,6 +88,15 @@ module.exports = class Plan {
   }
 
   static applyEntry(entry, context) {
+    try {
+      Plan._applyEntry(entry, context);
+    } catch (error) {
+      error.stack = `${error.stack}\nProblem origin - ${entry.stack || 'verbose-not-activated'}`;
+      throw error;
+    }
+  }
+
+  static _applyEntry(entry, context) {
     const {
       path, type, name, value, options,
     } = entry;
@@ -140,6 +150,7 @@ module.exports = class Plan {
     const path = this._stepsWalk.join('/');
     const entry = { path, name, type, value };
     if (options) entry.options = options;
+    if (this._verbose) entry.stack = new Error().stack;
     this._entries.push(entry);
   }
 
