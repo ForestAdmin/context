@@ -1,3 +1,10 @@
+# [1.18.0](https://github.com/ForestAdmin/context/compare/v1.17.0...v1.18.0) (2021-07-30)
+
+
+### Features
+
+* introduce verbose mode ([265b588](https://github.com/ForestAdmin/context/commit/265b5881274a77772de9efae0167f08e2001fc2f))
+
 # [1.17.0](https://github.com/ForestAdmin/context/compare/v1.16.0...v1.17.0) (2021-07-16)
 
 
