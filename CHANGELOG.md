@@ -1,3 +1,10 @@
+# [1.19.0](https://github.com/ForestAdmin/context/compare/v1.18.0...v1.19.0) (2021-08-13)
+
+
+### Features
+
+* addXXX methods now validates their input ([6dd69f6](https://github.com/ForestAdmin/context/commit/6dd69f6e0c0e80bca11299112bcc887a86ad72ff))
+
 # [1.18.0](https://github.com/ForestAdmin/context/compare/v1.17.0...v1.18.0) (2021-07-30)
 
 
