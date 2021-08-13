@@ -42,6 +42,7 @@ module.exports = class Plan {
    * It's to keep a context in a singleton (retrieved via inject()).
    * A context in a singleton is usefull to be used in files that are not in the context.
    * @param item
+   * @param verbose
    */
   static init(item, verbose) {
     Plan.execute(item, Plan._context = new Context(), verbose);
@@ -146,6 +147,7 @@ module.exports = class Plan {
   }
 
   _addEntry(name, type, value, options) {
+    if (value === undefined) throw new Error('missing value');
     if (name === 'assertPresent') throw new Error('reserved keyword "assertPresent"');
     const path = this._stepsWalk.join('/');
     const entry = { path, name, type, value };
@@ -222,21 +224,25 @@ module.exports = class Plan {
   }
 
   addValue(name, value, options) {
+    if (value === undefined) throw new Error('missing value');
     this._addEntry(name, 'value', value, options);
     return this;
   }
 
   addInstance(name, instance, options) {
+    if (instance === undefined) throw new Error('missing instance');
     this._addEntry(name, 'instance', instance, options);
     return this;
   }
 
-  addFunction(name, value, options) {
-    this._addEntry(name, 'function', value, options);
+  addFunction(name, func, options) {
+    if (func === undefined) throw new Error('missing function');
+    this._addEntry(name, 'function', func, options);
     return this;
   }
 
   addUsingClass(name, Class, options) {
+    if (Class === undefined) throw new Error('missing Class');
     this._addEntry(name, 'class', Class, options);
     return this;
   }
@@ -260,16 +266,19 @@ module.exports = class Plan {
   }
 
   addUsingFunction(name, factoryFunction, options) {
+    if (factoryFunction === undefined) throw new Error('missing factoryFunction');
     this._addEntry(name, 'function*', factoryFunction, options);
     return this;
   }
 
   addModule(name, module, options) {
+    if (module === undefined) throw new Error('missing module');
     this._addEntry(name, 'module', module, options);
     return this;
   }
 
   addAllKeysFrom(object, options) {
+    if (object === undefined) throw new Error('missing object');
     Object
       .entries(object)
       .forEach(([name, value]) => this.addValue(name, value, options));
