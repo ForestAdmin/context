@@ -138,7 +138,7 @@ module.exports = class Plan {
         value(context.getMetadata());
         break;
       default:
-        throw new Error(`invalid entry ${path} ${name}`);
+        throw new Error(`invalid entry type ${type} ${path} ${name}`);
     }
   }
 
