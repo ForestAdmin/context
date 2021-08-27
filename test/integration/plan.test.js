@@ -181,6 +181,16 @@ describe('Plan', () => {
       expect(key).toBe('value');
     });
 
+    it('add a raw value', () => {
+      expect.assertions(1);
+
+      const value = Symbol('value');
+      const plan = (rootPlan) => rootPlan._addRawValue('key', () => value);
+
+      const { key } = execute(plan);
+      expect(key()).toBe(value);
+    });
+
     it('add an instance', () => {
       expect.assertions(1);
       const instance = Symbol('instance');
@@ -309,6 +319,16 @@ describe('Plan', () => {
         two: 2,
         three: 3,
       });
+    });
+
+    it('add an object keys containing a function', () => {
+      expect.assertions(1);
+      const value = Symbol('value');
+
+      const { getValue } = execute(newPlan()
+        .addAllKeysFrom({ getValue: () => value }));
+
+      expect(getValue()).toBe(value);
     });
 
     it('add a step', () => {
@@ -727,8 +747,8 @@ describe('Plan', () => {
         { path: 'st1/subSt1', name: 'subSt1Value', type: 'value', options, value: subSt1Value },
         { path: 'st1/subSt1', name: stepNameSymbol, type: 'step-out', value: 'subSt1', options },
         { path: 'st1', name: stepNameSymbol, type: 'step-out', value: 'st1', options },
-        { path: '', name: 'key1', type: 'value', options, value: 1 },
-        { path: '', name: 'key2', type: 'value', options, value: 2 },
+        { path: '', name: 'key1', type: 'rawValue', options, value: 1 },
+        { path: '', name: 'key2', type: 'rawValue', options, value: 2 },
         { path: '', name: stepNameSymbol, type: 'work', options, value: { name: 'one', work } },
       ];
 
