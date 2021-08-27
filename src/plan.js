@@ -110,6 +110,9 @@ module.exports = class Plan {
       case 'number':
         context.addNumber(path, name, value, options);
         break;
+      case 'rawValue':
+        context.addRawValue(path, name, value, options);
+        break;
       case 'instance':
         context.addInstance(path, name, value, options);
         break;
@@ -138,7 +141,7 @@ module.exports = class Plan {
         value(context.getMetadata());
         break;
       default:
-        throw new Error(`invalid entry ${path} ${name}`);
+        throw new Error(`invalid entry type ${type} ${path} ${name}`);
     }
   }
 
@@ -237,6 +240,12 @@ module.exports = class Plan {
     return this;
   }
 
+  _addRawValue(name, rawValue, options) {
+    if (rawValue === undefined) throw new Error('missing raw value');
+    this._addEntry(name, 'rawValue', rawValue, options);
+    return this;
+  }
+
   addInstance(name, instance, options) {
     if (instance === undefined) throw new Error('missing instance');
     this._addEntry(name, 'instance', instance, options);
@@ -289,7 +298,7 @@ module.exports = class Plan {
     if (object === undefined) throw new Error('missing object');
     Object
       .entries(object)
-      .forEach(([name, value]) => this.addValue(name, value, options));
+      .forEach(([name, value]) => this._addRawValue(name, value, options));
     return this;
   }
 

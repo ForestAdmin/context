@@ -70,6 +70,12 @@ module.exports = class Context {
     return this;
   }
 
+  addRawValue(path, name, value, options) {
+    this._metadata.add(path, name, 'value', value, options);
+    this._setNewValue(name, value, options);
+    return this;
+  }
+
   addNumber(path, name, value, options = {}) {
     this._metadata.add(path, name, 'number', value, options);
     const rawValue = (typeof value === 'function') ? value(this.get()) : value;
