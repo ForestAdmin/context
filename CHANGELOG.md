@@ -1,3 +1,10 @@
+# [1.21.0](https://github.com/ForestAdmin/context/compare/v1.20.0...v1.21.0) (2021-08-27)
+
+
+### Features
+
+* addAllKeysFrom handle raw values ([#9](https://github.com/ForestAdmin/context/issues/9)) ([716f26a](https://github.com/ForestAdmin/context/commit/716f26ac96627e5f4e6f6530aac13f5c28d6924a))
+
 # [1.20.0](https://github.com/ForestAdmin/context/compare/v1.19.0...v1.20.0) (2021-08-27)
 
 
