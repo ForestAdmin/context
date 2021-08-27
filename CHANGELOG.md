@@ -1,3 +1,10 @@
+# [1.20.0](https://github.com/ForestAdmin/context/compare/v1.19.0...v1.20.0) (2021-08-27)
+
+
+### Features
+
+* introduce addNumber method ([#10](https://github.com/ForestAdmin/context/issues/10)) ([540ea64](https://github.com/ForestAdmin/context/commit/540ea64572c81d6647e1197d59f2f59f17a0b165))
+
 # [1.19.0](https://github.com/ForestAdmin/context/compare/v1.18.0...v1.19.0) (2021-08-13)
 
 
