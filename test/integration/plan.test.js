@@ -132,6 +132,37 @@ describe('Plan', () => {
   });
 
   describe('the "addXXX" methods', () => {
+    describe('addNumber method', () => {
+      it('adds a number', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', 3);
+        const { key } = execute(plan);
+        expect(key).toBe(3);
+      });
+      it('adds a number lazily', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', () => 3);
+        const { key } = execute(plan);
+        expect(key).toBe(3);
+      });
+      it('add a number using min value', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', () => -1, { min: 0, max: 10 });
+        const { key } = execute(plan);
+        expect(key).toBe(0);
+      });
+      it('add a max number using max value', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', () => 11, { min: 0, max: 10 });
+        const { key } = execute(plan);
+        expect(key).toBe(10);
+      });
+      it('throw specified value is not a number', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', () => ({}), { min: 0, max: 10 });
+        expect(() => execute(plan)).toThrow('Specified value is not a number: /key');
+      });
+    });
     it('add a value', () => {
       expect.assertions(1);
 

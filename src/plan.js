@@ -9,7 +9,6 @@ module.exports = class Plan {
   constructor(_entries = [], verbose = false) {
     this._entries = _entries;
     this._stepsWalk = [];
-    this._metadataHook = null;
     this._verbose = verbose;
   }
 
@@ -107,6 +106,9 @@ module.exports = class Plan {
         break;
       case 'value':
         context.addValue(path, name, value, options);
+        break;
+      case 'number':
+        context.addNumber(path, name, value, options);
         break;
       case 'instance':
         context.addInstance(path, name, value, options);
@@ -226,6 +228,12 @@ module.exports = class Plan {
   addValue(name, value, options) {
     if (value === undefined) throw new Error('missing value');
     this._addEntry(name, 'value', value, options);
+    return this;
+  }
+
+  addNumber(name, value, options) {
+    if (value === undefined) throw new Error('missing number');
+    this._addEntry(name, 'number', value, options);
     return this;
   }
 
