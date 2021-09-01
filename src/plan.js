@@ -179,7 +179,14 @@ module.exports = class Plan {
     const stepReplacedPlan = this._replaceStep(relativePath, value, options);
     if (stepReplacedPlan) return stepReplacedPlan;
 
-    throw new Error(`entry not found: '${relativePath}'`);
+    throw new Error(`entry not found: '${relativePath}'. Entries list:\n${this._getEntriesList()}`);
+  }
+
+  _getEntriesList() {
+    return this._entries
+      .filter(({ name }) => typeof name !== 'symbol')
+      .map(({ path, name }) => `${path}/${name}`)
+      .join('\n');
   }
 
   _replaceValue(relativePath, value, options) {
