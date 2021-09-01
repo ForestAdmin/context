@@ -122,12 +122,29 @@ describe('Plan', () => {
 
       expect(key).toBe('value');
     });
+  });
 
-    it('check that assertPresent is defined with init/inject', () => {
+  describe('assertPresent', () => {
+    it('is injected with init/inject', () => {
+      expect.assertions(1);
       init((plan) => plan.addValue('key', 'value'));
       const { assertPresent, key } = inject();
       assertPresent({ key });
       expect(key).toBe('value');
+    });
+
+    it('is injected with execute', () => {
+      expect.assertions(1);
+      const { assertPresent, key } = execute((plan) => plan.addValue('key', 'value'));
+      assertPresent({ key });
+      expect(key).toBe('value');
+    });
+
+    it('throws when an entry is missing', () => {
+      expect.assertions(1);
+      const { assertPresent } = execute((plan) => plan.addValue('one', 1));
+      expect(() => assertPresent({ invalidEntry: 1 }))
+        .toThrow('missing dependencies invalidEntry. Existing: assertPresent,one');
     });
   });
 
