@@ -564,6 +564,14 @@ describe('Plan', () => {
         .toThrow('entry not found: \'BAD_NAME\'');
     });
 
+    it('should throw the entries list', () => {
+      expect(() => execute((plan) => plan
+        .addValue('zero', 0)
+        .addStep('one', (onePlan) => onePlan.addValue('value', 'value'))
+        .replace('BAD_NAME')))
+        .toThrow('entry not found: \'BAD_NAME\'. Entries list:\n/zero\none/value');
+    });
+
     it('replace a value inside a plan inside a nested plan step', () => {
       const planA = newPlan()
         .addStep('zero', newPlan()
