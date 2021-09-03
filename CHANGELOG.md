@@ -1,3 +1,10 @@
+# [1.24.0](https://github.com/ForestAdmin/context/compare/v1.23.0...v1.24.0) (2021-09-03)
+
+
+### Features
+
+* assertPresent display valid entries list when an entry is invalid ([#14](https://github.com/ForestAdmin/context/issues/14)) ([76ea691](https://github.com/ForestAdmin/context/commit/76ea6918fe0a30b06c92ffa364b92199d8959eb4))
+
 # [1.23.0](https://github.com/ForestAdmin/context/compare/v1.22.0...v1.23.0) (2021-09-03)
 
 
