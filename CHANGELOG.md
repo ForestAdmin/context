@@ -1,3 +1,10 @@
+# [1.23.0](https://github.com/ForestAdmin/context/compare/v1.22.0...v1.23.0) (2021-09-03)
+
+
+### Features
+
+* list the entries when replacing an unknown key ([#13](https://github.com/ForestAdmin/context/issues/13)) ([ba8f0de](https://github.com/ForestAdmin/context/commit/ba8f0deb64aeb89d39585cd7771c4824680d1403))
+
 # [1.22.0](https://github.com/ForestAdmin/context/compare/v1.21.0...v1.22.0) (2021-09-03)
 
 
