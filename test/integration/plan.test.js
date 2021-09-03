@@ -179,6 +179,24 @@ describe('Plan', () => {
         const plan = (rootPlan) => rootPlan.addNumber('key', () => ({}), { min: 0, max: 10 });
         expect(() => execute(plan)).toThrow('Specified value is not a number: /key');
       });
+      it('add a number using default value', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', () => null, { min: 0, default: 5, max: 10 });
+        const { key } = execute(plan);
+        expect(key).toBe(5);
+      });
+      it('default value is under max value', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', () => null, { min: 0, default: -5, max: 10 });
+        const { key } = execute(plan);
+        expect(key).toBe(0);
+      });
+      it('default value is upper min value', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', () => null, { min: 0, default: 15, max: 10 });
+        const { key } = execute(plan);
+        expect(key).toBe(10);
+      });
     });
     it('add a value', () => {
       expect.assertions(1);
@@ -561,6 +579,14 @@ describe('Plan', () => {
     it('should throw when entry is not found', () => {
       expect(() => execute((plan) => plan.replace('BAD_NAME')))
         .toThrow('entry not found: \'BAD_NAME\'');
+    });
+
+    it('should throw the entries list', () => {
+      expect(() => execute((plan) => plan
+        .addValue('zero', 0)
+        .addStep('one', (onePlan) => onePlan.addValue('value', 'value'))
+        .replace('BAD_NAME')))
+        .toThrow('entry not found: \'BAD_NAME\'. Entries list:\n/zero\none/value');
     });
 
     it('replace a value inside a plan inside a nested plan step', () => {

@@ -79,8 +79,8 @@ module.exports = class Context {
   addNumber(path, name, value, options = {}) {
     this._metadata.add(path, name, 'number', value, options);
     const rawValue = (typeof value === 'function') ? value(this.get()) : value;
-    const expectedNumber = Number(rawValue);
-    if (Number.isNaN(expectedNumber)) throw new Error(`Specified value is not a number: ${path}/${name}`);
+    const expectedNumber = Number(rawValue || options.default);
+    if (Number.isNaN(expectedNumber)) throw new Error(`Specified value is not a number: ${path}/${name}=${rawValue}`);
     const { min = Number.NEGATIVE_INFINITY, max = Number.POSITIVE_INFINITY } = options;
     const number = Math.max(min, Math.min(max, expectedNumber));
     this._setNewValue(name, number, options);

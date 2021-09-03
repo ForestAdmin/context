@@ -1,3 +1,10 @@
+# [1.22.0](https://github.com/ForestAdmin/context/compare/v1.21.0...v1.22.0) (2021-09-03)
+
+
+### Features
+
+* add default value to addNumber method ([#11](https://github.com/ForestAdmin/context/issues/11)) ([58f0037](https://github.com/ForestAdmin/context/commit/58f0037d9ca19b762ae3de066fc6b819c71a6435))
+
 # [1.21.0](https://github.com/ForestAdmin/context/compare/v1.20.0...v1.21.0) (2021-08-27)
 
 
