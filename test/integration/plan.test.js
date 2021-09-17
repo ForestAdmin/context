@@ -142,9 +142,9 @@ describe('Plan', () => {
 
     it('throws when an entry is missing', () => {
       expect.assertions(1);
-      const { assertPresent } = execute((plan) => plan.addValue('one', 1));
-      expect(() => assertPresent({ invalidEntry: 1 }))
-        .toThrow('missing dependencies invalidEntry. Existing: assertPresent,one');
+      const { assertPresent, one } = execute((plan) => plan);
+      expect(() => assertPresent({ one }))
+        .toThrow('missing dependencies one. Existing: assertPresent');
     });
   });
 
