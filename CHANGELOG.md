@@ -1,3 +1,10 @@
+# [1.25.0](https://github.com/ForestAdmin/context/compare/v1.24.0...v1.25.0) (2021-09-17)
+
+
+### Features
+
+* addNumber with default and nullable ([#15](https://github.com/ForestAdmin/context/issues/15)) ([749163d](https://github.com/ForestAdmin/context/commit/749163dbb7f02c892ef5dab5763aff8a8c0ad90c))
+
 # [1.24.0](https://github.com/ForestAdmin/context/compare/v1.23.0...v1.24.0) (2021-09-03)
 
 
