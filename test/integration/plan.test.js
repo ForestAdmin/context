@@ -162,40 +162,63 @@ describe('Plan', () => {
         const { key } = execute(plan);
         expect(key).toBe(3);
       });
-      it('add a number using min value', () => {
+      it('add null throws', () => {
         expect.assertions(1);
-        const plan = (rootPlan) => rootPlan.addNumber('key', () => -1, { min: 0, max: 10 });
-        const { key } = execute(plan);
-        expect(key).toBe(0);
+        const plan = (rootPlan) => rootPlan.addNumber('key', () => null);
+        expect(() => execute(plan)).toThrow();
       });
-      it('add a max number using max value', () => {
+      it('add {} throws', () => {
         expect.assertions(1);
-        const plan = (rootPlan) => rootPlan.addNumber('key', () => 11, { min: 0, max: 10 });
-        const { key } = execute(plan);
-        expect(key).toBe(10);
-      });
-      it('throw specified value is not a number', () => {
-        expect.assertions(1);
-        const plan = (rootPlan) => rootPlan.addNumber('key', () => ({}), { min: 0, max: 10 });
+        const plan = (rootPlan) => rootPlan.addNumber('key', () => ({}));
         expect(() => execute(plan)).toThrow('Specified value is not a number: /key');
       });
-      it('add a number using default value', () => {
+      it('add \'string\' throws', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', () => ('string'));
+        expect(() => execute(plan)).toThrow('Specified value is not a number: /key');
+      });
+      it('add a number lower than min throws', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', () => -1, { min: 0 });
+        expect(() => execute(plan)).toThrow();
+      });
+      it('add a number upper than max throws', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', () => 11, { max: 10 });
+        expect(() => execute(plan)).toThrow();
+      });
+      it('add null using default value', () => {
         expect.assertions(1);
         const plan = (rootPlan) => rootPlan.addNumber('key', () => null, { min: 0, default: 5, max: 10 });
+        expect(() => execute(plan)).toThrow();
+      });
+      it('add undefined using default value', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', () => undefined, { min: 0, default: 5, max: 10 });
         const { key } = execute(plan);
         expect(key).toBe(5);
       });
       it('default value is under max value', () => {
         expect.assertions(1);
         const plan = (rootPlan) => rootPlan.addNumber('key', () => null, { min: 0, default: -5, max: 10 });
-        const { key } = execute(plan);
-        expect(key).toBe(0);
+        expect(() => execute(plan)).toThrow();
       });
       it('default value is upper min value', () => {
         expect.assertions(1);
         const plan = (rootPlan) => rootPlan.addNumber('key', () => null, { min: 0, default: 15, max: 10 });
+        expect(() => execute(plan)).toThrow();
+      });
+      it('add null using default null', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', () => null, { min: 0, max: 10, nullable: true });
         const { key } = execute(plan);
-        expect(key).toBe(10);
+        expect(key).toBe(null);
+      });
+      it('add undefined using default null', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', () => undefined, { min: 0, default: null, max: 10, nullable: true });
+        const { key } = execute(plan);
+        expect(key).toBe(null);
       });
     });
     it('add a value', () => {
