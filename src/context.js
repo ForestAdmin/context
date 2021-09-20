@@ -22,7 +22,7 @@ module.exports = class Context {
     if (rest) throw new Error('Only one parameter should be specified.');
     const keys = Object.keys(requisites);
     const missings = keys
-      .map((key) => (!this._bag[key] ? key : null))
+      .map((key) => (this._bag[key] === undefined ? key : null))
       .filter((key) => key);
     if (missings.length > 0) throw new Error(`missing dependencies ${missings}. Existing: ${Object.keys(this._bag)}`);
     this._metadata.setRequisites(keys);
