@@ -78,12 +78,30 @@ module.exports = class Context {
 
   addNumber(path, name, value, options = {}) {
     this._metadata.add(path, name, 'number', value, options);
+    const {
+      min = Number.NEGATIVE_INFINITY,
+      default: defaultValue,
+      max = Number.POSITIVE_INFINITY,
+      nullable,
+    } = options;
     const rawValue = (typeof value === 'function') ? value(this.get()) : value;
-    const expectedNumber = Number(rawValue || options.default);
+    if (rawValue === null) {
+      if (!nullable) throw new Error(`Specified value is null: ${path}/${name}`);
+      this._setNewValue(name, rawValue, options);
+      return this;
+    }
+    if (rawValue === undefined) {
+      if (defaultValue === undefined) throw new Error(`No specified value and no default value: ${path}/${name}`);
+      this._setNewValue(name, defaultValue, options);
+      return this;
+    }
+
+    const expectedNumber = Number(rawValue);
     if (Number.isNaN(expectedNumber)) throw new Error(`Specified value is not a number: ${path}/${name}=${rawValue}`);
-    const { min = Number.NEGATIVE_INFINITY, max = Number.POSITIVE_INFINITY } = options;
-    const number = Math.max(min, Math.min(max, expectedNumber));
-    this._setNewValue(name, number, options);
+    if (expectedNumber < min) throw new Error(`Specified value is below min: ${path}/${name}=${expectedNumber} min=${min}`);
+    if (max < expectedNumber) throw new Error(`Specified value is above max: ${path}/${name}=${expectedNumber} max=${max}`);
+
+    this._setNewValue(name, expectedNumber, options);
     return this;
   }
 
