@@ -1,3 +1,10 @@
+# [1.26.0](https://github.com/ForestAdmin/context/compare/v1.25.0...v1.26.0) (2021-09-20)
+
+
+### Features
+
+* assertPresent check undefined values ([#16](https://github.com/ForestAdmin/context/issues/16)) ([d43d0fd](https://github.com/ForestAdmin/context/commit/d43d0fdafaf30d844035fd15484e8e0357b72103))
+
 # [1.25.0](https://github.com/ForestAdmin/context/compare/v1.24.0...v1.25.0) (2021-09-17)
 
 
