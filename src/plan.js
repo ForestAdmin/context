@@ -152,7 +152,6 @@ module.exports = class Plan {
   }
 
   _addEntry(name, type, value, options) {
-    if (value === undefined) throw new Error('missing value');
     if (name === 'assertPresent') throw new Error('reserved keyword "assertPresent"');
     const path = this._stepsWalk.join('/');
     const entry = { path, name, type, value };
@@ -242,7 +241,6 @@ module.exports = class Plan {
   }
 
   addNumber(name, value, options) {
-    if (value === undefined) throw new Error('missing number');
     this._addEntry(name, 'number', value, options);
     return this;
   }

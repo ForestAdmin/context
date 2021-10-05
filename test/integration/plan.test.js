@@ -208,15 +208,27 @@ describe('Plan', () => {
         const plan = (rootPlan) => rootPlan.addNumber('key', () => null, { min: 0, default: 15, max: 10 });
         expect(() => execute(plan)).toThrow();
       });
-      it('add null using default null', () => {
+      it('add lazy null using default null', () => {
         expect.assertions(1);
         const plan = (rootPlan) => rootPlan.addNumber('key', () => null, { min: 0, max: 10, nullable: true });
         const { key } = execute(plan);
         expect(key).toBe(null);
       });
-      it('add undefined using default null', () => {
+      it('add null using default null', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', null, { min: 0, max: 10, nullable: true });
+        const { key } = execute(plan);
+        expect(key).toBe(null);
+      });
+      it('add lazy undefined using default null', () => {
         expect.assertions(1);
         const plan = (rootPlan) => rootPlan.addNumber('key', () => undefined, { min: 0, default: null, max: 10, nullable: true });
+        const { key } = execute(plan);
+        expect(key).toBe(null);
+      });
+      it('add undefined using default null', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', undefined, { min: 0, default: null, max: 10, nullable: true });
         const { key } = execute(plan);
         expect(key).toBe(null);
       });
