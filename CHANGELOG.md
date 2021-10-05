@@ -1,3 +1,10 @@
+# [1.27.0](https://github.com/ForestAdmin/context/compare/v1.26.0...v1.27.0) (2021-10-05)
+
+
+### Features
+
+* can add undefined number ([#17](https://github.com/ForestAdmin/context/issues/17)) ([54900bb](https://github.com/ForestAdmin/context/commit/54900bb200d1b51ac117708e2564bc3d78002332))
+
 # [1.26.0](https://github.com/ForestAdmin/context/compare/v1.25.0...v1.26.0) (2021-09-20)
 
 
