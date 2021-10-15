@@ -36,7 +36,7 @@ module.exports = class Plan {
     };
   }
 
-  static makeDotWrite() {
+  static makeDotWrite(...basePath) {
     return (entries) => {
       const getEntriesAsJson = () => {
         const root = [];
@@ -98,7 +98,7 @@ module.exports = class Plan {
       dot.push('}');
 
       const text = dot.join('\n');
-      fs.writeFileSync('graph.dot', text);
+      fs.writeFileSync(join(...basePath), text);
     };
   }
 

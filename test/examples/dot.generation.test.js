@@ -17,7 +17,7 @@ describe('generate the dependancies graph', () => {
 
     execute([
       somePlan,
-      (plan) => plan.addMetadataHook(makeDotWrite()),
+      (plan) => plan.addMetadataHook(makeDotWrite(__dirname, 'generated', 'graph.dot')),
     ]);
   });
 });
