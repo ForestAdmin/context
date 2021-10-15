@@ -36,6 +36,72 @@ module.exports = class Plan {
     };
   }
 
+  static makeDotWrite() {
+    return (entries) => {
+      const getEntriesAsJson = () => {
+        const root = [];
+        const getStepContent = (pathString) => {
+          if (pathString.length === 0) return root;
+          let current = root;
+          const pathArray = pathString.split('/');
+          pathArray.forEach((stepName) => {
+            current = current.find(({ name }) => name === stepName).content;
+          });
+          return current;
+        };
+        entries.forEach(({ path, name, type, requires, options }) => {
+          if (type === 'step') {
+            const step = { type, name, options, content: [] };
+            const temp = path.split('/');
+            temp.pop(); // pop because we want the parent.
+            path = temp.join('/');
+            getStepContent(path).push(step);
+          } else {
+            getStepContent(path).push({ type, name, options, requires });
+          }
+        });
+        return root;
+      };
+      const json = getEntriesAsJson();
+
+      const dot = [];
+
+      dot.push('digraph G {');
+      dot.push('  rankdir=LR;');
+
+      let clusterCount = 0;
+      const indent = (deep) => ' '.repeat(2 * deep);
+      const links = [];
+      const appendNode = (nodes, output, deep = 1) => {
+        nodes.forEach((node) => {
+          if (node.type === 'step') {
+            output.push(`${indent(deep)}subgraph cluster_${clusterCount += 1} {`);
+            deep += 1;
+            output.push(`${indent(deep)}label = "${node.name}";`);
+            appendNode(node.content, output, deep);
+            deep -= 1;
+            output.push(`${indent(deep)}}`);
+          } else {
+            output.push(`${indent(deep)}${node.name};`);
+          }
+          links.push(node);
+        });
+      };
+      appendNode(json, dot);
+
+      links.forEach((node) => {
+        if (node.requires && node.requires.length) {
+          node.requires.forEach((requisite) => dot.push(`${indent(1)}${node.name} -> ${requisite.name};`));
+        }
+      });
+
+      dot.push('}');
+
+      const text = dot.join('\n');
+      fs.writeFileSync('graph.dot', text);
+    };
+  }
+
   /**
    * This is useful in legacy code only.
    * It's to keep a context in a singleton (retrieved via inject()).
