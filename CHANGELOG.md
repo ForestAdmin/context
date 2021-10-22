@@ -1,3 +1,10 @@
+# [1.28.0](https://github.com/ForestAdmin/context/compare/v1.27.0...v1.28.0) (2021-10-22)
+
+
+### Features
+
+* addPackage alias ([#18](https://github.com/ForestAdmin/context/issues/18)) ([ede7aca](https://github.com/ForestAdmin/context/commit/ede7aca0ff9e55203172d3d39f3a296ced6f3f6a))
+
 # [1.27.0](https://github.com/ForestAdmin/context/compare/v1.26.0...v1.27.0) (2021-10-05)
 
 
