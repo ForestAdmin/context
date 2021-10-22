@@ -225,6 +225,10 @@ module.exports = class Plan {
     return new Plan(newEntries);
   }
 
+  addPackage(name, item, options) {
+    return this.addStep(name, item, options);
+  }
+
   addStep(name, item, options) {
     this._stepsWalk.push(name);
     this._addEntry(Symbol('step-in'), 'step-in', name, options);
