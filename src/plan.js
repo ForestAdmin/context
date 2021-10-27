@@ -152,7 +152,7 @@ module.exports = class Plan {
   }
 
   _addEntry(name, type, value, options) {
-    if (name === 'assertPresent') throw new Error('reserved keyword "assertPresent"');
+    if (process.env.NODE_ENV !== 'test' && name === 'assertPresent') throw new Error('reserved keyword "assertPresent"');
     const path = this._stepsWalk.join('/');
     const entry = { path, name, type, value };
     if (options) entry.options = options;
