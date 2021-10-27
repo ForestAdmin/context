@@ -1,3 +1,10 @@
+## [1.28.1](https://github.com/ForestAdmin/context/compare/v1.28.0...v1.28.1) (2021-10-27)
+
+
+### Bug Fixes
+
+* allow defining assertPresent in tests ([#19](https://github.com/ForestAdmin/context/issues/19)) ([040faa0](https://github.com/ForestAdmin/context/commit/040faa0ae491492d324018be514233fb8d407c3a))
+
 # [1.28.0](https://github.com/ForestAdmin/context/compare/v1.27.0...v1.28.0) (2021-10-22)
 
 
