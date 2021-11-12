@@ -54,6 +54,10 @@ module.exports = class Plan {
 
   static execute(plan, context = new Context(), verbose = false) {
     if (!plan) throw new Error('missing item');
+    if (typeof plan === 'object' && !(plan instanceof Plan) && !Array.isArray(plan)) {
+      context._bag = plan;
+      return context.get();
+    }
 
     Plan
       ._mergeItem(plan, Plan.newPlan(undefined, verbose))

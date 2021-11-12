@@ -122,6 +122,16 @@ describe('Plan', () => {
 
       expect(key).toBe('value');
     });
+    it('init with an object', () => {
+      const context = {
+        assertPresent: Symbol('assertPresent'),
+        cool: 'and the gang',
+        func: () => 'result',
+      };
+      init(context);
+
+      expect(inject()).toStrictEqual(context);
+    });
   });
 
   describe('assertPresent', () => {
