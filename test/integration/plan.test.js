@@ -328,23 +328,21 @@ describe('Plan', () => {
       expect(fakeClass instanceof FakeClass).toBe(true);
     });
 
-    it('add a class two times with a context mapping', () => {
-      expect.assertions(2);
+    it('uses map', () => {
       class FakeClass {
-        constructor({ param }) {
+        constructor({ assertPresent, param }) {
+          assertPresent({ param });
           this.param = param;
         }
       }
-      const firstSymbol = Symbol('first');
-      const secondSymbol = Symbol('second');
       const { one, two } = execute(newPlan()
-        .addValue('first', firstSymbol)
-        .addValue('second', secondSymbol)
-        .addUsingClass('one', FakeClass, { map: ({ first }) => ({ param: first }) })
-        .addUsingClass('two', FakeClass, { map: ({ second }) => ({ param: second }) }));
+        .addValue('paramOne', 1)
+        .addValue('paramTwo', 2)
+        .addUsingClass('one', FakeClass, { map: { param: 'paramOne' } })
+        .addUsingClass('two', FakeClass, { map: { param: 'paramTwo' } }));
 
-      expect(one.param).toBe(firstSymbol);
-      expect(two.param).toBe(secondSymbol);
+      expect(one.param).toBe(1);
+      expect(two.param).toBe(2);
     });
 
     it('add a factory function', () => {
