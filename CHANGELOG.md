@@ -1,3 +1,10 @@
+# [1.29.0](https://github.com/ForestAdmin/context/compare/v1.28.1...v1.29.0) (2021-11-12)
+
+
+### Features
+
+* context init with a simple object ([#21](https://github.com/ForestAdmin/context/issues/21)) ([8ac5e0d](https://github.com/ForestAdmin/context/commit/8ac5e0d6d72bd4c6766e2f7f146e6f0ab0d3ed58))
+
 ## [1.28.1](https://github.com/ForestAdmin/context/compare/v1.28.0...v1.28.1) (2021-10-27)
 
 
