@@ -1,3 +1,10 @@
+# [1.30.0](https://github.com/ForestAdmin/context/compare/v1.29.0...v1.30.0) (2021-11-19)
+
+
+### Features
+
+* map now receives an object ([#22](https://github.com/ForestAdmin/context/issues/22)) ([e5c1b6b](https://github.com/ForestAdmin/context/commit/e5c1b6b75c04b3c895a51338a751db7051d69d89))
+
 # [1.29.0](https://github.com/ForestAdmin/context/compare/v1.28.1...v1.29.0) (2021-11-12)
 
 
