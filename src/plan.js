@@ -98,6 +98,7 @@ module.exports = class Plan {
       dot.push('}');
 
       const text = dot.join('\n');
+      fs.mkdirSync(join(...(basePath.slice(0, basePath.length - 1))), { recursive: true });
       fs.writeFileSync(join(...basePath), text);
     };
   }
