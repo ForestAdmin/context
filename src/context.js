@@ -3,7 +3,7 @@ const Metadata = require('./metadata');
 module.exports = class Context {
   constructor() {
     this._bag = {};
-    this._bag.assertPresent = this._assertPresent.bind(this);
+    this._bag.assertPresent = this._makeAssertPresent(this._bag).bind(this);
     this._metadata = new Metadata();
   }
 
@@ -18,15 +18,17 @@ module.exports = class Context {
     return this._metadata.get();
   }
 
-  _assertPresent(requisites, rest) {
-    if (rest) throw new Error('Only one parameter should be specified.');
-    const keys = Object.keys(requisites);
-    const missings = keys
-      .map((key) => (this._bag[key] === undefined ? key : null))
-      .filter((key) => key);
-    if (missings.length > 0) throw new Error(`missing dependencies ${missings}. Existing: ${Object.keys(this._bag)}`);
-    this._metadata.setRequisites(keys);
-    return true;
+  _makeAssertPresent(bag) {
+    return (requisites, rest) => {
+      if (rest) throw new Error('Only one parameter should be specified.');
+      const keys = Object.keys(requisites);
+      const missings = keys
+        .map((key) => (bag[key] === undefined ? key : null))
+        .filter((key) => key);
+      if (missings.length > 0) throw new Error(`missing dependencies ${missings}. Existing: ${Object.keys(bag)}`);
+      this._metadata.setRequisites(keys);
+      return true;
+    };
   }
 
   openStep(path, name, options) {
@@ -157,10 +159,26 @@ module.exports = class Context {
     return new RealClass(this._mapContext(map));
   }
 
+  static _makeMapping(bag, map) {
+    const mappedBag = {};
+    const unknownKeys = [];
+    Object.keys(map).forEach((key) => {
+      if (bag[map[key]] === undefined) unknownKeys.push(key);
+      mappedBag[key] = bag[map[key]];
+    });
+    if (unknownKeys.length > 0) throw new Error(`mapping error, key(s) not found: ${unknownKeys.join(', ')}`);
+    return mappedBag;
+  }
+
   _mapContext(map) {
     const bag = this.get();
     if (!map) return bag;
-    return { ...bag, ...map(bag) };
+    const mappedBag = {
+      ...bag,
+      ...Context._makeMapping(bag, map),
+    };
+    mappedBag.assertPresent = this._makeAssertPresent(mappedBag);
+    return mappedBag;
   }
 
   _lookup(name) {

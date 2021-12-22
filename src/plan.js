@@ -120,6 +120,10 @@ module.exports = class Plan {
 
   static execute(plan, context = new Context(), verbose = false) {
     if (!plan) throw new Error('missing item');
+    if (typeof plan === 'object' && !(plan instanceof Plan) && !Array.isArray(plan)) {
+      context._bag = plan;
+      return context.get();
+    }
 
     Plan
       ._mergeItem(plan, Plan.newPlan(undefined, verbose))
@@ -218,7 +222,7 @@ module.exports = class Plan {
   }
 
   _addEntry(name, type, value, options) {
-    if (name === 'assertPresent') throw new Error('reserved keyword "assertPresent"');
+    if (process.env.NODE_ENV !== 'test' && name === 'assertPresent') throw new Error('reserved keyword "assertPresent"');
     const path = this._stepsWalk.join('/');
     const entry = { path, name, type, value };
     if (options) entry.options = options;
@@ -289,6 +293,10 @@ module.exports = class Plan {
     const newEntries = this._entries.slice();
     newEntries.splice(replacedIndex, deleteCount, ...replacingEntries);
     return new Plan(newEntries);
+  }
+
+  addPackage(name, item, options) {
+    return this.addStep(name, item, options);
   }
 
   addStep(name, item, options) {

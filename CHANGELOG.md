@@ -1,3 +1,31 @@
+# [1.30.0](https://github.com/ForestAdmin/context/compare/v1.29.0...v1.30.0) (2021-11-19)
+
+
+### Features
+
+* map now receives an object ([#22](https://github.com/ForestAdmin/context/issues/22)) ([e5c1b6b](https://github.com/ForestAdmin/context/commit/e5c1b6b75c04b3c895a51338a751db7051d69d89))
+
+# [1.29.0](https://github.com/ForestAdmin/context/compare/v1.28.1...v1.29.0) (2021-11-12)
+
+
+### Features
+
+* context init with a simple object ([#21](https://github.com/ForestAdmin/context/issues/21)) ([8ac5e0d](https://github.com/ForestAdmin/context/commit/8ac5e0d6d72bd4c6766e2f7f146e6f0ab0d3ed58))
+
+## [1.28.1](https://github.com/ForestAdmin/context/compare/v1.28.0...v1.28.1) (2021-10-27)
+
+
+### Bug Fixes
+
+* allow defining assertPresent in tests ([#19](https://github.com/ForestAdmin/context/issues/19)) ([040faa0](https://github.com/ForestAdmin/context/commit/040faa0ae491492d324018be514233fb8d407c3a))
+
+# [1.28.0](https://github.com/ForestAdmin/context/compare/v1.27.0...v1.28.0) (2021-10-22)
+
+
+### Features
+
+* addPackage alias ([#18](https://github.com/ForestAdmin/context/issues/18)) ([ede7aca](https://github.com/ForestAdmin/context/commit/ede7aca0ff9e55203172d3d39f3a296ced6f3f6a))
+
 # [1.27.0](https://github.com/ForestAdmin/context/compare/v1.26.0...v1.27.0) (2021-10-05)
 
 

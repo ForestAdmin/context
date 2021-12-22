@@ -10,4 +10,15 @@ describe('Plan', () => {
         .toThrow('invalid entry type invalid-type /entry-path entry-name');
     });
   });
+  it('addPackage is a addStep alias', () => {
+    const plan = new Plan();
+    plan.addStep = jest.fn();
+
+    const name = Symbol('name');
+    const item = Symbol('item');
+    const options = Symbol('options');
+    plan.addPackage(name, item, options);
+
+    expect(plan.addStep).toBeCalledWith(name, item, options);
+  });
 });
