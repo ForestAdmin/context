@@ -1,3 +1,10 @@
+# [1.31.0](https://github.com/ForestAdmin/context/compare/v1.30.0...v1.31.0) (2021-12-22)
+
+
+### Features
+
+* dot dependency graph ([#23](https://github.com/ForestAdmin/context/issues/23)) ([c285e96](https://github.com/ForestAdmin/context/commit/c285e96354596c0fb116a4e4cfe5a5cb8bac572a))
+
 # [1.30.0](https://github.com/ForestAdmin/context/compare/v1.29.0...v1.30.0) (2021-11-19)
 
 
