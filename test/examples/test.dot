@@ -1,0 +1,35 @@
+digraph G {
+
+    toto;
+
+    subgraph cluster_1 {
+        label = "service";
+
+        userService;
+        branchService;
+        layoutService;
+        otherService;
+        // branchService -> otherService;
+            //		layoutService -> otherService;
+	}
+
+    subgraph cluster_0 {
+        label = "store";
+
+        layoutStore;
+        branchStore;
+        projectStore;
+
+        subgraph cluster_3 {
+            label = "sequelize";
+            models;
+        }
+    }
+
+
+    //	    layoutService -> projectStore;
+//	userService -> layoutStore;
+//	projectStore -> models;
+//	branchStore -> models;
+//	layoutStore -> models;
+}
