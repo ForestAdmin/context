@@ -1,3 +1,10 @@
+## [1.31.1](https://github.com/ForestAdmin/context/compare/v1.31.0...v1.31.1) (2022-04-29)
+
+
+### Bug Fixes
+
+* **map-generation:** do not fail when references are falsy ([#24](https://github.com/ForestAdmin/context/issues/24)) ([fcbfe0f](https://github.com/ForestAdmin/context/commit/fcbfe0f38cfa881c730216c25deb04b9f7cfee4d))
+
 # [1.31.0](https://github.com/ForestAdmin/context/compare/v1.30.0...v1.31.0) (2021-12-22)
 
 
