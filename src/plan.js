@@ -91,7 +91,7 @@ module.exports = class Plan {
 
       links.forEach((node) => {
         if (node.requires && node.requires.length) {
-          node.requires.forEach((requisite) => dot.push(`${indent(1)}${node.name} -> ${requisite.name};`));
+          node.requires.forEach((requisite) => dot.push(`${indent(1)}${node.name} -> ${requisite && requisite.name};`));
         }
       });
 
