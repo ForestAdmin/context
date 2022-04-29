@@ -1,3 +1,10 @@
+## [1.31.2](https://github.com/ForestAdmin/context/compare/v1.31.1...v1.31.2) (2022-04-29)
+
+
+### Bug Fixes
+
+* **map-generation:** allow class hierarchy ([#25](https://github.com/ForestAdmin/context/issues/25)) ([156b020](https://github.com/ForestAdmin/context/commit/156b0209d3558efe29e3c43e7bc710e4d1a76af7))
+
 ## [1.31.1](https://github.com/ForestAdmin/context/compare/v1.31.0...v1.31.1) (2022-04-29)
 
 
