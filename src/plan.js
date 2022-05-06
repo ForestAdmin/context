@@ -108,7 +108,7 @@ module.exports = class Plan {
    * It's to keep a context in a singleton (retrieved via inject()).
    * A context in a singleton is usefull to be used in files that are not in the context.
    * @param item
-   * @param verbose
+   * @param {boolean} [verbose]
    */
   static init(item, verbose) {
     Plan.execute(item, Plan._context = new Context(), verbose);
