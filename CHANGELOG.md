@@ -1,3 +1,10 @@
+# [1.32.0](https://github.com/ForestAdmin/context/compare/v1.31.2...v1.32.0) (2022-05-23)
+
+
+### Features
+
+* introduce addUsingFunctionStack allowing chaining two factories ([#27](https://github.com/ForestAdmin/context/issues/27)) ([2926a6d](https://github.com/ForestAdmin/context/commit/2926a6d9dc42a68af41d9731036fa3531f7a131e))
+
 ## [1.31.2](https://github.com/ForestAdmin/context/compare/v1.31.1...v1.31.2) (2022-04-29)
 
 
