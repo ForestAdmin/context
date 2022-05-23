@@ -51,8 +51,12 @@ module.exports = class Context {
     return this;
   }
 
-  _setNewValue(name, value, options = {}) {
+  _checkKeyAvailable(name) {
     if (this._bag[name]) throw new Error(`existing { key: '${name}'} in context`);
+  }
+
+  _setNewValue(name, value, options = {}) {
+    this._checkKeyAvailable(name);
     this._setValue(name, value, options);
   }
 
@@ -128,6 +132,18 @@ module.exports = class Context {
     const bag = this.get();
     const theFunction = factoryFunction(bag);
     this._setNewValue(name, theFunction, options);
+    return this;
+  }
+
+  addUsingFunctionStack(path, name, factoryFunctionList, options) {
+    this._metadata.add(path, name, 'function**', factoryFunctionList, options);
+    this._checkKeyAvailable(name);
+    factoryFunctionList.forEach((factoryFunction) => {
+      const bag = this.get();
+      const value = factoryFunction(bag);
+      this._setValue(name, value, options);
+    });
+
     return this;
   }
 

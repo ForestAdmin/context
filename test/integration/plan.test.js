@@ -357,6 +357,32 @@ describe('Plan', () => {
       expect(keyPlusOne).toBe(2);
     });
 
+    it('add a factory function stack', () => {
+      expect.assertions(1);
+      const myFactoryFunction = ({ key }) => key + 1;
+
+      const planWithFactoryFunction = (plan) => plan
+        .addValue('key', 1)
+        .addUsingFunctionStack('keyPlusOne', [myFactoryFunction, ({ keyPlusOne }) => keyPlusOne * 2]);
+
+      const { keyPlusOne } = execute(planWithFactoryFunction);
+      expect(keyPlusOne).toBe(4);
+    });
+
+    it('add a private factory function stack', () => {
+      expect.assertions(1);
+      const myFactoryFunction = ({ key }) => key + 1;
+
+      const planWithFactoryFunction = (plan) => plan
+        .addValue('key', 1)
+        .addUsingFunctionStack('keyPlusOne',
+          [myFactoryFunction, ({ keyPlusOne }) => keyPlusOne * 2],
+          { private: true });
+
+      const { keyPlusOne } = execute(planWithFactoryFunction);
+      expect(keyPlusOne).toBe(undefined);
+    });
+
     describe('add a module', () => {
       it('add a module function', () => {
         expect.assertions(1);

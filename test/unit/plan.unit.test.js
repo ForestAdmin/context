@@ -21,4 +21,24 @@ describe('Plan', () => {
 
     expect(plan.addStep).toBeCalledWith(name, item, options);
   });
+  it('addUsingFunctionStack', () => {
+    const plan = new Plan();
+    plan._addEntry = jest.fn();
+
+    const name = Symbol('name');
+    const factoryFunctionOne = Symbol('factoryFunctionOne');
+    const factoryFunctionTwo = Symbol('factoryFunctionTwo');
+    const options = Symbol('options');
+
+    const result = plan
+      .addUsingFunctionStack(name, [factoryFunctionOne, factoryFunctionTwo], options);
+
+    expect(plan._addEntry).toHaveBeenLastCalledWith(
+      name,
+      'function**',
+      [factoryFunctionOne, factoryFunctionTwo],
+      options,
+    );
+    expect(result).toBe(plan);
+  });
 });
