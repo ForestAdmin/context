@@ -196,6 +196,9 @@ module.exports = class Plan {
       case 'function*':
         context.addUsingFunction(path, name, value, options);
         break;
+      case 'function**':
+        context.addUsingFunctionStack(path, name, value, options);
+        break;
       case 'module':
         context.addModule(path, name, value, options);
         break;
@@ -365,6 +368,12 @@ module.exports = class Plan {
   addUsingFunction(name, factoryFunction, options) {
     if (factoryFunction === undefined) throw new Error('missing factoryFunction');
     this._addEntry(name, 'function*', factoryFunction, options);
+    return this;
+  }
+
+  addUsingFunctionStack(name, factoryFunctionList, options) {
+    if (!Array.isArray(factoryFunctionList)) throw new Error('invalid parameter must be array: factoryFunctionList');
+    this._addEntry(name, 'function**', factoryFunctionList, options);
     return this;
   }
 
