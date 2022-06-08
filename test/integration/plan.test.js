@@ -3,6 +3,7 @@
 /* eslint-disable max-classes-per-file */
 const Context = require('../../src/context');
 const { execute, newPlan, init, inject } = require('../../src/index');
+const Plan = require('../../src/plan');
 
 describe('Plan', () => {
   const stepNameSymbol = expect.any(Symbol);
@@ -973,6 +974,61 @@ describe('Plan', () => {
         { path: 'zero/first', name: 'one', type: 'value', value: 'value' },
       ];
       expect(entries).toStrictEqual(expectedEntries);
+    });
+  });
+
+  describe('map option', () => {
+    describe('addUsingClass', () => {
+      it('should map a value to another one before instanciating the class', () => {
+        class Tested {
+          constructor({ assertPresent, value }) {
+            assertPresent({ value });
+          }
+        }
+        const plan = new Plan()
+          .addValue('defaultValue', 1)
+          .addUsingClass('tested', Tested, { map: { value: 'defaultValue' } });
+
+        expect(() => {
+          execute(plan);
+        }).not.toThrow();
+      });
+    });
+
+    describe('addUsingFunction', () => {
+      it('should map a value to another one before calling the function', () => {
+        const tested = jest.fn();
+
+        const plan = new Plan()
+          .addValue('defaultValue', 1)
+          .addUsingFunction('tested', tested, { map: { value: 'defaultValue' } });
+
+        execute(plan);
+
+        expect(tested).toHaveBeenCalledWith(expect.objectContaining({
+          value: 1,
+        }));
+      });
+    });
+
+    describe('addUsingFunctionStack', () => {
+      it('should map a value to another one before calling the function', () => {
+        const testedOne = jest.fn();
+        const testedTwo = jest.fn();
+
+        const plan = new Plan()
+          .addValue('defaultValue', 1)
+          .addUsingFunctionStack('tested', [testedOne, testedTwo], { map: { value: 'defaultValue' } });
+
+        execute(plan);
+
+        expect(testedOne).toHaveBeenCalledWith(expect.objectContaining({
+          value: 1,
+        }));
+        expect(testedTwo).toHaveBeenCalledWith(expect.objectContaining({
+          value: 1,
+        }));
+      });
     });
   });
 });

@@ -129,8 +129,7 @@ module.exports = class Context {
 
   addUsingFunction(path, name, factoryFunction, options) {
     this._metadata.add(path, name, 'function*', factoryFunction, options);
-    const bag = this.get();
-    const theFunction = factoryFunction(bag);
+    const theFunction = factoryFunction(this._mapContext(options && options.map));
     this._setNewValue(name, theFunction, options);
     return this;
   }
@@ -139,8 +138,7 @@ module.exports = class Context {
     this._metadata.add(path, name, 'function**', factoryFunctionList, options);
     this._checkKeyAvailable(name);
     factoryFunctionList.forEach((factoryFunction) => {
-      const bag = this.get();
-      const value = factoryFunction(bag);
+      const value = factoryFunction(this._mapContext(options && options.map));
       this._setValue(name, value, options);
     });
 
