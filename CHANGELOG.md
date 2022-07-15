@@ -1,3 +1,10 @@
+# [1.33.0](https://github.com/ForestAdmin/context/compare/v1.32.0...v1.33.0) (2022-07-15)
+
+
+### Features
+
+* add typings ([#29](https://github.com/ForestAdmin/context/issues/29)) ([08f05b2](https://github.com/ForestAdmin/context/commit/08f05b258c2bd8633353979ad9fb9a346510ff13))
+
 # [1.32.0](https://github.com/ForestAdmin/context/compare/v1.31.2...v1.32.0) (2022-05-23)
 
 
