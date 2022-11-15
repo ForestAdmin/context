@@ -1,3 +1,10 @@
+# [1.34.0](https://github.com/ForestAdmin/context/compare/v1.33.0...v1.34.0) (2022-11-15)
+
+
+### Features
+
+* **assertion:** assertPresent can be called multiple times by entry ([#30](https://github.com/ForestAdmin/context/issues/30)) ([8ee955b](https://github.com/ForestAdmin/context/commit/8ee955bf8368ff83bf47de616bc44dfac4826393))
+
 # [1.33.0](https://github.com/ForestAdmin/context/compare/v1.32.0...v1.33.0) (2022-07-15)
 
 
