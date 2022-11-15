@@ -166,7 +166,9 @@ describe('Plan', () => {
         .addValue('keyMother', 'mother')
         .addValue('keyChild', 'child')
         .addUsingClass('child', Child);
-      execute(planWithTwoAssert);
+
+      const { child } = execute(planWithTwoAssert);
+      expect(child).toBeInstanceOf(Child);
     });
 
     it('throws when an entry is missing', () => {
