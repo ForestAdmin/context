@@ -20,13 +20,14 @@ module.exports = class Metadata {
 
   setRequisites(names) {
     if (this.sealed) return;// can happen when assertPresent come from inject().
-    if (!this._lastAdded) throw new Error(`setRequisites() without lastAdded`);
+    if (!this._lastAdded) throw new Error('assertPresent is called with no preceding call to add.*()');
 
     const lastAdded = this._lookup(this._lastAdded);
-    if (!lastAdded) throw new Error(`last added ${this._lastAdded} is not in data`);
-    if (lastAdded.requires.length > 0) throw new Error(`last added requires '${this._lastAdded}' not empty`);
+    if (!lastAdded) throw new Error(`last add ${this._lastAdded} is not in context`);
 
-    lastAdded.requires = this._getRequisites(names);
+    const requisites = this._getRequisites(names);
+    if (lastAdded.requires.length > 0) lastAdded.requires.push(...requisites);
+    else lastAdded.requires = requisites;
   }
 
   _getRequisites(names) {

@@ -150,6 +150,27 @@ describe('Plan', () => {
       expect(key).toBe('value');
     });
 
+    it('can be called multiple times on same entry', () => {
+      class Mother {
+        constructor({ assertPresent, keyMother }) {
+          assertPresent({ keyMother });
+        }
+      }
+      class Child extends Mother {
+        constructor({ assertPresent, keyChild, ...motherContext }) {
+          super({ assertPresent, ...motherContext });
+          assertPresent({ keyChild });
+        }
+      }
+      const planWithTwoAssert = (plan) => plan
+        .addValue('keyMother', 'mother')
+        .addValue('keyChild', 'child')
+        .addUsingClass('child', Child);
+
+      const { child } = execute(planWithTwoAssert);
+      expect(child).toBeInstanceOf(Child);
+    });
+
     it('throws when an entry is missing', () => {
       expect.assertions(1);
       const { assertPresent, invalidEntry } = execute((plan) => plan.addValue('one', null));
