@@ -31,7 +31,7 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: linting PR title
-        uses: JulienKode/pull-request-name-linter-action@98794a8b815ec05560813c42e55fd8d32d3fd248
+        uses: JulienKode/pull-request-name-linter-action@900e046a8f2d6d0ba79bef8b6c731e4fe9f5fa8a
       - name: install dependencies
         run: yarn install --frozen-lockfile --non-interactive --production=false
       - name: lint Javascript
@@ -55,7 +55,7 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Send coverage
-        uses: paambaati/codeclimate-action@v2.7.4
+        uses: paambaati/codeclimate-action@v82885c87f3b617aa9f8d35fbbf3b364bd373d55b
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
