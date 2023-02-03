@@ -89,9 +89,9 @@ export type PlanFactory = (plan: Plan) => Plan;
 
 export type PlanDefinition = Plan | PlanFactory | Array<Plan | PlanFactory>;
 
-/** @deprecated use "execute" function instead to avoid usage of context singleton */
+/** @deprecated use "execute" function instead to avoid singleton creation. */
 export function init(item: PlanDefinition, verbose?: boolean): void;
-/** @deprecated add component into context instead */
+/** @deprecated prefer adding the component in the context */
 export function inject<T>(): T;
 export function execute<T>(
   plan: PlanDefinition,
