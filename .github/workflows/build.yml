@@ -55,7 +55,7 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Send coverage
-        uses: paambaati/codeclimate-action@82885c87f3b617aa9f8d35fbbf3b364bd373d55b
+        uses: paambaati/codeclimate-action@ac3f177ece9928d220a8bd1c2f1957926fd3b67e
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
@@ -79,8 +79,6 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-      - name: Build package
-        run: yarn build
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@719e6c4cc35efd3ac293b46d0dd60ea3a5fa9084
         id: semantic
