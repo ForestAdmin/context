@@ -55,7 +55,7 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Send coverage
-        uses: paambaati/codeclimate-action@v82885c87f3b617aa9f8d35fbbf3b364bd373d55b
+        uses: paambaati/codeclimate-action@82885c87f3b617aa9f8d35fbbf3b364bd373d55b
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
