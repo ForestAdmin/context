@@ -30,10 +30,10 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-      - name: linting PR title
-        uses: JulienKode/pull-request-name-linter-action@900e046a8f2d6d0ba79bef8b6c731e4fe9f5fa8a
       - name: install dependencies
         run: yarn install --frozen-lockfile --non-interactive --production=false
+      - name: linting PR title
+        uses: JulienKode/pull-request-name-linter-action@900e046a8f2d6d0ba79bef8b6c731e4fe9f5fa8a
       - name: lint Javascript
         run: yarn lint
 
