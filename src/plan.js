@@ -28,7 +28,9 @@ module.exports = class Plan {
           const requirePaths = requires
             .map(({ path, name }) => `${join(relative(entryPath, path), name)}`)
             .map((path) => (path.startsWith('.') ? path : `.${sep}${path}`));
-          const fileContent = `${requirePaths.map((require) => `require('${require}');`).join('\n')}\n\nmodule.exports = 'hello!';\n`;
+
+          const requiresList = requirePaths.map((require) => `require('${require}');`);
+          const fileContent = `${requiresList.join('\n')}\n\nmodule.exports = 'hello!';\n`;
 
           fs.writeFileSync(filepath, fileContent);
         }
