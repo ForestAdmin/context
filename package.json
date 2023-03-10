@@ -37,7 +37,7 @@
     "@semantic-release/commit-analyzer": "^8.0.1",
     "@semantic-release/git": "10.0.1",
     "@semantic-release/github": "^7.2.0",
-    "@semantic-release/npm": "^7.1.0",
+    "@semantic-release/npm": "9.0.1",
     "@semantic-release/release-notes-generator": "^9.0.2",
     "bull": "4.10.4",
     "eslint": "8.31.0",
@@ -52,6 +52,6 @@
     "semantic-release": "19.0.3",
     "semantic-release-slack-bot": "3.5.2",
     "sequelize": "6.29.0",
-    "simple-git": "^2.36.2"
+    "simple-git": "3.17.0"
   }
 }
