@@ -1,3 +1,10 @@
+## [1.35.1](https://github.com/ForestAdmin/context/compare/v1.35.0...v1.35.1) (2023-03-13)
+
+
+### Bug Fixes
+
+* improve error message ([#43](https://github.com/ForestAdmin/context/issues/43)) ([4ad9b0a](https://github.com/ForestAdmin/context/commit/4ad9b0ae66d012baf1966b8208f9167f85c678b1))
+
 # [1.35.0](https://github.com/ForestAdmin/context/compare/v1.34.5...v1.35.0) (2023-03-13)
 
 
