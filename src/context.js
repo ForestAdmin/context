@@ -25,7 +25,7 @@ module.exports = class Context {
       const missings = keys
         .map((key) => (bag[key] === undefined ? key : null))
         .filter((key) => key);
-      if (missings.length > 0) throw new Error(`missing dependencies ${missings}. Existing: ${Object.keys(bag)}`);
+      if (missings.length > 0) throw new Error(`missing dependencies ${missings}.`);
       this._metadata.setRequisites(keys);
       return true;
     };
