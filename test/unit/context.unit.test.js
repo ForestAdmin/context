@@ -29,4 +29,15 @@ describe('Context', () => {
     expect(() => Context._makeMapping(bag, map))
       .toThrow('mapping error, key(s) not found: from, foo');
   });
+
+  describe('_instantiate failure', () => {
+    it('passing anything but a function factory or a class', () => {
+      expect(() => new Context()._instanciate('foo', 'bar', 'bad-value'))
+        .toThrow('instanciating a value for path "foo/bar"');
+    });
+    it('passing a function factory that does not return a class', () => {
+      expect(() => new Context()._instanciate('foo', 'bar', () => 'bad-value'))
+        .toThrow('instanciating a value for path "foo/bar"');
+    });
+  });
 });

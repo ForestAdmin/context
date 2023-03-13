@@ -149,7 +149,7 @@ module.exports = class Context {
 
   addUsingClass(path, name, Class, options) {
     this._metadata.add(path, name, 'class', Class, options);
-    const instance = this._instanciate(Class, options);
+    const instance = this._instanciate(path, name, Class, options);
     this._setNewValue(name, instance, options);
     return this;
   }
@@ -169,10 +169,15 @@ module.exports = class Context {
     return this;
   }
 
-  _instanciate(Class, { map } = {}) {
-    const RealClass = Class.toString().startsWith('class') ? Class : Class();
-    if (!map) return new RealClass(this.get());
-    return new RealClass(this._mapContext(map));
+  _instanciate(path, name, FunctionFactory, { map } = {}) {
+    try {
+      const isClass = FunctionFactory.toString().startsWith('class');
+      const ClassToInstanciate = isClass ? FunctionFactory : FunctionFactory();
+      const localContext = map ? this._mapContext(map) : this.get();
+      return new ClassToInstanciate(localContext);
+    } catch (cause) {
+      throw new Error(`instanciating a value for path "${path}/${name}"`, { cause });
+    }
   }
 
   static _makeMapping(bag, map) {
