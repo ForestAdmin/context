@@ -1,3 +1,10 @@
+# [1.35.0](https://github.com/ForestAdmin/context/compare/v1.34.5...v1.35.0) (2023-03-13)
+
+
+### Features
+
+* **addUsingClass:** provide more detailled error ([#42](https://github.com/ForestAdmin/context/issues/42)) ([2326827](https://github.com/ForestAdmin/context/commit/2326827960224b76e51033731297fce14bd43c0e))
+
 ## [1.34.5](https://github.com/ForestAdmin/context/compare/v1.34.4...v1.34.5) (2023-03-10)
 
 ## [1.34.4](https://github.com/ForestAdmin/context/compare/v1.34.3...v1.34.4) (2023-03-10)
