@@ -52,6 +52,8 @@ declare class Plan {
   ): T;
   static applyEntry(entry: PlanEntry, context: Plan);
 
+  replace<T>(relativePath: string, value: T, options?: EntryOptions): Plan;
+
   addPackage(name: string, item: PlanDefinition, options?: EntryOptions): Plan;
   addStep(name: string, item: PlanDefinition, options?: EntryOptions): Plan;
   addValue<T>(name: string, value: T, options?: EntryOptions): Plan;
