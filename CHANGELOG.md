@@ -1,3 +1,10 @@
+## [1.35.3](https://github.com/ForestAdmin/context/compare/v1.35.2...v1.35.3) (2023-03-21)
+
+
+### Bug Fixes
+
+* **types:** declare the replace function ([#45](https://github.com/ForestAdmin/context/issues/45)) ([f4aa0c2](https://github.com/ForestAdmin/context/commit/f4aa0c2776e05422bdb46c5b223953f3d2704760))
+
 ## [1.35.2](https://github.com/ForestAdmin/context/compare/v1.35.1...v1.35.2) (2023-03-17)
 
 ## [1.35.1](https://github.com/ForestAdmin/context/compare/v1.35.0...v1.35.1) (2023-03-13)
