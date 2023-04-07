@@ -33,11 +33,11 @@ describe('Context', () => {
   describe('_instantiate failure', () => {
     it('passing anything but a function factory or a class', () => {
       expect(() => new Context()._instanciate('foo', 'bar', 'bad-value'))
-        .toThrow('instanciating a value for path "foo/bar"');
+        .toThrow('instanciating a value for path "foo/bar" - FunctionFactory is not a function');
     });
     it('passing a function factory that does not return a class', () => {
       expect(() => new Context()._instanciate('foo', 'bar', () => 'bad-value'))
-        .toThrow('instanciating a value for path "foo/bar"');
+        .toThrow('instanciating a value for path "foo/bar" - ClassToInstanciate is not a constructor');
     });
   });
 });
