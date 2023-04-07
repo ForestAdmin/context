@@ -1,3 +1,10 @@
+# [1.36.0](https://github.com/ForestAdmin/context/compare/v1.35.4...v1.36.0) (2023-04-07)
+
+
+### Features
+
+* improve addUsingFunction error message ([#48](https://github.com/ForestAdmin/context/issues/48)) ([79b7c02](https://github.com/ForestAdmin/context/commit/79b7c025269b6ac5861d95c2a343cab5b114ee15))
+
 ## [1.35.4](https://github.com/ForestAdmin/context/compare/v1.35.3...v1.35.4) (2023-04-07)
 
 
