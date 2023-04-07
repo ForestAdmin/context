@@ -378,6 +378,11 @@ describe('Plan', () => {
       expect(keyPlusOne).toBe(2);
     });
 
+    it('add an invalid factory function', () => {
+      expect(() => execute((plan) => plan.addUsingFunction('key', null)))
+        .toThrow('Using factory function for path "/key" - factoryFunction is not a function');
+    });
+
     it('add a factory function stack', () => {
       expect.assertions(1);
       const myFactoryFunction = ({ key }) => key + 1;
@@ -396,9 +401,11 @@ describe('Plan', () => {
 
       const planWithFactoryFunction = (plan) => plan
         .addValue('key', 1)
-        .addUsingFunctionStack('keyPlusOne',
+        .addUsingFunctionStack(
+          'keyPlusOne',
           [myFactoryFunction, ({ keyPlusOne }) => keyPlusOne * 2],
-          { private: true });
+          { private: true },
+        );
 
       const { keyPlusOne } = execute(planWithFactoryFunction);
       expect(keyPlusOne).toBe(undefined);
@@ -595,12 +602,14 @@ describe('Plan', () => {
       expect.assertions(1);
 
       const plan = newPlan()
-        .addStep('main',
+        .addStep(
+          'main',
           (planMain) => planMain.addStep(
             'privateStep',
             (privateStep) => privateStep.addValue('invisibleKey', 'invisibleValue'),
             { private: true },
-          ));
+          ),
+        );
 
       const context = new Context();
       const { invisibleKey } = execute(plan, context);
