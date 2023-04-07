@@ -128,11 +128,15 @@ module.exports = class Context {
   }
 
   addUsingFunction(path, name, factoryFunction, options) {
-    this._metadata.add(path, name, 'function*', factoryFunction, options);
-    const bag = this.get();
-    const theFunction = factoryFunction(bag);
-    this._setNewValue(name, theFunction, options);
-    return this;
+    try {
+      this._metadata.add(path, name, 'function*', factoryFunction, options);
+      const bag = this.get();
+      const theFunction = factoryFunction(bag);
+      this._setNewValue(name, theFunction, options);
+      return this;
+    } catch (cause) {
+      throw new Error(`Using factory function for path "${path}/${name}" - ${cause.message}`, { cause });
+    }
   }
 
   addUsingFunctionStack(path, name, factoryFunctionList, options) {
