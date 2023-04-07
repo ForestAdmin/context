@@ -180,7 +180,7 @@ module.exports = class Context {
       const localContext = map ? this._mapContext(map) : this.get();
       return new ClassToInstanciate(localContext);
     } catch (cause) {
-      throw new Error(`instanciating a value for path "${path}/${name}"`, { cause });
+      throw new Error(`instanciating a value for path "${path}/${name}" - ${cause.message}`, { cause });
     }
   }
 
