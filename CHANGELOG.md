@@ -1,3 +1,10 @@
+## [1.35.4](https://github.com/ForestAdmin/context/compare/v1.35.3...v1.35.4) (2023-04-07)
+
+
+### Bug Fixes
+
+* improve _instanciate error message ([#47](https://github.com/ForestAdmin/context/issues/47)) ([859cb4c](https://github.com/ForestAdmin/context/commit/859cb4cdcba8b7fc4148b3f3b9852e478e655066))
+
 ## [1.35.3](https://github.com/ForestAdmin/context/compare/v1.35.2...v1.35.3) (2023-03-21)
 
 
