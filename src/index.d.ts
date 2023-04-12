@@ -13,7 +13,9 @@ export type PlanType =
   | "step-in"
   | "step-out";
 
-export interface EntryOptions {}
+export interface EntryOptions {
+  private?: boolean;
+}
 
 export interface NumberEntryOptions extends EntryOptions {
   min?: number;

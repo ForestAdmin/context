@@ -20,12 +20,12 @@ module.exports = class Context {
 
   _makeAssertPresent(bag) {
     return (requisites, rest) => {
-      if (rest) throw new Error('Only one parameter should be specified.');
+      if (rest) throw new Error('Asserting dependencies - Only one parameter should be specified.');
       const keys = Object.keys(requisites);
       const missings = keys
         .map((key) => (bag[key] === undefined ? key : null))
         .filter((key) => key);
-      if (missings.length > 0) throw new Error(`missing dependencies ${missings}.`);
+      if (missings.length > 0) throw new Error(`Asserting dependencies on path "${this._metadata.getCurrentPath()}": Missing dependencies: "${missings}"`);
       this._metadata.setRequisites(keys);
       return true;
     };
@@ -52,7 +52,7 @@ module.exports = class Context {
   }
 
   _checkKeyAvailable(name) {
-    if (this._bag[name]) throw new Error(`existing { key: '${name}'} in context`);
+    if (this._bag[name]) throw new Error(`Adding value on path "${this._metadata.getCurrentPath()}": Key already exists: "${name}"`);
   }
 
   _setNewValue(name, value, options = {}) {
@@ -92,20 +92,20 @@ module.exports = class Context {
     } = options;
     const rawValue = (typeof value === 'function') ? value(this.get()) : value;
     if (rawValue === null) {
-      if (!nullable) throw new Error(`Specified value is null: ${path}/${name}`);
+      if (!nullable) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is null`);
       this._setNewValue(name, rawValue, options);
       return this;
     }
     if (rawValue === undefined) {
-      if (defaultValue === undefined) throw new Error(`No specified value and no default value: ${path}/${name}`);
+      if (defaultValue === undefined) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": No specified value and no default value`);
       this._setNewValue(name, defaultValue, options);
       return this;
     }
 
     const expectedNumber = Number(rawValue);
-    if (Number.isNaN(expectedNumber)) throw new Error(`Specified value is not a number: ${path}/${name}=${rawValue}`);
-    if (expectedNumber < min) throw new Error(`Specified value is below min: ${path}/${name}=${expectedNumber} min=${min}`);
-    if (max < expectedNumber) throw new Error(`Specified value is above max: ${path}/${name}=${expectedNumber} max=${max}`);
+    if (Number.isNaN(expectedNumber)) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is not a number: "${rawValue}"`);
+    if (expectedNumber < min) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is below min: "${expectedNumber}" (min=${min})`);
+    if (max < expectedNumber) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is above max: "${expectedNumber}" (max=${max})`);
 
     this._setNewValue(name, expectedNumber, options);
     return this;
@@ -135,7 +135,7 @@ module.exports = class Context {
       this._setNewValue(name, theFunction, options);
       return this;
     } catch (cause) {
-      throw new Error(`Using factory function for path "${path}/${name}" - ${cause.message}`, { cause });
+      throw new Error(`Using factory function on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
     }
   }
 
@@ -180,7 +180,7 @@ module.exports = class Context {
       const localContext = map ? this._mapContext(map) : this.get();
       return new ClassToInstanciate(localContext);
     } catch (cause) {
-      throw new Error(`instanciating a value for path "${path}/${name}" - ${cause.message}`, { cause });
+      throw new Error(`Instanciating class on path "${this._metadata.getCurrentPath()}" - ${cause.message}`, { cause });
     }
   }
 
