@@ -1,3 +1,10 @@
+# [1.37.0](https://github.com/ForestAdmin/context/compare/v1.36.0...v1.37.0) (2023-04-12)
+
+
+### Features
+
+* improve all error message ([#49](https://github.com/ForestAdmin/context/issues/49)) ([432f06d](https://github.com/ForestAdmin/context/commit/432f06dbd8edc003d785c17d61f460e663832c99))
+
 # [1.36.0](https://github.com/ForestAdmin/context/compare/v1.35.4...v1.36.0) (2023-04-07)
 
 
