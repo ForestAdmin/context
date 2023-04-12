@@ -46,6 +46,7 @@ declare class Plan {
   static makeDotWrite(basePath: string): (entries: PlanEntry[]) => void;
 
   static init(item: PlanDefinition, verbose?: boolean): void;
+  /** @deprecated avoid singleton and prefer use execute instead of init/inject */
   static inject<T>(): T;
   static execute<T>(
     plan: PlanDefinition,
