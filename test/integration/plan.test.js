@@ -173,9 +173,12 @@ describe('Plan', () => {
 
     it('throws when an entry is missing', () => {
       expect.assertions(1);
-      const { assertPresent, invalidEntry } = execute((plan) => plan.addValue('one', null));
-      expect(() => assertPresent({ invalidEntry }))
-        .toThrow('missing dependencies invalidEntry.');
+
+      execute((plan) => plan
+        .addPackage('package', (subPlan) => subPlan
+          .addUsingFunction('one', ({ assertPresent, badValue }) => {
+            expect(() => assertPresent({ badValue })).toThrow('Asserting dependencies on path "package/one": Missing dependencies: "badValue"');
+          })));
     });
   });
 
@@ -201,12 +204,12 @@ describe('Plan', () => {
       it('add {} throws', () => {
         expect.assertions(1);
         const plan = (rootPlan) => rootPlan.addNumber('key', () => ({}));
-        expect(() => execute(plan)).toThrow('Specified value is not a number: /key');
+        expect(() => execute(plan)).toThrow('Adding number on path "/key": Specified value is not a number: "[object Object]"');
       });
       it('add \'string\' throws', () => {
         expect.assertions(1);
         const plan = (rootPlan) => rootPlan.addNumber('key', () => ('string'));
-        expect(() => execute(plan)).toThrow('Specified value is not a number: /key');
+        expect(() => execute(plan)).toThrow('Adding number on path "/key": Specified value is not a number: "string"');
       });
       it('add a number lower than min throws', () => {
         expect.assertions(1);
@@ -271,6 +274,18 @@ describe('Plan', () => {
 
       const { key } = execute(plan);
       expect(key).toBe('value');
+    });
+
+    it('adding twice a value', () => {
+      expect.assertions(1);
+
+      const plan = (rootPlan) => rootPlan
+        .addPackage('values', (valuesPlan) => valuesPlan
+          .addValue('valueKey', 'oneValue'))
+        .addPackage('otherValues', (otherValuesPlan) => otherValuesPlan
+          .addValue('valueKey', 'otherOneValue'));
+
+      expect(() => execute(plan)).toThrow('Adding value on path "otherValues/valueKey": Key already exists: "valueKey"');
     });
 
     it('add a value lazily', () => {
@@ -340,6 +355,16 @@ describe('Plan', () => {
       expect(fakeClass instanceof FakeClass).toBe(true);
     });
 
+    it('passing anything but a function factory or a class to addUsingClass', () => {
+      expect(() => execute(newPlan().addUsingClass('fakeClass', 'bad-value')))
+        .toThrow('Instanciating class on path "/fakeClass" - FunctionFactory is not a function');
+    });
+
+    it('passing a function factory that returns anything but a class to addUsingClass', () => {
+      expect(() => execute(newPlan().addUsingClass('fakeClass', () => 'bad-value')))
+        .toThrow('Instanciating class on path "/fakeClass" - ClassToInstanciate is not a constructor');
+    });
+
     it('add lazily a class', () => {
       expect.assertions(1);
       class FakeClass {}
@@ -378,9 +403,14 @@ describe('Plan', () => {
       expect(keyPlusOne).toBe(2);
     });
 
-    it('add an invalid factory function', () => {
+    it('add a null factory function', () => {
       expect(() => execute((plan) => plan.addUsingFunction('key', null)))
-        .toThrow('Using factory function for path "/key" - factoryFunction is not a function');
+        .toThrow('Using factory function on path "/key": factoryFunction is not a function');
+    });
+
+    it('add anything but a function as a factory function', () => {
+      expect(() => execute((plan) => plan.addUsingFunction('key', 'bad-value')))
+        .toThrow('Using factory function on path "/key": factoryFunction is not a function');
     });
 
     it('add a factory function stack', () => {
@@ -677,15 +707,7 @@ describe('Plan', () => {
 
     it('should throw when entry is not found', () => {
       expect(() => execute((plan) => plan.replace('BAD_NAME')))
-        .toThrow('entry not found: \'BAD_NAME\'');
-    });
-
-    it('should throw the entries list', () => {
-      expect(() => execute((plan) => plan
-        .addValue('zero', 0)
-        .addStep('one', (onePlan) => onePlan.addValue('value', 'value'))
-        .replace('BAD_NAME')))
-        .toThrow('entry not found: \'BAD_NAME\'. Entries list:\n/zero\none/value');
+        .toThrow('Invalid replace operation: relativePath not found \'BAD_NAME\'');
     });
 
     it('replace a value inside a plan inside a nested plan step', () => {
