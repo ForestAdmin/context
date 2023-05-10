@@ -18,6 +18,11 @@ module.exports = class Metadata {
     return this._data;
   }
 
+  getCurrentPath() {
+    const requisite = this._getRequisite(this._lastAdded);
+    return `${requisite.path}/${requisite.name}`;
+  }
+
   setRequisites(names) {
     if (this.sealed) return;// can happen when assertPresent come from inject().
     if (!this._lastAdded) throw new Error('assertPresent is called with no preceding call to add.*()');
