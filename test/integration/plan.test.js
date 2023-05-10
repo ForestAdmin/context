@@ -707,15 +707,7 @@ describe('Plan', () => {
 
     it('should throw when entry is not found', () => {
       expect(() => execute((plan) => plan.replace('BAD_NAME')))
-        .toThrow('entry not found: \'BAD_NAME\'');
-    });
-
-    it('should throw the entries list', () => {
-      expect(() => execute((plan) => plan
-        .addValue('zero', 0)
-        .addStep('one', (onePlan) => onePlan.addValue('value', 'value'))
-        .replace('BAD_NAME')))
-        .toThrow('entry not found: \'BAD_NAME\'. Entries list:\n/zero\none/value');
+        .toThrow('Invalid replace operation: relativePath not found \'BAD_NAME\'');
     });
 
     it('replace a value inside a plan inside a nested plan step', () => {
