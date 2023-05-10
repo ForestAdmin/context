@@ -257,13 +257,6 @@ module.exports = class Plan {
     throw new Error(`Invalid replace operation: relativePath not found '${relativePath}'`);
   }
 
-  _getEntriesList() {
-    return this._entries
-      .filter(({ name }) => typeof name !== 'symbol')
-      .map(({ path, name }) => `${path}/${name}`)
-      .join('\n');
-  }
-
   _replaceValue(relativePath, value, options) {
     const { path, name } = this._getPathAndName(relativePath);
     const replacedIndex = this._entries.findIndex(
