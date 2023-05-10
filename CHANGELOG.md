@@ -1,3 +1,10 @@
+# [1.38.0](https://github.com/ForestAdmin/context/compare/v1.37.1...v1.38.0) (2023-05-10)
+
+
+### Features
+
+* improve replace error message ([#51](https://github.com/ForestAdmin/context/issues/51)) ([2f661d5](https://github.com/ForestAdmin/context/commit/2f661d5c111f7ffde318787ad798c8b5ee417233))
+
 ## [1.37.1](https://github.com/ForestAdmin/context/compare/v1.37.0...v1.37.1) (2023-04-12)
 
 # [1.37.0](https://github.com/ForestAdmin/context/compare/v1.36.0...v1.37.0) (2023-04-12)
