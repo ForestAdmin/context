@@ -190,6 +190,17 @@ describe('Plan', () => {
         const { key } = execute(plan);
         expect(key).toBe(3);
       });
+      it('adds a NaN without default', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', NaN);
+        expect(() => execute(plan)).toThrow('Adding number on path "/key": Specified value is not a number: "NaN"');
+      });
+      it('adds a NaN with a default', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', NaN, { default: 42 });
+        const { key } = execute(plan);
+        expect(key).toBe(42);
+      });
       it('adds a number lazily', () => {
         expect.assertions(1);
         const plan = (rootPlan) => rootPlan.addNumber('key', () => 3);

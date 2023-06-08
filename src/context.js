@@ -103,7 +103,11 @@ module.exports = class Context {
     }
 
     const expectedNumber = Number(rawValue);
-    if (Number.isNaN(expectedNumber)) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is not a number: "${rawValue}"`);
+    if (Number.isNaN(expectedNumber)) {
+      if (!defaultValue) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is not a number: "${rawValue}"`);
+      this._setNewValue(name, defaultValue, options);
+      return this;
+    }
     if (expectedNumber < min) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is below min: "${expectedNumber}" (min=${min})`);
     if (max < expectedNumber) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is above max: "${expectedNumber}" (max=${max})`);
 
