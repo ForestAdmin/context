@@ -1,3 +1,10 @@
+# [1.39.0](https://github.com/ForestAdmin/context/compare/v1.38.1...v1.39.0) (2023-06-08)
+
+
+### Features
+
+* **addNumber:** use default when passing NaN instead of throwing ([#53](https://github.com/ForestAdmin/context/issues/53)) ([75b83c6](https://github.com/ForestAdmin/context/commit/75b83c6a784f6e37987366e8509996e43d423c29))
+
 ## [1.38.1](https://github.com/ForestAdmin/context/compare/v1.38.0...v1.38.1) (2023-05-10)
 
 # [1.38.0](https://github.com/ForestAdmin/context/compare/v1.37.1...v1.38.0) (2023-05-10)
