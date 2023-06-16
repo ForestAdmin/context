@@ -1,3 +1,10 @@
+## [1.39.1](https://github.com/ForestAdmin/context/compare/v1.39.0...v1.39.1) (2023-06-16)
+
+
+### Bug Fixes
+
+* **security:** patch dottie dependency vulnerabilities ([#54](https://github.com/ForestAdmin/context/issues/54)) ([9012412](https://github.com/ForestAdmin/context/commit/90124121522fb17bd85f40845b115af7969b1aae))
+
 # [1.39.0](https://github.com/ForestAdmin/context/compare/v1.38.1...v1.39.0) (2023-06-08)
 
 
