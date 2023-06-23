@@ -1,3 +1,10 @@
+## [1.39.2](https://github.com/ForestAdmin/context/compare/v1.39.1...v1.39.2) (2023-06-23)
+
+
+### Bug Fixes
+
+* **security:** patch semver dependency vulnerabilities ([#55](https://github.com/ForestAdmin/context/issues/55)) ([84c3d49](https://github.com/ForestAdmin/context/commit/84c3d49c63409456ff75e7c15df4f6d2be1459dc))
+
 ## [1.39.1](https://github.com/ForestAdmin/context/compare/v1.39.0...v1.39.1) (2023-06-16)
 
 
