@@ -1,3 +1,10 @@
+## [1.39.3](https://github.com/ForestAdmin/context/compare/v1.39.2...v1.39.3) (2023-06-30)
+
+
+### Bug Fixes
+
+* **security:** patch word-wrap dependency vulnerabilities ([#56](https://github.com/ForestAdmin/context/issues/56)) ([8ef271e](https://github.com/ForestAdmin/context/commit/8ef271e30b6f01245b97ea94857147da3a335744))
+
 ## [1.39.2](https://github.com/ForestAdmin/context/compare/v1.39.1...v1.39.2) (2023-06-23)
 
 
