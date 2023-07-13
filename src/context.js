@@ -61,70 +61,94 @@ module.exports = class Context {
   }
 
   addReplacement(path, name, value, options) {
-    this._metadata.add(path, name, 'replacement', value, options);
-    this._setNewValue(name, value, options);
-    return this;
+    try {
+      this._metadata.add(path, name, 'replacement', value, options);
+      this._setNewValue(name, value, options);
+      return this;
+    } catch (cause) {
+      throw new Error(`Adding replacement on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+    }
   }
 
   addValue(path, name, value, options) {
-    this._metadata.add(path, name, 'value', value, options);
-    this._setNewValue(
-      name,
-      (typeof value === 'function') ? value(this.get()) : value,
-      options,
-    );
-    return this;
+    try {
+      this._metadata.add(path, name, 'value', value, options);
+      this._setNewValue(
+        name,
+        (typeof value === 'function') ? value(this.get()) : value,
+        options,
+      );
+      return this;
+    } catch (cause) {
+      throw new Error(`Adding value on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+    }
   }
 
   addRawValue(path, name, value, options) {
-    this._metadata.add(path, name, 'value', value, options);
-    this._setNewValue(name, value, options);
-    return this;
+    try {
+      this._metadata.add(path, name, 'value', value, options);
+      this._setNewValue(name, value, options);
+      return this;
+    } catch (cause) {
+      throw new Error(`Adding raw value on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+    }
   }
 
   addNumber(path, name, value, options = {}) {
-    this._metadata.add(path, name, 'number', value, options);
-    const {
-      min = Number.NEGATIVE_INFINITY,
-      default: defaultValue,
-      max = Number.POSITIVE_INFINITY,
-      nullable,
-    } = options;
-    const rawValue = (typeof value === 'function') ? value(this.get()) : value;
-    if (rawValue === null) {
-      if (!nullable) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is null`);
-      this._setNewValue(name, rawValue, options);
-      return this;
-    }
-    if (rawValue === undefined) {
-      if (defaultValue === undefined) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": No specified value and no default value`);
-      this._setNewValue(name, defaultValue, options);
-      return this;
-    }
+    try {
+      this._metadata.add(path, name, 'number', value, options);
+      const {
+        min = Number.NEGATIVE_INFINITY,
+        default: defaultValue,
+        max = Number.POSITIVE_INFINITY,
+        nullable,
+      } = options;
+      const rawValue = (typeof value === 'function') ? value(this.get()) : value;
+      if (rawValue === null) {
+        if (!nullable) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is null`);
+        this._setNewValue(name, rawValue, options);
+        return this;
+      }
+      if (rawValue === undefined) {
+        if (defaultValue === undefined) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": No specified value and no default value`);
+        this._setNewValue(name, defaultValue, options);
+        return this;
+      }
 
-    const expectedNumber = Number(rawValue);
-    if (Number.isNaN(expectedNumber)) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is not a number: "${rawValue}"`);
-    if (expectedNumber < min) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is below min: "${expectedNumber}" (min=${min})`);
-    if (max < expectedNumber) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is above max: "${expectedNumber}" (max=${max})`);
+      const expectedNumber = Number(rawValue);
+      if (Number.isNaN(expectedNumber)) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is not a number: "${rawValue}"`);
+      if (expectedNumber < min) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is below min: "${expectedNumber}" (min=${min})`);
+      if (max < expectedNumber) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is above max: "${expectedNumber}" (max=${max})`);
 
-    this._setNewValue(name, expectedNumber, options);
-    return this;
+      this._setNewValue(name, expectedNumber, options);
+      return this;
+    } catch (cause) {
+      throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+    }
   }
 
   addInstance(path, name, instance, options) {
-    this._metadata.add(path, name, 'instance', instance, options);
-    this._setNewValue(
-      name,
-      (typeof instance === 'function') ? instance(this.get()) : instance,
-      options,
-    );
-    return this;
+    try {
+      this._metadata.add(path, name, 'instance', instance, options);
+      this._setNewValue(
+        name,
+        (typeof instance === 'function') ? instance(this.get()) : instance,
+        options,
+      );
+      return this;
+    } catch (cause) {
+      throw new Error(`Adding instance on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+    }
   }
 
   addFunction(path, name, theFunction, options) {
-    this._metadata.add(path, name, 'function', theFunction, options);
-    this._setNewValue(name, theFunction, options);
-    return this;
+    try {
+      this._metadata.add(path, name, 'function', theFunction, options);
+      this._setNewValue(name, theFunction, options);
+      return this;
+    } catch (cause) {
+      throw new Error(`Adding function on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+    }
   }
 
   addUsingFunction(path, name, factoryFunction, options) {
@@ -140,37 +164,53 @@ module.exports = class Context {
   }
 
   addUsingFunctionStack(path, name, factoryFunctionList, options) {
-    this._metadata.add(path, name, 'function**', factoryFunctionList, options);
-    this._checkKeyAvailable(name);
-    factoryFunctionList.forEach((factoryFunction) => {
-      const bag = this.get();
-      const value = factoryFunction(bag);
-      this._setValue(name, value, options);
-    });
+    try {
+      this._metadata.add(path, name, 'function**', factoryFunctionList, options);
+      this._checkKeyAvailable(name);
+      factoryFunctionList.forEach((factoryFunction) => {
+        const bag = this.get();
+        const value = factoryFunction(bag);
+        this._setValue(name, value, options);
+      });
 
-    return this;
+      return this;
+    } catch (cause) {
+      throw new Error(`Using factory function stack on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+    }
   }
 
   addUsingClass(path, name, Class, options) {
-    this._metadata.add(path, name, 'class', Class, options);
-    const instance = this._instanciate(path, name, Class, options);
-    this._setNewValue(name, instance, options);
-    return this;
+    try {
+      this._metadata.add(path, name, 'class', Class, options);
+      const instance = this._instanciate(path, name, Class, options);
+      this._setNewValue(name, instance, options);
+      return this;
+    } catch (cause) {
+      throw new Error(`Using class on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+    }
   }
 
   addModule(path, name, module, options) {
-    this._metadata.add(path, name, 'module', module, options);
-    this._setNewValue(
-      name,
-      (typeof module === 'function') ? module() : module,
-      options,
-    );
-    return this;
+    try {
+      this._metadata.add(path, name, 'module', module, options);
+      this._setNewValue(
+        name,
+        (typeof module === 'function') ? module() : module,
+        options,
+      );
+      return this;
+    } catch (cause) {
+      throw new Error(`Using module on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+    }
   }
 
   with(name, work) {
-    work(this._lookup(name));
-    return this;
+    try {
+      work(this._lookup(name));
+      return this;
+    } catch (cause) {
+      throw new Error(`Using with on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+    }
   }
 
   _instanciate(path, name, FunctionFactory, { map } = {}) {
