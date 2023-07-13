@@ -1,3 +1,10 @@
+# [1.40.0](https://github.com/ForestAdmin/context/compare/v1.39.3...v1.40.0) (2023-07-13)
+
+
+### Features
+
+* improve errors to always print the path that caused the issue ([#57](https://github.com/ForestAdmin/context/issues/57)) ([004e68a](https://github.com/ForestAdmin/context/commit/004e68aa73d98bcc271007cd62c55c159b7e67b1))
+
 ## [1.39.3](https://github.com/ForestAdmin/context/compare/v1.39.2...v1.39.3) (2023-06-30)
 
 
