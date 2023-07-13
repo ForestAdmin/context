@@ -36,7 +36,7 @@ describe('Plan', () => {
       try {
         execute(plan);
       } catch (error) {
-        expect(error.stack).toMatch(/.*Object\.addUsingFunction/);
+        expect(error.stack).toMatch(/.*\.addUsingFunction/);
       }
     });
     it('print nothing when verbose deactivated', () => {
