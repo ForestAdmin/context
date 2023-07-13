@@ -105,24 +105,24 @@ module.exports = class Context {
       } = options;
       const rawValue = (typeof value === 'function') ? value(this.get()) : value;
       if (rawValue === null) {
-        if (!nullable) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is null`);
+        if (!nullable) throw new Error('Specified value is null');
         this._setNewValue(name, rawValue, options);
         return this;
       }
       if (rawValue === undefined) {
-        if (defaultValue === undefined) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": No specified value and no default value`);
+        if (defaultValue === undefined) throw new Error('No specified value and no default value');
         this._setNewValue(name, defaultValue, options);
         return this;
       }
 
       const expectedNumber = Number(rawValue);
       if (Number.isNaN(expectedNumber)) {
-        if (!defaultValue) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is not a number: "${rawValue}"`);
+        if (!defaultValue) throw new Error(`Specified value is not a number: "${rawValue}"`);
         this._setNewValue(name, defaultValue, options);
         return this;
       }
-      if (expectedNumber < min) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is below min: "${expectedNumber}" (min=${min})`);
-      if (max < expectedNumber) throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": Specified value is above max: "${expectedNumber}" (max=${max})`);
+      if (expectedNumber < min) throw new Error(`Specified value is below min: "${expectedNumber}" (min=${min})`);
+      if (max < expectedNumber) throw new Error(`Specified value is above max: "${expectedNumber}" (max=${max})`);
 
       this._setNewValue(name, expectedNumber, options);
       return this;
