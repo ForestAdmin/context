@@ -190,6 +190,17 @@ describe('Plan', () => {
         const { key } = execute(plan);
         expect(key).toBe(3);
       });
+      it('adds a NaN without default', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', NaN);
+        expect(() => execute(plan)).toThrow('Adding number on path "/key": Specified value is not a number: "NaN"');
+      });
+      it('adds a NaN with a default', () => {
+        expect.assertions(1);
+        const plan = (rootPlan) => rootPlan.addNumber('key', NaN, { default: 42 });
+        const { key } = execute(plan);
+        expect(key).toBe(42);
+      });
       it('adds a number lazily', () => {
         expect.assertions(1);
         const plan = (rootPlan) => rootPlan.addNumber('key', () => 3);
@@ -707,15 +718,7 @@ describe('Plan', () => {
 
     it('should throw when entry is not found', () => {
       expect(() => execute((plan) => plan.replace('BAD_NAME')))
-        .toThrow('entry not found: \'BAD_NAME\'');
-    });
-
-    it('should throw the entries list', () => {
-      expect(() => execute((plan) => plan
-        .addValue('zero', 0)
-        .addStep('one', (onePlan) => onePlan.addValue('value', 'value'))
-        .replace('BAD_NAME')))
-        .toThrow('entry not found: \'BAD_NAME\'. Entries list:\n/zero\none/value');
+        .toThrow('Invalid replace operation: relativePath not found \'BAD_NAME\'');
     });
 
     it('replace a value inside a plan inside a nested plan step', () => {

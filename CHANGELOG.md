@@ -1,3 +1,40 @@
+## [1.39.3](https://github.com/ForestAdmin/context/compare/v1.39.2...v1.39.3) (2023-06-30)
+
+
+### Bug Fixes
+
+* **security:** patch word-wrap dependency vulnerabilities ([#56](https://github.com/ForestAdmin/context/issues/56)) ([8ef271e](https://github.com/ForestAdmin/context/commit/8ef271e30b6f01245b97ea94857147da3a335744))
+
+## [1.39.2](https://github.com/ForestAdmin/context/compare/v1.39.1...v1.39.2) (2023-06-23)
+
+
+### Bug Fixes
+
+* **security:** patch semver dependency vulnerabilities ([#55](https://github.com/ForestAdmin/context/issues/55)) ([84c3d49](https://github.com/ForestAdmin/context/commit/84c3d49c63409456ff75e7c15df4f6d2be1459dc))
+
+## [1.39.1](https://github.com/ForestAdmin/context/compare/v1.39.0...v1.39.1) (2023-06-16)
+
+
+### Bug Fixes
+
+* **security:** patch dottie dependency vulnerabilities ([#54](https://github.com/ForestAdmin/context/issues/54)) ([9012412](https://github.com/ForestAdmin/context/commit/90124121522fb17bd85f40845b115af7969b1aae))
+
+# [1.39.0](https://github.com/ForestAdmin/context/compare/v1.38.1...v1.39.0) (2023-06-08)
+
+
+### Features
+
+* **addNumber:** use default when passing NaN instead of throwing ([#53](https://github.com/ForestAdmin/context/issues/53)) ([75b83c6](https://github.com/ForestAdmin/context/commit/75b83c6a784f6e37987366e8509996e43d423c29))
+
+## [1.38.1](https://github.com/ForestAdmin/context/compare/v1.38.0...v1.38.1) (2023-05-10)
+
+# [1.38.0](https://github.com/ForestAdmin/context/compare/v1.37.1...v1.38.0) (2023-05-10)
+
+
+### Features
+
+* improve replace error message ([#51](https://github.com/ForestAdmin/context/issues/51)) ([2f661d5](https://github.com/ForestAdmin/context/commit/2f661d5c111f7ffde318787ad798c8b5ee417233))
+
 ## [1.37.1](https://github.com/ForestAdmin/context/compare/v1.37.0...v1.37.1) (2023-04-12)
 
 # [1.37.0](https://github.com/ForestAdmin/context/compare/v1.36.0...v1.37.0) (2023-04-12)
