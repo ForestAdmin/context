@@ -1,3 +1,10 @@
+## [1.40.1](https://github.com/ForestAdmin/context/compare/v1.40.0...v1.40.1) (2023-08-04)
+
+
+### Bug Fixes
+
+* **security:** patch semver dependency vulnerabilities ([#58](https://github.com/ForestAdmin/context/issues/58)) ([46688f8](https://github.com/ForestAdmin/context/commit/46688f8090d65a57e05308760ac673d99adbc462))
+
 # [1.40.0](https://github.com/ForestAdmin/context/compare/v1.39.3...v1.40.0) (2023-07-13)
 
 
