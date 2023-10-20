@@ -1,3 +1,10 @@
+## [1.40.2](https://github.com/ForestAdmin/context/compare/v1.40.1...v1.40.2) (2023-10-20)
+
+
+### Bug Fixes
+
+* **security:** patch @babel/traverse dependency vulnerabilities ([#59](https://github.com/ForestAdmin/context/issues/59)) ([a55001d](https://github.com/ForestAdmin/context/commit/a55001dbcac7333b6f2b33929b18d5adbc0785b4))
+
 ## [1.40.1](https://github.com/ForestAdmin/context/compare/v1.40.0...v1.40.1) (2023-08-04)
 
 
