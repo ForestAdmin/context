@@ -1,3 +1,10 @@
+## [1.40.3](https://github.com/ForestAdmin/context/compare/v1.40.2...v1.40.3) (2024-01-02)
+
+
+### Bug Fixes
+
+* **security:** patch msgpackr dependency vulnerabilitiesç ([#60](https://github.com/ForestAdmin/context/issues/60)) ([ceed0cb](https://github.com/ForestAdmin/context/commit/ceed0cb999a5d290e19da9dfd41a3df577e16bbd))
+
 ## [1.40.2](https://github.com/ForestAdmin/context/compare/v1.40.1...v1.40.2) (2023-10-20)
 
 
