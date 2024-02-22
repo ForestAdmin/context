@@ -1,3 +1,10 @@
+## [1.40.4](https://github.com/ForestAdmin/context/compare/v1.40.3...v1.40.4) (2024-02-22)
+
+
+### Bug Fixes
+
+* **security:** patch ip dependency vulnerabilities ([#61](https://github.com/ForestAdmin/context/issues/61)) ([b03b2ce](https://github.com/ForestAdmin/context/commit/b03b2ce50aa47f63d96eee8f884616842583e960))
+
 ## [1.40.3](https://github.com/ForestAdmin/context/compare/v1.40.2...v1.40.3) (2024-01-02)
 
 
