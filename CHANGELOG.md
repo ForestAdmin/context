@@ -1,3 +1,10 @@
+## [1.40.5](https://github.com/ForestAdmin/context/compare/v1.40.4...v1.40.5) (2024-04-04)
+
+
+### Bug Fixes
+
+* **security:** patch express dependency vulnerabilities ([#62](https://github.com/ForestAdmin/context/issues/62)) ([d1143d7](https://github.com/ForestAdmin/context/commit/d1143d77ef66afd76f8f733174589aa18ca02fcc))
+
 ## [1.40.4](https://github.com/ForestAdmin/context/compare/v1.40.3...v1.40.4) (2024-02-22)
 
 
