@@ -1,3 +1,10 @@
+## [1.40.6](https://github.com/ForestAdmin/context/compare/v1.40.5...v1.40.6) (2024-04-12)
+
+
+### Bug Fixes
+
+* **security:** patch tar dependency vulnerabilities ([#63](https://github.com/ForestAdmin/context/issues/63)) ([dd27a74](https://github.com/ForestAdmin/context/commit/dd27a745cb4ca8ecb2d28928100658a8daf305cc))
+
 ## [1.40.5](https://github.com/ForestAdmin/context/compare/v1.40.4...v1.40.5) (2024-04-04)
 
 
