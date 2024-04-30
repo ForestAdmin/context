@@ -103,3 +103,5 @@ export function execute<T>(
   context?: Context,
   verbose?: boolean
 ): T;
+
+export type AssertPresent = (dependencies: Record<string, unknown>) => void
