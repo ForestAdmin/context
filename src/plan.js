@@ -362,7 +362,7 @@ module.exports = class Plan {
   }
 
   addUsingFunction(name, factoryFunction, options) {
-    if (factoryFunction === undefined) throw new Error(`Missing factory function: ${name}`);
+    if (factoryFunction === undefined) throw new Error(`Specified factory function is undefined: ${name}`);
     this._addEntry(name, 'function*', factoryFunction, options);
     return this;
   }
