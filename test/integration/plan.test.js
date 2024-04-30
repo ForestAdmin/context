@@ -503,32 +503,47 @@ describe('Plan', () => {
       });
     });
 
-    it('add a factory function stack', () => {
-      expect.assertions(1);
-      const myFactoryFunction = ({ key }) => key + 1;
+    describe('addUsingFunctionStack', () => {
+      it('add a factory function stack', () => {
+        expect.assertions(1);
+        const myFactoryFunction = ({ key }) => key + 1;
 
-      const planWithFactoryFunction = (plan) => plan
-        .addValue('key', 1)
-        .addUsingFunctionStack('keyPlusOne', [myFactoryFunction, ({ keyPlusOne }) => keyPlusOne * 2]);
+        const planWithFactoryFunction = (plan) => plan
+          .addValue('key', 1)
+          .addUsingFunctionStack('keyPlusOne', [myFactoryFunction, ({ keyPlusOne }) => keyPlusOne * 2]);
 
-      const { keyPlusOne } = execute(planWithFactoryFunction);
-      expect(keyPlusOne).toBe(4);
-    });
+        const { keyPlusOne } = execute(planWithFactoryFunction);
+        expect(keyPlusOne).toBe(4);
+      });
 
-    it('add a private factory function stack', () => {
-      expect.assertions(1);
-      const myFactoryFunction = ({ key }) => key + 1;
+      it('add a private factory function stack', () => {
+        expect.assertions(1);
+        const myFactoryFunction = ({ key }) => key + 1;
 
-      const planWithFactoryFunction = (plan) => plan
-        .addValue('key', 1)
-        .addUsingFunctionStack(
-          'keyPlusOne',
-          [myFactoryFunction, ({ keyPlusOne }) => keyPlusOne * 2],
-          { private: true },
-        );
+        const planWithFactoryFunction = (plan) => plan
+          .addValue('key', 1)
+          .addUsingFunctionStack(
+            'keyPlusOne',
+            [myFactoryFunction, ({ keyPlusOne }) => keyPlusOne * 2],
+            { private: true },
+          );
 
-      const { keyPlusOne } = execute(planWithFactoryFunction);
-      expect(keyPlusOne).toBe(undefined);
+        const { keyPlusOne } = execute(planWithFactoryFunction);
+        expect(keyPlusOne).toBe(undefined);
+      });
+
+      it('should throw if one of the functions is undefined', () => {
+        const plan = (rootPlan) => rootPlan.addUsingFunctionStack('key', [() => 1, undefined]);
+
+        expect(() => execute(plan)).toThrow('Using factory function stack on path "/key": factoryFunction is not a function');
+      });
+
+      it('should throw when the factory function returns undefined', () => {
+        const plan = (rootPlan) => rootPlan.addUsingFunctionStack('key', [() =>
+          undefined]);
+
+        expect(() => execute(plan)).toThrow('Using factory function stack on path "/key": Factory function returned undefined');
+      });
     });
 
     describe('add a module', () => {
