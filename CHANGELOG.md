@@ -1,3 +1,10 @@
+## [1.40.7](https://github.com/ForestAdmin/context/compare/v1.40.6...v1.40.7) (2024-04-30)
+
+
+### Bug Fixes
+
+* export the type of assertPresent ([#64](https://github.com/ForestAdmin/context/issues/64)) ([1caa84c](https://github.com/ForestAdmin/context/commit/1caa84ccddb86da37d554225002e616ef6915b21))
+
 ## [1.40.6](https://github.com/ForestAdmin/context/compare/v1.40.5...v1.40.6) (2024-04-12)
 
 
