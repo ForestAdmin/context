@@ -1,3 +1,10 @@
+## [1.40.8](https://github.com/ForestAdmin/context/compare/v1.40.7...v1.40.8) (2024-05-02)
+
+
+### Bug Fixes
+
+* don't allow undefined values in the context ([#65](https://github.com/ForestAdmin/context/issues/65)) ([69f7cba](https://github.com/ForestAdmin/context/commit/69f7cba25bece6642056bcaf301bc467381ce8da))
+
 ## [1.40.7](https://github.com/ForestAdmin/context/compare/v1.40.6...v1.40.7) (2024-04-30)
 
 
