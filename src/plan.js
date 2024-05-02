@@ -308,7 +308,7 @@ module.exports = class Plan {
   }
 
   addValue(name, value, options) {
-    if (value === undefined) throw new Error('missing value');
+    if (value === undefined) throw new Error(`Value is undefined: ${name}`);
     this._addEntry(name, 'value', value, options);
     return this;
   }
@@ -319,25 +319,25 @@ module.exports = class Plan {
   }
 
   _addRawValue(name, rawValue, options) {
-    if (rawValue === undefined) throw new Error('missing raw value');
+    if (rawValue === undefined) throw new Error(`Raw value is undefined: ${name}`);
     this._addEntry(name, 'rawValue', rawValue, options);
     return this;
   }
 
   addInstance(name, instance, options) {
-    if (instance === undefined) throw new Error('missing instance');
+    if (instance === undefined) throw new Error(`Specified instance is undefined: ${name}`);
     this._addEntry(name, 'instance', instance, options);
     return this;
   }
 
   addFunction(name, func, options) {
-    if (func === undefined) throw new Error('missing function');
+    if (func === undefined) throw new Error(`Specified function is undefined: ${name}`);
     this._addEntry(name, 'function', func, options);
     return this;
   }
 
   addUsingClass(name, Class, options) {
-    if (Class === undefined) throw new Error('missing Class');
+    if (Class === undefined) throw new Error(`Specified class is undefined: ${name}`);
     this._addEntry(name, 'class', Class, options);
     return this;
   }
@@ -346,6 +346,7 @@ module.exports = class Plan {
    * @deprecated Use addUsingClass instead.
    */
   addClass(Class, options) {
+    if (Class === undefined) throw new Error('Specified class is undefined');
     const name = Plan._getInstanceName(Class, options);
     this._addEntry(name, 'class', Class, options);
     return this;
@@ -361,25 +362,25 @@ module.exports = class Plan {
   }
 
   addUsingFunction(name, factoryFunction, options) {
-    if (factoryFunction === undefined) throw new Error('missing factoryFunction');
+    if (factoryFunction === undefined) throw new Error(`Specified factory function is undefined: ${name}`);
     this._addEntry(name, 'function*', factoryFunction, options);
     return this;
   }
 
   addUsingFunctionStack(name, factoryFunctionList, options) {
-    if (!Array.isArray(factoryFunctionList)) throw new Error('invalid parameter must be array: factoryFunctionList');
+    if (!Array.isArray(factoryFunctionList)) throw new Error(`Invalid parameter must be array: factoryFunctionList: ${name}`);
     this._addEntry(name, 'function**', factoryFunctionList, options);
     return this;
   }
 
   addModule(name, module, options) {
-    if (module === undefined) throw new Error('missing module');
+    if (module === undefined) throw new Error(`Missing module: ${name}`);
     this._addEntry(name, 'module', module, options);
     return this;
   }
 
   addAllKeysFrom(object, options) {
-    if (object === undefined) throw new Error('missing object');
+    if (object === undefined) throw new Error('Missing object');
     Object
       .entries(object)
       .forEach(([name, value]) => this._addRawValue(name, value, options));

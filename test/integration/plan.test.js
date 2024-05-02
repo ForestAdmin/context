@@ -178,6 +178,8 @@ describe('Plan', () => {
         .addPackage('package', (subPlan) => subPlan
           .addUsingFunction('one', ({ assertPresent, badValue }) => {
             expect(() => assertPresent({ badValue })).toThrow('Asserting dependencies on path "package/one": Missing dependencies: "badValue"');
+
+            return 1;
           })));
     });
   });
@@ -278,111 +280,180 @@ describe('Plan', () => {
         expect(key).toBe(null);
       });
     });
-    it('add a value', () => {
-      expect.assertions(1);
 
-      const plan = (rootPlan) => rootPlan.addValue('key', 'value');
+    describe('addValue', () => {
+      it('add a value', () => {
+        expect.assertions(1);
 
-      const { key } = execute(plan);
-      expect(key).toBe('value');
+        const plan = (rootPlan) => rootPlan.addValue('key', 'value');
+
+        const { key } = execute(plan);
+        expect(key).toBe('value');
+      });
+
+      it('adding twice a value', () => {
+        expect.assertions(1);
+
+        const plan = (rootPlan) => rootPlan
+          .addPackage('values', (valuesPlan) => valuesPlan
+            .addValue('valueKey', 'oneValue'))
+          .addPackage('otherValues', (otherValuesPlan) => otherValuesPlan
+            .addValue('valueKey', 'otherOneValue'));
+
+        expect(() => execute(plan)).toThrow('Adding value on path "otherValues/valueKey": Key already exists: "valueKey"');
+      });
+
+      it('add a value lazily', () => {
+        expect.assertions(1);
+
+        const plan = (rootPlan) => rootPlan.addValue('key', () => 'value');
+
+        const { key } = execute(plan);
+        expect(key).toBe('value');
+      });
+
+      it('throws an error if the value is undefined', () => {
+        expect.assertions(1);
+
+        const plan = (rootPlan) => rootPlan.addValue('key', undefined);
+
+        expect(() => execute(plan)).toThrow('Value is undefined: key');
+      });
+
+      it('throws an error if the value is undefined when added lazily', () => {
+        expect.assertions(1);
+
+        const plan = (rootPlan) => rootPlan.addValue('key', () => undefined);
+
+        expect(() => execute(plan)).toThrow('Specified value is undefined: /key');
+      });
     });
 
-    it('adding twice a value', () => {
-      expect.assertions(1);
+    describe('addRawValue', () => {
+      it('add a raw value', () => {
+        expect.assertions(1);
 
-      const plan = (rootPlan) => rootPlan
-        .addPackage('values', (valuesPlan) => valuesPlan
-          .addValue('valueKey', 'oneValue'))
-        .addPackage('otherValues', (otherValuesPlan) => otherValuesPlan
-          .addValue('valueKey', 'otherOneValue'));
+        const value = Symbol('value');
+        const plan = (rootPlan) => rootPlan._addRawValue('key', () => value);
 
-      expect(() => execute(plan)).toThrow('Adding value on path "otherValues/valueKey": Key already exists: "valueKey"');
+        const { key } = execute(plan);
+        expect(key()).toBe(value);
+      });
+
+      it('should throw when the value is undefined', () => {
+        expect.assertions(1);
+
+        const plan = (rootPlan) => rootPlan._addRawValue('key', undefined);
+
+        expect(() => execute(plan)).toThrow('Raw value is undefined: key');
+      });
     });
 
-    it('add a value lazily', () => {
-      expect.assertions(1);
+    describe('addInstance', () => {
+      it('add an instance', () => {
+        expect.assertions(1);
+        const instance = Symbol('instance');
 
-      const plan = (rootPlan) => rootPlan.addValue('key', () => 'value');
+        const plan = (rootPlan) => rootPlan.addInstance('key', instance);
 
-      const { key } = execute(plan);
-      expect(key).toBe('value');
+        const { key } = execute(plan);
+        expect(key).toBe(instance);
+      });
+
+      it('add an instance lazily', () => {
+        expect.assertions(1);
+        const instance = Symbol('instance');
+
+        const plan = (rootPlan) => rootPlan.addInstance('key', () => instance);
+
+        const { key } = execute(plan);
+        expect(key).toBe(instance);
+      });
+
+      it('should throw when the instance is undefined', () => {
+        expect.assertions(1);
+
+        const plan = (rootPlan) => rootPlan.addInstance('key', undefined);
+
+        expect(() => execute(plan)).toThrow('Specified instance is undefined: key');
+      });
     });
 
-    it('add a raw value', () => {
-      expect.assertions(1);
+    describe('addFunction', () => {
+      it('add an function', () => {
+        expect.assertions(1);
+        const fct = Symbol('fct');
 
-      const value = Symbol('value');
-      const plan = (rootPlan) => rootPlan._addRawValue('key', () => value);
+        const plan = (rootPlan) => rootPlan.addFunction('key', fct);
 
-      const { key } = execute(plan);
-      expect(key()).toBe(value);
+        const { key } = execute(plan);
+        expect(key).toBe(fct);
+      });
+
+      it('should throw when the function is undefined', () => {
+        expect.assertions(1);
+
+        const plan = (rootPlan) => rootPlan.addFunction('key', undefined);
+
+        expect(() => execute(plan)).toThrow('Specified function is undefined: key');
+      });
     });
 
-    it('add an instance', () => {
-      expect.assertions(1);
-      const instance = Symbol('instance');
+    describe('addClass (deprecated)', () => {
+      it('add a class deprecated', () => {
+        expect.assertions(1);
+        class FakeClass {}
 
-      const plan = (rootPlan) => rootPlan.addInstance('key', instance);
+        const { fakeClass } = execute(newPlan().addClass(FakeClass));
 
-      const { key } = execute(plan);
-      expect(key).toBe(instance);
+        expect(fakeClass instanceof FakeClass).toBe(true);
+      });
+
+      it('should throw when the class is undefined', () => {
+        expect.assertions(1);
+
+        const plan = (rootPlan) => rootPlan.addClass(undefined);
+
+        expect(() => execute(plan)).toThrow('Specified class is undefined');
+      });
     });
 
-    it('add an instance lazily', () => {
-      expect.assertions(1);
-      const instance = Symbol('instance');
+    describe('addUsingClass', () => {
+      it('add a class', () => {
+        expect.assertions(1);
+        class FakeClass {}
 
-      const plan = (rootPlan) => rootPlan.addInstance('key', () => instance);
+        const { fakeClass } = execute(newPlan().addUsingClass('fakeClass', FakeClass));
 
-      const { key } = execute(plan);
-      expect(key).toBe(instance);
-    });
+        expect(fakeClass instanceof FakeClass).toBe(true);
+      });
 
-    it('add an function', () => {
-      expect.assertions(1);
-      const fct = Symbol('fct');
+      it('passing anything but a function factory or a class to addUsingClass', () => {
+        expect(() => execute(newPlan().addUsingClass('fakeClass', 'bad-value')))
+          .toThrow('Instanciating class on path "/fakeClass" - FunctionFactory is not a function');
+      });
 
-      const plan = (rootPlan) => rootPlan.addFunction('key', fct);
+      it('passing a function factory that returns anything but a class to addUsingClass', () => {
+        expect(() => execute(newPlan().addUsingClass('fakeClass', () => 'bad-value')))
+          .toThrow('Instanciating class on path "/fakeClass" - ClassToInstanciate is not a constructor');
+      });
 
-      const { key } = execute(plan);
-      expect(key).toBe(fct);
-    });
+      it('add lazily a class', () => {
+        expect.assertions(1);
+        class FakeClass {}
 
-    it('add a class deprecated', () => {
-      expect.assertions(1);
-      class FakeClass {}
+        const { fakeClass } = execute(newPlan().addUsingClass('fakeClass', () => FakeClass));
 
-      const { fakeClass } = execute(newPlan().addClass(FakeClass));
+        expect(fakeClass instanceof FakeClass).toBe(true);
+      });
 
-      expect(fakeClass instanceof FakeClass).toBe(true);
-    });
+      it('should throw when the class is undefined', () => {
+        expect.assertions(1);
 
-    it('add a class', () => {
-      expect.assertions(1);
-      class FakeClass {}
+        const plan = (rootPlan) => rootPlan.addUsingClass('key', undefined);
 
-      const { fakeClass } = execute(newPlan().addUsingClass('fakeClass', FakeClass));
-
-      expect(fakeClass instanceof FakeClass).toBe(true);
-    });
-
-    it('passing anything but a function factory or a class to addUsingClass', () => {
-      expect(() => execute(newPlan().addUsingClass('fakeClass', 'bad-value')))
-        .toThrow('Instanciating class on path "/fakeClass" - FunctionFactory is not a function');
-    });
-
-    it('passing a function factory that returns anything but a class to addUsingClass', () => {
-      expect(() => execute(newPlan().addUsingClass('fakeClass', () => 'bad-value')))
-        .toThrow('Instanciating class on path "/fakeClass" - ClassToInstanciate is not a constructor');
-    });
-
-    it('add lazily a class', () => {
-      expect.assertions(1);
-      class FakeClass {}
-
-      const { fakeClass } = execute(newPlan().addUsingClass('fakeClass', () => FakeClass));
-
-      expect(fakeClass instanceof FakeClass).toBe(true);
+        expect(() => execute(plan)).toThrow('Specified class is undefined: key');
+      });
     });
 
     it('uses map', () => {
@@ -402,54 +473,77 @@ describe('Plan', () => {
       expect(two.param).toBe(2);
     });
 
-    it('add a factory function', () => {
-      expect.assertions(1);
-      const myFactoryFunction = ({ key }) => key + 1;
+    describe('addUsingFunction', () => {
+      it('add a factory function', () => {
+        expect.assertions(1);
+        const myFactoryFunction = ({ key }) => key + 1;
 
-      const planWithFactoryFunction = (plan) => plan
-        .addValue('key', 1)
-        .addUsingFunction('keyPlusOne', myFactoryFunction);
+        const planWithFactoryFunction = (plan) => plan
+          .addValue('key', 1)
+          .addUsingFunction('keyPlusOne', myFactoryFunction);
 
-      const { keyPlusOne } = execute(planWithFactoryFunction);
-      expect(keyPlusOne).toBe(2);
+        const { keyPlusOne } = execute(planWithFactoryFunction);
+        expect(keyPlusOne).toBe(2);
+      });
+
+      it('add a null factory function', () => {
+        expect(() => execute((plan) => plan.addUsingFunction('key', null)))
+          .toThrow('Using factory function on path "/key": factoryFunction is not a function');
+      });
+
+      it('add anything but a function as a factory function', () => {
+        expect(() => execute((plan) => plan.addUsingFunction('key', 'bad-value')))
+          .toThrow('Using factory function on path "/key": factoryFunction is not a function');
+      });
+
+      it('should throw when the factory function returns undefined', () => {
+        const plan = (rootPlan) => rootPlan.addUsingFunction('key', () => undefined);
+
+        expect(() => execute(plan)).toThrow('Using factory function on path "/key": Factory function returned undefined');
+      });
     });
 
-    it('add a null factory function', () => {
-      expect(() => execute((plan) => plan.addUsingFunction('key', null)))
-        .toThrow('Using factory function on path "/key": factoryFunction is not a function');
-    });
+    describe('addUsingFunctionStack', () => {
+      it('add a factory function stack', () => {
+        expect.assertions(1);
+        const myFactoryFunction = ({ key }) => key + 1;
 
-    it('add anything but a function as a factory function', () => {
-      expect(() => execute((plan) => plan.addUsingFunction('key', 'bad-value')))
-        .toThrow('Using factory function on path "/key": factoryFunction is not a function');
-    });
+        const planWithFactoryFunction = (plan) => plan
+          .addValue('key', 1)
+          .addUsingFunctionStack('keyPlusOne', [myFactoryFunction, ({ keyPlusOne }) => keyPlusOne * 2]);
 
-    it('add a factory function stack', () => {
-      expect.assertions(1);
-      const myFactoryFunction = ({ key }) => key + 1;
+        const { keyPlusOne } = execute(planWithFactoryFunction);
+        expect(keyPlusOne).toBe(4);
+      });
 
-      const planWithFactoryFunction = (plan) => plan
-        .addValue('key', 1)
-        .addUsingFunctionStack('keyPlusOne', [myFactoryFunction, ({ keyPlusOne }) => keyPlusOne * 2]);
+      it('add a private factory function stack', () => {
+        expect.assertions(1);
+        const myFactoryFunction = ({ key }) => key + 1;
 
-      const { keyPlusOne } = execute(planWithFactoryFunction);
-      expect(keyPlusOne).toBe(4);
-    });
+        const planWithFactoryFunction = (plan) => plan
+          .addValue('key', 1)
+          .addUsingFunctionStack(
+            'keyPlusOne',
+            [myFactoryFunction, ({ keyPlusOne }) => keyPlusOne * 2],
+            { private: true },
+          );
 
-    it('add a private factory function stack', () => {
-      expect.assertions(1);
-      const myFactoryFunction = ({ key }) => key + 1;
+        const { keyPlusOne } = execute(planWithFactoryFunction);
+        expect(keyPlusOne).toBe(undefined);
+      });
 
-      const planWithFactoryFunction = (plan) => plan
-        .addValue('key', 1)
-        .addUsingFunctionStack(
-          'keyPlusOne',
-          [myFactoryFunction, ({ keyPlusOne }) => keyPlusOne * 2],
-          { private: true },
-        );
+      it('should throw if one of the functions is undefined', () => {
+        const plan = (rootPlan) => rootPlan.addUsingFunctionStack('key', [() => 1, undefined]);
 
-      const { keyPlusOne } = execute(planWithFactoryFunction);
-      expect(keyPlusOne).toBe(undefined);
+        expect(() => execute(plan)).toThrow('Using factory function stack on path "/key": factoryFunction is not a function');
+      });
+
+      it('should throw when the factory function returns undefined', () => {
+        const plan = (rootPlan) => rootPlan.addUsingFunctionStack('key', [() =>
+          undefined]);
+
+        expect(() => execute(plan)).toThrow('Using factory function stack on path "/key": Factory function returned undefined');
+      });
     });
 
     describe('add a module', () => {

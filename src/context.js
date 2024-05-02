@@ -22,10 +22,15 @@ module.exports = class Context {
     return (requisites, rest) => {
       if (rest) throw new Error('Asserting dependencies - Only one parameter should be specified.');
       const keys = Object.keys(requisites);
-      const missings = keys
-        .map((key) => (bag[key] === undefined ? key : null))
-        .filter((key) => key);
-      if (missings.length > 0) throw new Error(`Asserting dependencies on path "${this._metadata.getCurrentPath()}": Missing dependencies: "${missings}"`);
+      const missingKeys = keys
+        .filter((key) => !Object.prototype.hasOwnProperty.call(bag, key));
+      if (missingKeys.length > 0) throw new Error(`Asserting dependencies on path "${this._metadata.getCurrentPath()}": Missing dependencies: "${missingKeys}"`);
+
+      const undefinedKeys = keys
+        .filter((key) => bag[key] === undefined);
+
+      if (undefinedKeys.length > 0) throw new Error(`Asserting dependencies on path "${this._metadata.getCurrentPath()}": Undefined dependencies: "${undefinedKeys}"`);
+
       this._metadata.setRequisites(keys);
       return true;
     };
@@ -73,9 +78,14 @@ module.exports = class Context {
   addValue(path, name, value, options) {
     try {
       this._metadata.add(path, name, 'value', value, options);
+
+      const realValue = (typeof value === 'function') ? value(this.get()) : value;
+
+      if (realValue === undefined) throw new Error(`Specified value is undefined: ${path}/${name}`);
+
       this._setNewValue(
         name,
-        (typeof value === 'function') ? value(this.get()) : value,
+        realValue,
         options,
       );
       return this;
@@ -159,8 +169,13 @@ module.exports = class Context {
     try {
       this._metadata.add(path, name, 'function*', factoryFunction, options);
       const bag = this.get();
-      const theFunction = factoryFunction(bag);
-      this._setNewValue(name, theFunction, options);
+      const value = factoryFunction(bag);
+
+      if (value === undefined) {
+        throw new Error('Factory function returned undefined');
+      }
+
+      this._setNewValue(name, value, options);
       return this;
     } catch (cause) {
       throw new Error(`Using factory function on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
@@ -174,6 +189,11 @@ module.exports = class Context {
       factoryFunctionList.forEach((factoryFunction) => {
         const bag = this.get();
         const value = factoryFunction(bag);
+
+        if (value === undefined) {
+          throw new Error(`Factory function returned undefined ${factoryFunction.name}`);
+        }
+
         this._setValue(name, value, options);
       });
 
