@@ -1,3 +1,10 @@
+## [1.40.9](https://github.com/ForestAdmin/context/compare/v1.40.8...v1.40.9) (2024-05-23)
+
+
+### Bug Fixes
+
+* declare map as optional on ClassEntryOptions ([#66](https://github.com/ForestAdmin/context/issues/66)) ([411057f](https://github.com/ForestAdmin/context/commit/411057f50d7e4d29f02dbacd01fa6baeff5f7a30))
+
 ## [1.40.8](https://github.com/ForestAdmin/context/compare/v1.40.7...v1.40.8) (2024-05-02)
 
 
