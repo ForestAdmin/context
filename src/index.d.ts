@@ -26,7 +26,7 @@ export interface NumberEntryOptions extends EntryOptions {
 
 export interface ClassEntryOptions extends EntryOptions {
   /** @deprecated use packages instead */
-  map: <T, TReturn>(dependencies: T) => TReturn;
+  map?: <T, TReturn>(dependencies: T) => TReturn;
 }
 
 export interface PlanEntry<T = any> {
