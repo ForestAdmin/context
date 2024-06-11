@@ -92,7 +92,7 @@ declare class Plan {
 
 export type PlanFactory = (plan: Plan) => Plan;
 
-export type PlanDefinition = Plan | PlanFactory | Array<Plan | PlanFactory>;
+export type PlanDefinition = Plan | PlanFactory | Array<Plan | PlanFactory | PlanDefinition>;
 
 /** @deprecated use "execute" function instead to avoid singleton creation. */
 export function init(item: PlanDefinition, verbose?: boolean): void;
