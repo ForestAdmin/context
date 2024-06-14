@@ -1,3 +1,10 @@
+## [1.40.11](https://github.com/ForestAdmin/context/compare/v1.40.10...v1.40.11) (2024-06-14)
+
+
+### Bug Fixes
+
+* **security:** patch braces dependency vulnerabilities ([#68](https://github.com/ForestAdmin/context/issues/68)) ([4d13e2d](https://github.com/ForestAdmin/context/commit/4d13e2d73846455b5a93c4702acd88ac881a7a57))
+
 ## [1.40.10](https://github.com/ForestAdmin/context/compare/v1.40.9...v1.40.10) (2024-06-11)
 
 ## [1.40.9](https://github.com/ForestAdmin/context/compare/v1.40.8...v1.40.9) (2024-05-23)
