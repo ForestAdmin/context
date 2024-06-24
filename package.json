@@ -1,6 +1,6 @@
 {
   "name": "@forestadmin/context",
-  "version": "1.40.11",
+  "version": "1.40.12",
   "description": "Minimal context management helper for applications and libraries.",
   "main": "src/index.js",
   "publishConfig": {
