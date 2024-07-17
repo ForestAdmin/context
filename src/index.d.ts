@@ -69,7 +69,7 @@ declare class Plan {
   ): Plan;
   addUsingClass<T>(
     name: string,
-    value: new (...args: any[]) => T | (() => new (...args: any[]) => T),
+    value: (new (...args: any[]) => T) | (() => new (...args: any[]) => T),
     options?: ClassEntryOptions
   ): Plan;
   /** @deprecated use addUsingClass instead */
