@@ -1,3 +1,10 @@
+# [1.41.0](https://github.com/ForestAdmin/context/compare/v1.40.13...v1.41.0) (2024-07-25)
+
+
+### Features
+
+* introduce conditional packages ([#71](https://github.com/ForestAdmin/context/issues/71)) ([b8fab9c](https://github.com/ForestAdmin/context/commit/b8fab9cc301ded5b752bf6c20b15263a9faf9d32))
+
 ## [1.40.13](https://github.com/ForestAdmin/context/compare/v1.40.12...v1.40.13) (2024-07-17)
 
 ## [1.40.12](https://github.com/ForestAdmin/context/compare/v1.40.11...v1.40.12) (2024-06-24)
