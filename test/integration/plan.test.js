@@ -1132,4 +1132,28 @@ describe('Plan', () => {
       expect(entries).toStrictEqual(expectedEntries);
     });
   });
+
+  describe('conditional package', () => {
+    it('includes a package with option.if true', () => {
+      const packageValue = Symbol('packageValue');
+      const { value } = execute((plan) => plan.addPackage(
+        'package',
+        (packagePlan) => packagePlan.addValue('value', packageValue),
+        { if: true },
+      ));
+
+      expect(value).toStrictEqual(packageValue);
+    });
+
+    it('excludes a package with option.if false', () => {
+      const packageValue = Symbol('packageValue');
+      const { value } = execute((plan) => plan.addPackage(
+        'package',
+        (packagePlan) => packagePlan.addValue('value', packageValue),
+        { if: false },
+      ));
+
+      expect(value).toBeUndefined();
+    });
+  });
 });

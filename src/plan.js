@@ -299,11 +299,14 @@ module.exports = class Plan {
   }
 
   addStep(name, item, options) {
+    if (options && options.if === false) return this;
+
     this._stepsWalk.push(name);
     this._addEntry(Symbol('step-in'), 'step-in', name, options);
     const plan = Plan._mergeItem(item, this);
     this._addEntry(Symbol('step-out'), 'step-out', name, options);
     this._stepsWalk.pop();
+
     return plan;
   }
 
