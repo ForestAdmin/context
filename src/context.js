@@ -64,12 +64,12 @@ module.exports = class Context {
   }
 
   isEntryIgnorable({ path, type }) {
-    const entryIsIgnored = this._currentStepIgnorable !== null;
+    const currentStepIsIgnored = this._currentStepIgnorable !== null;
     const entryIsStepOut = type === 'step-out';
     const entryPathEqualsCurrentlyIgnoredPath = this._currentStepIgnorable === path;
     const entryIsClosingCurrentIgnoredStep = entryIsStepOut && entryPathEqualsCurrentlyIgnoredPath;
 
-    return entryIsIgnored && !entryIsClosingCurrentIgnoredStep;
+    return currentStepIsIgnored && !entryIsClosingCurrentIgnoredStep;
   }
 
   flushPrivates(path) {
