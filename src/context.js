@@ -5,6 +5,7 @@ module.exports = class Context {
     this._bag = {};
     this._bag.assertPresent = this._makeAssertPresent(this._bag).bind(this);
     this._metadata = new Metadata();
+    this._ignoredStep = null;
   }
 
   seal() {
@@ -37,14 +38,44 @@ module.exports = class Context {
   }
 
   openStep(path, name, options) {
-    if (options && typeof options.if === 'boolean' && !options.if) return;
-    if (options && options.if instanceof String && !this.get()[options.if]) return;
-
+    if (this._markIgnorableStep(path, options)) return;
     this._metadata.add(path, name, 'step', null, options);
   }
 
   closeStep(path) {
+    if (this._unMarkIgnorableStep(path)) return;
     this.flushPrivates(path);
+  }
+
+  _markIgnorableStep(path, options) {
+    if (options) {
+      const ifOptionIsFalse = typeof options.if === 'boolean' && !options.if;
+      const contextValueDoesNotExists = typeof options.if === 'string' && this.get()[options.if] === undefined;
+      const contextValueIsFalsy = typeof options.if === 'string' && !this.get()[options.if];
+
+      if (contextValueDoesNotExists) throw new Error(`Adding package on path '${path}': Invalid option 'if': Key '${options.if}' does not exist in the context`);
+
+      if (ifOptionIsFalse || contextValueIsFalsy) {
+        this._ignoredStep = path;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  _unMarkIgnorableStep(path) {
+    if (this._ignoredStep === path) {
+      this._ignoredStep = null;
+      return true;
+    }
+    return false;
+  }
+
+  isEntryIgnorable({ type }) {
+    const currentStepIsIgnored = this._ignoredStep !== null;
+    const currentStepIsStepOut = type === 'step-out';
+
+    return currentStepIsIgnored && !currentStepIsStepOut;
   }
 
   flushPrivates(path) {

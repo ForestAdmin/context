@@ -130,7 +130,6 @@ module.exports = class Plan {
 
     Plan
       ._mergeItem(plan, Plan.newPlan(undefined, verbose))
-      ._dropConditionalEntries()
       ._getEntries()
       .forEach((entry) => Plan.applyEntry(entry, context));
 
@@ -174,6 +173,9 @@ module.exports = class Plan {
     const {
       path, type, name, value, options,
     } = entry;
+
+    if (context.isEntryIgnorable(entry)) return;
+
     switch (type) {
       case 'replacement':
         context.addReplacement(path, name, value, options);
@@ -395,11 +397,6 @@ module.exports = class Plan {
 
   _getEntries() {
     return this._entries;
-  }
-
-  _dropConditionalEntries() {
-    this._entries.filter(({ type }) => type !== 'conditional');
-    return this;
   }
 
   addMetadataHook(hook) {
