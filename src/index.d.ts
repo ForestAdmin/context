@@ -17,6 +17,10 @@ export interface EntryOptions {
   private?: boolean;
 }
 
+export interface PackageEntryOptions extends EntryOptions {
+  if?: boolean | string;
+}
+
 export interface NumberEntryOptions extends EntryOptions {
   min?: number;
   max?: number;
@@ -57,8 +61,8 @@ declare class Plan {
 
   replace<T>(relativePath: string, value: T, options?: EntryOptions): Plan;
 
-  addPackage(name: string, item: PlanDefinition, options?: EntryOptions): Plan;
-  addStep(name: string, item: PlanDefinition, options?: EntryOptions): Plan;
+  addPackage(name: string, item: PlanDefinition, options?: PackageEntryOptions): Plan;
+  addStep(name: string, item: PlanDefinition, options?: PackageEntryOptions): Plan;
   addValue<T>(name: string, value: T, options?: EntryOptions): Plan;
   addNumber(name: string, value: number, options?: NumberEntryOptions): Plan;
   addInstance<T>(name: string, value: T, options?: EntryOptions): Plan;

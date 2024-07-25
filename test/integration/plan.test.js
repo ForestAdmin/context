@@ -1132,4 +1132,88 @@ describe('Plan', () => {
       expect(entries).toStrictEqual(expectedEntries);
     });
   });
+
+  describe('conditional package (options.if)', () => {
+    describe('when parameter is a boolean', () => {
+      describe('when true', () => {
+        it('should include the package to the context', () => {
+          const packageValue = Symbol('packageValue');
+          const { value, foo } = execute((plan) => plan.addPackage(
+            'package',
+            (packagePlan) => packagePlan.addValue('value', packageValue),
+            { if: true },
+          ).addValue('foo', 'bar'));
+
+          expect(value).toStrictEqual(packageValue);
+          expect(foo).toStrictEqual('bar');
+        });
+      });
+
+      describe('when false', () => {
+        it('should not include the package to the context', () => {
+          const packageValue = Symbol('packageValue');
+          const { value, foo } = execute((plan) => plan.addPackage(
+            'package',
+            (packagePlan) => packagePlan.addValue('value', packageValue),
+            { if: false },
+          ).addValue('foo', 'bar'));
+
+          expect(value).toBeUndefined();
+          expect(foo).toStrictEqual('bar');
+        });
+      });
+    });
+
+    describe('when parameter is a string', () => {
+      describe('when it does not match a key in the context', () => {
+        it('throws', () => {
+          const throwingPlan = (plan) => plan.addPackage(
+            'package',
+            (packagePlan) => packagePlan.addValue('value', Symbol('packageValue')),
+            { if: 'key' },
+          );
+
+          expect(() => execute(throwingPlan)).toThrow('Adding package on path \'package\': Invalid option \'if\': Key \'key\' does not exist in the context');
+        });
+      });
+
+      describe('when it match a key in the context', () => {
+        describe('when the value is truthy', () => {
+          it('should include the package to the context', () => {
+            const packageValue = Symbol('packageValue');
+            const conditionalPlan = (plan) => plan
+              .addValue('condition', 'truthyValue')
+              .addPackage(
+                'package',
+                (packagePlan) => packagePlan.addValue('value', packageValue),
+                { if: 'condition' },
+              );
+
+            expect(execute(conditionalPlan).value).toStrictEqual(packageValue);
+          });
+        });
+
+        describe('when the value is falsy', () => {
+          it('should not include the package to the context', () => {
+            const packageValue = Symbol('packageValue');
+            const conditionalPlan = (plan) => plan
+              .addValue('falsyValue', '')
+              .addPackage(
+                'package',
+                (packagePlan) => packagePlan
+                  .addValue('value', packageValue)
+                  .addPackage('nestedPackage', (nestedPackagePlan) => nestedPackagePlan.addValue('nestedValue', 'nestedValue')),
+                { if: 'falsyValue' },
+              ).addValue('foo', 'bar');
+
+            const { value, nestedValue, foo } = execute(conditionalPlan);
+
+            expect(value).toBeUndefined();
+            expect(nestedValue).toBeUndefined();
+            expect(foo).toStrictEqual('bar');
+          });
+        });
+      });
+    });
+  });
 });

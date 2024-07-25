@@ -173,6 +173,9 @@ module.exports = class Plan {
     const {
       path, type, name, value, options,
     } = entry;
+
+    if (context.isEntryIgnorable(entry)) return;
+
     switch (type) {
       case 'replacement':
         context.addReplacement(path, name, value, options);
