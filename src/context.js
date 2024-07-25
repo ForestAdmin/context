@@ -49,13 +49,13 @@ module.exports = class Context {
 
   _markIgnorableStep(path, options) {
     if (options) {
-      const ifOptionIsFalse = typeof options.if === 'boolean' && !options.if;
+      const optionsIfIsFalse = typeof options.if === 'boolean' && !options.if;
       const contextValueDoesNotExists = typeof options.if === 'string' && this.get()[options.if] === undefined;
       const contextValueIsFalsy = typeof options.if === 'string' && !this.get()[options.if];
 
       if (contextValueDoesNotExists) throw new Error(`Adding package on path '${path}': Invalid option 'if': Key '${options.if}' does not exist in the context`);
 
-      if (ifOptionIsFalse || contextValueIsFalsy) {
+      if (optionsIfIsFalse || contextValueIsFalsy) {
         this._ignoredStep = path;
         return true;
       }
