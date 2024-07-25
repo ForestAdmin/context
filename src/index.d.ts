@@ -18,7 +18,7 @@ export interface EntryOptions {
 }
 
 export interface PackageEntryOptions extends EntryOptions {
-  if?: boolean;
+  if?: boolean | string;
 }
 
 export interface NumberEntryOptions extends EntryOptions {

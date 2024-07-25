@@ -37,6 +37,9 @@ module.exports = class Context {
   }
 
   openStep(path, name, options) {
+    if (options && typeof options.if === 'boolean' && !options.if) return;
+    if (options && options.if instanceof String && !this.get()[options.if]) return;
+
     this._metadata.add(path, name, 'step', null, options);
   }
 
