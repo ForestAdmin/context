@@ -37,7 +37,9 @@ export interface PlanEntry<T = any> {
   options?: EntryOptions;
 }
 
-declare class Context {}
+declare class Context {
+  constructor({ debugMode }: { debugMode: boolean });
+}
 
 declare class Plan {
   constructor(entries: PlanEntry[], verbose?: boolean);

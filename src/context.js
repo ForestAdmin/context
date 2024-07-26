@@ -1,15 +1,28 @@
 const Metadata = require('./metadata');
 
 module.exports = class Context {
-  constructor() {
+  constructor({ debugMode = false } = {}) {
     this._bag = {};
     this._bag.assertPresent = this._makeAssertPresent(this._bag).bind(this);
     this._metadata = new Metadata();
+    this._missings = {};
+    this._debugMode = debugMode;
+  }
+
+  _addMissing(path, keys) {
+    this._missings[path] = keys;
+  }
+
+  _hasMissing() {
+    return Object.keys(this._missings).length > 0;
   }
 
   seal() {
     this.flushPrivates('');
     this._metadata.seal();
+    if (this._debugMode && this._hasMissing()) {
+      throw new Error(`Missing dependencies: ${JSON.stringify(this._missings)}`);
+    }
   }
 
   get() { return this._bag; }
@@ -24,12 +37,10 @@ module.exports = class Context {
       const keys = Object.keys(requisites);
       const missingKeys = keys
         .filter((key) => !Object.prototype.hasOwnProperty.call(bag, key));
-      if (missingKeys.length > 0) throw new Error(`Asserting dependencies on path "${this._metadata.getCurrentPath()}": Missing dependencies: "${missingKeys}"`);
-
-      const undefinedKeys = keys
-        .filter((key) => bag[key] === undefined);
-
-      if (undefinedKeys.length > 0) throw new Error(`Asserting dependencies on path "${this._metadata.getCurrentPath()}": Undefined dependencies: "${undefinedKeys}"`);
+      if (missingKeys.length > 0) {
+        if (this._debugMode) this._addMissing(this._metadata.getCurrentPath(), missingKeys);
+        else throw new Error(`Asserting dependencies on path "${this._metadata.getCurrentPath()}": Missing dependencies: "${missingKeys}"`);
+      }
 
       this._metadata.setRequisites(keys);
       return true;
