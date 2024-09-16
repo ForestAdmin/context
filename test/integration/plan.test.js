@@ -295,12 +295,12 @@ describe('Plan', () => {
         expect.assertions(1);
 
         const plan = (rootPlan) => rootPlan
-          .addPackage('values', (valuesPlan) => valuesPlan
-            .addValue('valueKey', 'oneValue'))
-          .addPackage('otherValues', (otherValuesPlan) => otherValuesPlan
-            .addValue('valueKey', 'otherOneValue'));
+          .addPackage('packageOne', (planOne) => planOne
+            .addValue('key', 'value'))
+          .addPackage('packageTwo', (planTwo) => planTwo
+            .addValue('key', 'conflictValue'));
 
-        expect(() => execute(plan)).toThrow('Adding value on path "otherValues/valueKey": Key already exists: "valueKey"');
+        expect(() => execute(plan)).toThrow('Adding value on path "packageTwo/key": Key already exists on another path: "packageOne/key"');
       });
 
       it('add a value lazily', () => {
