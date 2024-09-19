@@ -88,6 +88,10 @@ module.exports = class Context {
     if (this._bag[name]) throw new Error(`Key already exists on another path: "${this._metadata.getPath(name)}"`);
   }
 
+  _checkKeyNotAvailable(name) {
+    if (!this._bag[name]) throw new Error(`Key does not exists: "${name}"`);
+  }
+
   _setNewValue(name, value, options = {}) {
     this._setValue(name, value, options);
   }
@@ -120,6 +124,18 @@ module.exports = class Context {
       return this;
     } catch (cause) {
       throw new Error(`Adding value on path "${path}/${name}": ${cause.message}`, { cause });
+    }
+  }
+
+  addAlias(path, name, value, options) {
+    try {
+      this._checkKeyAvailable(name);
+      this._checkKeyNotAvailable(value);
+      this._metadata.add(path, name, 'alias', value, options);
+      this._setNewValue(name, this._bag[value], options);
+      return this;
+    } catch (cause) {
+      throw new Error(`Adding alias on path "${path}/${name}": ${cause.message}`, { cause });
     }
   }
 

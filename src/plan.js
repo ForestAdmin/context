@@ -183,6 +183,9 @@ module.exports = class Plan {
       case 'value':
         context.addValue(path, name, value, options);
         break;
+      case 'alias':
+        context.addAlias(path, name, value, options);
+        break;
       case 'number':
         context.addNumber(path, name, value, options);
         break;
@@ -299,6 +302,13 @@ module.exports = class Plan {
 
   addPackage(name, item, options) {
     return this.addStep(name, item, options);
+  }
+
+  addAlias(name, aliasOf, options) {
+    if (!name) throw new Error(`name is falsy: ${name}`);
+    if (!aliasOf) throw new Error(`alias is falsy: ${name}`);
+    this._addEntry(name, 'alias', aliasOf, options);
+    return this;
   }
 
   addStep(name, item, options) {
