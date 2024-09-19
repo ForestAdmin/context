@@ -1,3 +1,10 @@
+## [1.41.3](https://github.com/ForestAdmin/context/compare/v1.41.2...v1.41.3) (2024-09-19)
+
+
+### Bug Fixes
+
+* **security:** patch body-parser dependency vulnerabilities ([#74](https://github.com/ForestAdmin/context/issues/74)) ([b140c6a](https://github.com/ForestAdmin/context/commit/b140c6a77867a177c6fde1859329b5d30be0a3f0))
+
 ## [1.41.2](https://github.com/ForestAdmin/context/compare/v1.41.1...v1.41.2) (2024-09-16)
 
 ## [1.41.1](https://github.com/ForestAdmin/context/compare/v1.41.0...v1.41.1) (2024-09-05)
