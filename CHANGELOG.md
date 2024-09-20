@@ -1,3 +1,12 @@
+## [1.42.1](https://github.com/ForestAdmin/context/compare/v1.42.0...v1.42.1) (2024-09-19)
+
+# [1.42.0](https://github.com/ForestAdmin/context/compare/v1.41.3...v1.42.0) (2024-09-19)
+
+
+### Features
+
+* introduce addAlias ([#75](https://github.com/ForestAdmin/context/issues/75)) ([c6f5cac](https://github.com/ForestAdmin/context/commit/c6f5caceb9c96689ba228d45d20027d2e5f1eace))
+
 ## [1.41.3](https://github.com/ForestAdmin/context/compare/v1.41.2...v1.41.3) (2024-09-19)
 
 

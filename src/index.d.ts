@@ -64,6 +64,7 @@ declare class Plan {
   addPackage(name: string, item: PlanDefinition, options?: PackageEntryOptions): Plan;
   addStep(name: string, item: PlanDefinition, options?: PackageEntryOptions): Plan;
   addValue<T>(name: string, value: T, options?: EntryOptions): Plan;
+  addAlias(name: string, aliasOf: string, options?: EntryOptions): Plan;
   addNumber(name: string, value: number, options?: NumberEntryOptions): Plan;
   addInstance<T>(name: string, value: T, options?: EntryOptions): Plan;
   addFunction<T extends Function>(

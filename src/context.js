@@ -129,6 +129,18 @@ module.exports = class Context {
     }
   }
 
+  addAlias(path, name, value, options) {
+    try {
+      this._checkKeyAvailable(name);
+      this._checkKeyNotAvailable(value);
+      this._metadata.add(path, name, 'alias', value, options);
+      this._setNewValue(name, this._bag[value], options);
+      return this;
+    } catch (cause) {
+      throw new Error(`Adding alias on path "${path}/${name}": ${cause.message}`, { cause });
+    }
+  }
+
   addRawValue(path, name, value, options) {
     try {
       this._checkKeyAvailable(name);

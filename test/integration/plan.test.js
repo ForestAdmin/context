@@ -185,6 +185,44 @@ describe('Plan', () => {
   });
 
   describe('the "addXXX" methods', () => {
+    describe('addAlias', () => {
+      it('adds an alias', () => {
+        expect.assertions(2);
+        const value = Symbol('value');
+        const plan = (rootPlan) => rootPlan
+            .addValue('key', value)
+            .addAlias('alias', 'key');
+
+        const { key, alias } = execute(plan);
+        expect(key).toBe(value);
+        expect(alias).toBe(value);
+      });
+
+      it('add a public alias from private key', () => {
+          expect.assertions(2);
+          const value = Symbol('value');
+          const plan = (rootPlan) => rootPlan
+              .addValue('key', value, { private: true })
+              .addAlias('alias', 'key', { private: false});
+
+          const { key, alias } = execute(plan);
+          expect(key).toBe(undefined);
+          expect(alias).toBe(value);
+      });
+
+      it('add a private alias from public key', () => {
+        expect.assertions(2);
+        const value = Symbol('value');
+        const plan = (rootPlan) => rootPlan
+            .addValue('key', value)
+            .addAlias('alias', 'key', { private: true});
+
+        const { key, alias } = execute(plan);
+        expect(key).toBe(value);
+        expect(alias).toBe(undefined);
+      });
+    });
+
     describe('addNumber method', () => {
       it('adds a number', () => {
         expect.assertions(1);
