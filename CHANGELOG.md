@@ -1,3 +1,5 @@
+## [1.42.2](https://github.com/ForestAdmin/context/compare/v1.42.1...v1.42.2) (2024-09-20)
+
 ## [1.42.1](https://github.com/ForestAdmin/context/compare/v1.42.0...v1.42.1) (2024-09-19)
 
 # [1.42.0](https://github.com/ForestAdmin/context/compare/v1.41.3...v1.42.0) (2024-09-19)
