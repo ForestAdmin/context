@@ -88,6 +88,12 @@ module.exports = class Context {
     if (this._bag[name]) throw new Error(`Key already exists on another path: "${this._metadata.getPath(name)}"`);
   }
 
+  _checkKeyNotAvailable(name) {
+    (Array.isArray(name) ? name : [name]).forEach((key) => {
+      if (!this._bag[key]) throw new Error(`Key does not exists: ${key}`);
+    });
+  }
+
   _setNewValue(name, value, options = {}) {
     this._setValue(name, value, options);
   }
@@ -266,6 +272,7 @@ module.exports = class Context {
 
   with(name, work) {
     try {
+      this._checkKeyNotAvailable(name);
       work(this._lookup(name));
       return this;
     } catch (cause) {
