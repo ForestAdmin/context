@@ -730,6 +730,30 @@ describe('Plan', () => {
           key2: 'value2',
         });
     });
+
+    it('runs a callback "with" missing context elements', () => {
+      const callback = jest.fn();
+      const planWithCallback = (plan) => plan
+        .addValue('key', 'value')
+        .addValue('key2', 'value2')
+        .with('not-existing-key', callback);
+
+      expect(() => execute(planWithCallback)).toThrow('Using with on path "/key2": Key does not exists: not-existing-key');
+
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('runs a callback "with" missing context elements', () => {
+      const callback = jest.fn();
+      const planWithCallback = (plan) => plan
+        .addValue('key', 'value')
+        .addValue('key2', 'value2')
+        .with(['not-existing-key', 'key2'], callback);
+
+      expect(() => execute(planWithCallback)).toThrow('Using with on path "/key2": Key does not exists: not-existing-key');
+
+      expect(callback).not.toHaveBeenCalled();
+    });
   });
 
   describe('private scope', () => {
@@ -791,9 +815,8 @@ describe('Plan', () => {
     });
 
     it('private value is not exposed to other steps', () => {
-      expect.assertions(7);
+      expect.assertions(4);
 
-      const receiveUndefined = jest.fn();
       const receiveTheValue = jest.fn();
 
       const plan = newPlan()
@@ -803,24 +826,19 @@ describe('Plan', () => {
             .addStep('step_0_1', (step1Plan) => step1Plan
               .addValue('step01Private', 'visible only in step_0_1', { private: true })
               .with('step01Private', receiveTheValue)
-              .with('rootPrivate', receiveTheValue))
-            .with('step01Private', receiveUndefined))
+              .with('rootPrivate', receiveTheValue)))
           .addStep('step_1', (step2Plan) => step2Plan
-            .with('step01Private', receiveUndefined)
             .with('rootPrivate', receiveTheValue)));
 
       const {
-        rootPrivate, step01Private,
+        rootPrivate,
       } = execute(plan);
 
       expect(rootPrivate).toBeUndefined();
-      expect(step01Private).toBeUndefined();
 
       expect(receiveTheValue).toHaveBeenNthCalledWith(1, 'visible only in step_0_1');
       expect(receiveTheValue).toHaveBeenNthCalledWith(2, 'value seen by root and sons');
       expect(receiveTheValue).toHaveBeenNthCalledWith(3, 'value seen by root and sons');
-      expect(receiveUndefined).toHaveBeenNthCalledWith(1, undefined);
-      expect(receiveUndefined).toHaveBeenNthCalledWith(2, undefined);
     });
 
     it('not private value is accessible from other steps', () => {

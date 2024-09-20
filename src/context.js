@@ -89,7 +89,9 @@ module.exports = class Context {
   }
 
   _checkKeyNotAvailable(name) {
-    if (!this._bag[name]) throw new Error(`Key does not exists: "${name}"`);
+    (Array.isArray(name) ? name : [name]).forEach((key) => {
+      if (!this._bag[key]) throw new Error(`Key does not exists: ${key}`);
+    });
   }
 
   _setNewValue(name, value, options = {}) {
@@ -282,6 +284,7 @@ module.exports = class Context {
 
   with(name, work) {
     try {
+      this._checkKeyNotAvailable(name);
       work(this._lookup(name));
       return this;
     } catch (cause) {
