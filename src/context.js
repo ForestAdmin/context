@@ -282,13 +282,13 @@ module.exports = class Context {
     }
   }
 
-  with(name, work) {
+  with(path, name, work) {
     try {
       this._checkKeyNotAvailable(name);
       work(this._lookup(name));
       return this;
     } catch (cause) {
-      throw new Error(`Using with on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+      throw new Error(`Using with on path "${path}/${name}": ${cause.message}`, { cause });
     }
   }
 
