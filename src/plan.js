@@ -211,7 +211,7 @@ module.exports = class Plan {
         context.addModule(path, name, value, options);
         break;
       case 'work':
-        context.with(value.name, value.work, options);
+        context.with(path, value.name, value.work, options);
         break;
       case 'step-in':
         context.openStep(path, value, options);
@@ -301,6 +301,7 @@ module.exports = class Plan {
   }
 
   addPackage(name, item, options) {
+    if (!item) throw new Error('Using addPackage: missing package definition');
     return this.addStep(name, item, options);
   }
 
