@@ -78,7 +78,7 @@ module.exports = class Metadata {
   findNamesInStepsPaths(stepsPaths) {
     return this._data
       .filter(({ type }) => type !== 'step')
-      .filter(({ path }) => stepsPaths.includes(path))
+      .filter(({ path }) => stepsPaths.some(stepPath => path.startsWith(stepPath)))
       .map(({ name }) => name);
   }
 };
