@@ -1,3 +1,10 @@
+## [1.42.4](https://github.com/ForestAdmin/context/compare/v1.42.3...v1.42.4) (2024-09-25)
+
+
+### Bug Fixes
+
+* intermediate private package does not expose content ([#79](https://github.com/ForestAdmin/context/issues/79)) ([83d6978](https://github.com/ForestAdmin/context/commit/83d69784cb42c38b1a3a1939face0f7e63fa071a))
+
 ## [1.42.3](https://github.com/ForestAdmin/context/compare/v1.42.2...v1.42.3) (2024-09-24)
 
 ## [1.42.2](https://github.com/ForestAdmin/context/compare/v1.42.1...v1.42.2) (2024-09-20)
