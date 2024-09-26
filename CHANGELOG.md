@@ -1,3 +1,10 @@
+## [1.42.5](https://github.com/ForestAdmin/context/compare/v1.42.4...v1.42.5) (2024-09-26)
+
+
+### Bug Fixes
+
+* with command type ([#80](https://github.com/ForestAdmin/context/issues/80)) ([abf0df2](https://github.com/ForestAdmin/context/commit/abf0df245d25f29c3966b1f8f797d2ce4348230e))
+
 ## [1.42.4](https://github.com/ForestAdmin/context/compare/v1.42.3...v1.42.4) (2024-09-25)
 
 
