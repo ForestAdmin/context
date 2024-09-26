@@ -189,8 +189,8 @@ describe('Plan', () => {
         expect.assertions(2);
         const value = Symbol('value');
         const plan = (rootPlan) => rootPlan
-            .addValue('key', value)
-            .addAlias('alias', 'key');
+          .addValue('key', value)
+          .addAlias('alias', 'key');
 
         const { key, alias } = execute(plan);
         expect(key).toBe(value);
@@ -198,23 +198,23 @@ describe('Plan', () => {
       });
 
       it('add a public alias from private key', () => {
-          expect.assertions(2);
-          const value = Symbol('value');
-          const plan = (rootPlan) => rootPlan
-              .addValue('key', value, { private: true })
-              .addAlias('alias', 'key', { private: false});
+        expect.assertions(2);
+        const value = Symbol('value');
+        const plan = (rootPlan) => rootPlan
+          .addValue('key', value, { private: true })
+          .addAlias('alias', 'key', { private: false });
 
-          const { key, alias } = execute(plan);
-          expect(key).toBeUndefined();
-          expect(alias).toBe(value);
+        const { key, alias } = execute(plan);
+        expect(key).toBeUndefined();
+        expect(alias).toBe(value);
       });
 
       it('add a private alias from public key', () => {
         expect.assertions(2);
         const value = Symbol('value');
         const plan = (rootPlan) => rootPlan
-            .addValue('key', value)
-            .addAlias('alias', 'key', { private: true});
+          .addValue('key', value)
+          .addAlias('alias', 'key', { private: true });
 
         const { key, alias } = execute(plan);
         expect(key).toBe(value);
@@ -855,6 +855,33 @@ describe('Plan', () => {
         .addPackage('p2', (step2Context) => step2Context
           .with('key', jest.fn()))))
         .toThrow('Using with on path "p2/key": Key does not exists: key');
+    });
+
+    it('p1/p2/private-p3/p4/key is not exposed to outside', () => {
+      expect(execute(newPlan()
+        .addPackage('p1', (p1) => p1
+          .addPackage('p2', p2 => p2
+            .addPackage('p3', p3 => p3
+              .addPackage('p4', p4 => p4
+                .addValue('key', 'value')), { private: true })))).key).toBeUndefined();
+    });
+
+    it('private-p1/p2/p3/p4/key is exposed to outside', () => {
+      expect(execute(newPlan()
+        .addPackage('p1', (p1) => p1
+          .addPackage('p2', p2 => p2
+            .addPackage('p3', p3 => p3
+              .addPackage('p4', p4 => p4
+                .addValue('key', 'value')))), { private: true })).key).toBe('value');
+    });
+
+    it('p1/p2/p3/p4/private-key is not exposed to outside', () => {
+      expect(execute(newPlan()
+        .addPackage('p1', (p1) => p1
+          .addPackage('p2', p2 => p2
+            .addPackage('p3', p3 => p3
+              .addPackage('p4', p4 => p4
+                .addValue('key', 'value', { private: true })))))).key).toBeUndefined();
     });
   });
 
