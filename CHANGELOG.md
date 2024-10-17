@@ -1,3 +1,10 @@
+## [1.42.6](https://github.com/ForestAdmin/context/compare/v1.42.5...v1.42.6) (2024-10-17)
+
+
+### Bug Fixes
+
+* **security:** patch cookie dependency vulnerabilities ([#81](https://github.com/ForestAdmin/context/issues/81)) ([dd73f1a](https://github.com/ForestAdmin/context/commit/dd73f1a0e06fad8424b86868a957b996ebd67d06))
+
 ## [1.42.5](https://github.com/ForestAdmin/context/compare/v1.42.4...v1.42.5) (2024-09-26)
 
 
