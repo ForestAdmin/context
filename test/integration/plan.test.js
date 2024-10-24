@@ -883,6 +883,17 @@ describe('Plan', () => {
               .addPackage('p4', p4 => p4
                 .addValue('key', 'value', { private: true })))))).key).toBeUndefined();
     });
+
+    it('value in private sub-step redeclared in parent step is exposed to context', () => {
+      const plan = newPlan()
+        .addPackage('p1', (domainPlan) => domainPlan
+          .addPackage('p2', (patchPlan) => patchPlan
+            .addPackage('p3', (servicePlan) => servicePlan
+              .addValue('key', 'value'), { private: true }))
+          .addValue('key', 'overriden-value'));
+
+      expect(execute(plan).key).toBe('overriden-value');
+    });
   });
 
   describe('replace', () => {

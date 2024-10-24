@@ -71,6 +71,7 @@ module.exports = class Metadata {
     return this._data
       .filter(({ type }) => type === 'step')
       .filter(({ path }) => path.startsWith(`${parentStepPath}/`))
+      .filter(({ path }) => path.split('/').length === parentStepPath.split('/').length + 1)
       .filter(({ options }) => options && options.private)
       .map(({ path }) => path);
   }
