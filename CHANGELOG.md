@@ -1,3 +1,10 @@
+## [1.42.7](https://github.com/ForestAdmin/context/compare/v1.42.6...v1.42.7) (2024-10-24)
+
+
+### Bug Fixes
+
+* allow reuse name of sub-sub-step value ([#82](https://github.com/ForestAdmin/context/issues/82)) ([2c910ed](https://github.com/ForestAdmin/context/commit/2c910ed76444408fd0fb496087cc01d9d1b17fad))
+
 ## [1.42.6](https://github.com/ForestAdmin/context/compare/v1.42.5...v1.42.6) (2024-10-17)
 
 
