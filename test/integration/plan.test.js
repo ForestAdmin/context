@@ -1,7 +1,6 @@
 /* eslint-disable  sonarjs/no-duplicate-string */
 /* eslint-disable global-require */
 /* eslint-disable max-classes-per-file */
-const Context = require('../../src/context');
 const { execute, newPlan, init, inject } = require('../../src/index');
 
 describe('Plan', () => {
@@ -185,6 +184,44 @@ describe('Plan', () => {
   });
 
   describe('the "addXXX" methods', () => {
+    describe('addAlias', () => {
+      it('adds an alias', () => {
+        expect.assertions(2);
+        const value = Symbol('value');
+        const plan = (rootPlan) => rootPlan
+          .addValue('key', value)
+          .addAlias('alias', 'key');
+
+        const { key, alias } = execute(plan);
+        expect(key).toBe(value);
+        expect(alias).toBe(value);
+      });
+
+      it('add a public alias from private key', () => {
+        expect.assertions(2);
+        const value = Symbol('value');
+        const plan = (rootPlan) => rootPlan
+          .addValue('key', value, { private: true })
+          .addAlias('alias', 'key', { private: false });
+
+        const { key, alias } = execute(plan);
+        expect(key).toBeUndefined();
+        expect(alias).toBe(value);
+      });
+
+      it('add a private alias from public key', () => {
+        expect.assertions(2);
+        const value = Symbol('value');
+        const plan = (rootPlan) => rootPlan
+          .addValue('key', value)
+          .addAlias('alias', 'key', { private: true });
+
+        const { key, alias } = execute(plan);
+        expect(key).toBe(value);
+        expect(alias).toBeUndefined();
+      });
+    });
+
     describe('addNumber method', () => {
       it('adds a number', () => {
         expect.assertions(1);
@@ -295,12 +332,12 @@ describe('Plan', () => {
         expect.assertions(1);
 
         const plan = (rootPlan) => rootPlan
-          .addPackage('values', (valuesPlan) => valuesPlan
-            .addValue('valueKey', 'oneValue'))
-          .addPackage('otherValues', (otherValuesPlan) => otherValuesPlan
-            .addValue('valueKey', 'otherOneValue'));
+          .addPackage('packageOne', (planOne) => planOne
+            .addValue('key', 'value'))
+          .addPackage('packageTwo', (planTwo) => planTwo
+            .addValue('key', 'conflictValue'));
 
-        expect(() => execute(plan)).toThrow('Adding value on path "otherValues/valueKey": Key already exists: "valueKey"');
+        expect(() => execute(plan)).toThrow('Adding value on path "packageTwo/key": Key already exists on another path: "packageOne/key"');
       });
 
       it('add a value lazily', () => {
@@ -529,7 +566,7 @@ describe('Plan', () => {
           );
 
         const { keyPlusOne } = execute(planWithFactoryFunction);
-        expect(keyPlusOne).toBe(undefined);
+        expect(keyPlusOne).toBeUndefined();
       });
 
       it('should throw if one of the functions is undefined', () => {
@@ -692,111 +729,159 @@ describe('Plan', () => {
           key2: 'value2',
         });
     });
+
+    it('runs a callback "with" missing context elements', () => {
+      const callback = jest.fn();
+      const planWithCallback = (plan) => plan
+        .addValue('key', 'value')
+        .addValue('key2', 'value2')
+        .with('not-existing-key', callback);
+
+      expect(() => execute(planWithCallback)).toThrow('Using with on path "/not-existing-key": Key does not exists: not-existing-key');
+
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('with receiving an array with missing key', () => {
+      const callback = jest.fn();
+      const planWithCallback = (plan) => plan
+        .addValue('key', 'value')
+        .addValue('key2', 'value2')
+        .with(['not-existing-key', 'key2'], callback);
+
+      expect(() => execute(planWithCallback)).toThrow('Using with on path "/not-existing-key,key2": Key does not exists: not-existing-key');
+
+      expect(callback).not.toHaveBeenCalled();
+    });
   });
 
-  describe('private scope', () => {
-    it('a global private is not exposed to context', () => {
-      expect.assertions(1);
-
-      const plan = newPlan()
-        .addValue('hidden', 'toto', { private: true });
-      const { hidden } = execute(plan);
-
-      expect(hidden).toBe(undefined);
+  describe('{ private: true }', () => {
+    it('key is exposed to package1', () => {
+      expect(() => execute(newPlan()
+        .addValue('key', 'value')
+        .addPackage('p1', p1 => p1.with('key', jest.fn()))))
+        .not.toThrow();
     });
 
-    it('a private value in step is not exposed to context', () => {
-      expect.assertions(1);
-
-      const plan = newPlan()
-        .addStep('step1', (step1Context) => step1Context
-          .addInstance('hidden', 'toto', { private: true }));
-      const { hidden } = execute(plan);
-
-      expect(hidden).toBe(undefined);
+    it('private-key is not exposed outside', () => {
+      expect(execute(newPlan()
+        .addValue('key', 'value', {private: true})).key).toBeUndefined();
     });
 
-    it('private value is accessible from same step', () => {
-      expect.assertions(1);
-
-      class HiddenService {
-        constructor({ privateValue }) {
-          this._privateValue = privateValue;
-        }
-      }
-
-      const { hiddenService } = execute(newPlan()
-        .addStep('step1', (step1Context) => step1Context
-          .addValue('privateValue', 'toto', { private: true })
-          .addUsingClass('hiddenService', HiddenService)));
-
-      expect(hiddenService._privateValue).toBe('toto');
+    it('private-key is exposed to package1', () => {
+      expect(() => execute(newPlan()
+        .addValue('key', 'value', {private: true})
+        .addPackage('p1', p1 => p1.with('key', jest.fn()))))
+        .not.toThrow();
     });
 
-    it('a value from a private step is not exposed to context ', () => {
-      expect.assertions(1);
-
-      const plan = newPlan()
-        .addStep(
-          'main',
-          (planMain) => planMain.addStep(
-            'privateStep',
-            (privateStep) => privateStep.addValue('invisibleKey', 'invisibleValue'),
-            { private: true },
-          ),
-        );
-
-      const context = new Context();
-      const { invisibleKey } = execute(plan, context);
-
-      expect(invisibleKey).toBeUndefined();
+    it('private-package1/value is exposed to outside', () => {
+      expect(execute(newPlan()
+        .addPackage('p1', p1 => p1
+          .addValue('key', 'value'), {private: true})).key)
+        .toBe('value');
     });
 
-    it('private value is not exposed to other steps', () => {
-      expect.assertions(7);
-
-      const receiveUndefined = jest.fn();
-      const receiveTheValue = jest.fn();
-
-      const plan = newPlan()
-        .addStep('root', (rootPlan) => rootPlan
-          .addValue('rootPrivate', 'value seen by root and sons', { private: true })
-          .addStep('step_0', (step0plan) => step0plan
-            .addStep('step_0_1', (step1Plan) => step1Plan
-              .addValue('step01Private', 'visible only in step_0_1', { private: true })
-              .with('step01Private', receiveTheValue)
-              .with('rootPrivate', receiveTheValue))
-            .with('step01Private', receiveUndefined))
-          .addStep('step_1', (step2Plan) => step2Plan
-            .with('step01Private', receiveUndefined)
-            .with('rootPrivate', receiveTheValue)));
-
-      const {
-        rootPrivate, step01Private,
-      } = execute(plan);
-
-      expect(rootPrivate).toBeUndefined();
-      expect(step01Private).toBeUndefined();
-
-      expect(receiveTheValue).toHaveBeenNthCalledWith(1, 'visible only in step_0_1');
-      expect(receiveTheValue).toHaveBeenNthCalledWith(2, 'value seen by root and sons');
-      expect(receiveTheValue).toHaveBeenNthCalledWith(3, 'value seen by root and sons');
-      expect(receiveUndefined).toHaveBeenNthCalledWith(1, undefined);
-      expect(receiveUndefined).toHaveBeenNthCalledWith(2, undefined);
+    it('private-package1/value is exposed to root', () => {
+      expect(() => execute(newPlan()
+        .addPackage('p1', (p1) => p1.addValue('key', 'value'), {private: true})
+        .with('key', jest.fn())))
+        .not.toThrow();
     });
 
-    it('not private value is accessible from other steps', () => {
-      expect.assertions(1);
+    it('private-package1/value is exposed to package2', () => {
+      expect(() => execute(newPlan()
+        .addPackage('p1', (p1) => p1
+          .addValue('key', 'value'), {private: true})
+        .addPackage('p2', (p2) => p2
+          .with('key', jest.fn()))))
+        .not.toThrow();
+    });
 
-      const step2hiddenNotAccessibleFunction = jest.fn();
+    it('package1/private-key is not exposed to outside', () => {
+      expect(execute(newPlan()
+        .addPackage('p1', p1 => p1.addValue('key', 'value', {private: true}))).key)
+        .toBeUndefined();
+    });
 
-      execute(newPlan()
-        .addStep('step1', (step1Context) => step1Context
-          .addInstance('hidden', 'toto', { private: false }))
-        .addStep('step2', (step2Context) => step2Context
-          .with('hidden', step2hiddenNotAccessibleFunction)));
+    it('package1/private-key is exposed to package1', () => {
+      expect(() => execute(newPlan()
+        .addPackage('p1', p1 => p1
+          .addValue('key', 'value', {private: true})
+          .with('key', jest.fn()))))
+        .not.toThrow();
+    });
 
-      expect(step2hiddenNotAccessibleFunction).toHaveBeenCalledWith('toto');
+    it('package1/private-package2/key is not exposed to outside', () => {
+      expect(execute(newPlan()
+        .addPackage('p1', p1 => p1
+          .addPackage('p2', p2 => p2
+            .addValue('key', 'value'), {private: true}))).key)
+        .toBeUndefined();
+    });
+
+    it('package1/private-package2/key is exposed to package1', () => {
+      expect(() => expect(execute(newPlan()
+        .addPackage('p1', p1 => p1
+          .addPackage('p2', p2 => p2
+            .addValue('key', 'value'), {private: true})
+          .with('key', jest.fn())))))
+        .not.toThrow();
+    });
+
+    it('package1/private-package2/key is not exposed to package1/private-package3', () => {
+      expect(() => expect(execute(newPlan()
+        .addPackage('p1', p1 => p1
+          .addPackage('p2', p2 => p2
+            .addValue('key', 'value'), {private: true})
+          .addPackage('p3', p3 => p3
+            .with('key', jest.fn()), {private: true})))))
+        .not.toThrow();
+    });
+
+    it('package1/private-package2/key is exposed to package2', () => {
+      expect(() => expect(execute(newPlan()
+        .addPackage('p1', p1 => p1
+          .addPackage('private-p2', p2 => p2
+            .addValue('key', 'value')
+            .with('key', jest.fn()), {private: true})))))
+        .not.toThrow();
+    });
+
+    it('package1/private-value is not exposed to package2', () => {
+      expect(() => execute(newPlan()
+        .addPackage('p1', (p1) => p1
+          .addValue('key', 'value', {private: true}))
+        .addPackage('p2', (step2Context) => step2Context
+          .with('key', jest.fn()))))
+        .toThrow('Using with on path "p2/key": Key does not exists: key');
+    });
+
+    it('p1/p2/private-p3/p4/key is not exposed to outside', () => {
+      expect(execute(newPlan()
+        .addPackage('p1', (p1) => p1
+          .addPackage('p2', p2 => p2
+            .addPackage('p3', p3 => p3
+              .addPackage('p4', p4 => p4
+                .addValue('key', 'value')), { private: true })))).key).toBeUndefined();
+    });
+
+    it('private-p1/p2/p3/p4/key is exposed to outside', () => {
+      expect(execute(newPlan()
+        .addPackage('p1', (p1) => p1
+          .addPackage('p2', p2 => p2
+            .addPackage('p3', p3 => p3
+              .addPackage('p4', p4 => p4
+                .addValue('key', 'value')))), { private: true })).key).toBe('value');
+    });
+
+    it('p1/p2/p3/p4/private-key is not exposed to outside', () => {
+      expect(execute(newPlan()
+        .addPackage('p1', (p1) => p1
+          .addPackage('p2', p2 => p2
+            .addPackage('p3', p3 => p3
+              .addPackage('p4', p4 => p4
+                .addValue('key', 'value', { private: true })))))).key).toBeUndefined();
     });
 
     it('value in private sub-step redeclared in parent step is exposed to context', () => {
@@ -1141,6 +1226,90 @@ describe('Plan', () => {
         { path: 'zero/first', name: 'one', type: 'value', value: 'value' },
       ];
       expect(entries).toStrictEqual(expectedEntries);
+    });
+  });
+
+  describe('conditional package (options.if)', () => {
+    describe('when parameter is a boolean', () => {
+      describe('when true', () => {
+        it('should include the package to the context', () => {
+          const packageValue = Symbol('packageValue');
+          const { value, foo } = execute((plan) => plan.addPackage(
+            'package',
+            (packagePlan) => packagePlan.addValue('value', packageValue),
+            { if: true },
+          ).addValue('foo', 'bar'));
+
+          expect(value).toStrictEqual(packageValue);
+          expect(foo).toStrictEqual('bar');
+        });
+      });
+
+      describe('when false', () => {
+        it('should not include the package to the context', () => {
+          const packageValue = Symbol('packageValue');
+          const { value, foo } = execute((plan) => plan.addPackage(
+            'package',
+            (packagePlan) => packagePlan.addValue('value', packageValue),
+            { if: false },
+          ).addValue('foo', 'bar'));
+
+          expect(value).toBeUndefined();
+          expect(foo).toStrictEqual('bar');
+        });
+      });
+    });
+
+    describe('when parameter is a string', () => {
+      describe('when it does not match a key in the context', () => {
+        it('throws', () => {
+          const throwingPlan = (plan) => plan.addPackage(
+            'package',
+            (packagePlan) => packagePlan.addValue('value', Symbol('packageValue')),
+            { if: 'key' },
+          );
+
+          expect(() => execute(throwingPlan)).toThrow('Adding package on path \'package\': Invalid option \'if\': Key \'key\' does not exist in the context');
+        });
+      });
+
+      describe('when it match a key in the context', () => {
+        describe('when the value is truthy', () => {
+          it('should include the package to the context', () => {
+            const packageValue = Symbol('packageValue');
+            const conditionalPlan = (plan) => plan
+              .addValue('condition', 'truthyValue')
+              .addPackage(
+                'package',
+                (packagePlan) => packagePlan.addValue('value', packageValue),
+                { if: 'condition' },
+              );
+
+            expect(execute(conditionalPlan).value).toStrictEqual(packageValue);
+          });
+        });
+
+        describe('when the value is falsy', () => {
+          it('should not include the package to the context', () => {
+            const packageValue = Symbol('packageValue');
+            const conditionalPlan = (plan) => plan
+              .addValue('falsyValue', '')
+              .addPackage(
+                'package',
+                (packagePlan) => packagePlan
+                  .addValue('value', packageValue)
+                  .addPackage('nestedPackage', (nestedPackagePlan) => nestedPackagePlan.addValue('nestedValue', 'nestedValue')),
+                { if: 'falsyValue' },
+              ).addValue('foo', 'bar');
+
+            const { value, nestedValue, foo } = execute(conditionalPlan);
+
+            expect(value).toBeUndefined();
+            expect(nestedValue).toBeUndefined();
+            expect(foo).toStrictEqual('bar');
+          });
+        });
+      });
     });
   });
 });

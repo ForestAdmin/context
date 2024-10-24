@@ -11,6 +11,7 @@
     "node": true
   },
   "rules": {
+    "arrow-parens": "off",
     "object-curly-newline": 0,
     "arrow-body-style": 0,
     "implicit-arrow-linebreak": 0,

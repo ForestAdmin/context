@@ -1,3 +1,60 @@
+## [1.42.6](https://github.com/ForestAdmin/context/compare/v1.42.5...v1.42.6) (2024-10-17)
+
+
+### Bug Fixes
+
+* **security:** patch cookie dependency vulnerabilities ([#81](https://github.com/ForestAdmin/context/issues/81)) ([dd73f1a](https://github.com/ForestAdmin/context/commit/dd73f1a0e06fad8424b86868a957b996ebd67d06))
+
+## [1.42.5](https://github.com/ForestAdmin/context/compare/v1.42.4...v1.42.5) (2024-09-26)
+
+
+### Bug Fixes
+
+* with command type ([#80](https://github.com/ForestAdmin/context/issues/80)) ([abf0df2](https://github.com/ForestAdmin/context/commit/abf0df245d25f29c3966b1f8f797d2ce4348230e))
+
+## [1.42.4](https://github.com/ForestAdmin/context/compare/v1.42.3...v1.42.4) (2024-09-25)
+
+
+### Bug Fixes
+
+* intermediate private package does not expose content ([#79](https://github.com/ForestAdmin/context/issues/79)) ([83d6978](https://github.com/ForestAdmin/context/commit/83d69784cb42c38b1a3a1939face0f7e63fa071a))
+
+## [1.42.3](https://github.com/ForestAdmin/context/compare/v1.42.2...v1.42.3) (2024-09-24)
+
+## [1.42.2](https://github.com/ForestAdmin/context/compare/v1.42.1...v1.42.2) (2024-09-20)
+
+## [1.42.1](https://github.com/ForestAdmin/context/compare/v1.42.0...v1.42.1) (2024-09-19)
+
+# [1.42.0](https://github.com/ForestAdmin/context/compare/v1.41.3...v1.42.0) (2024-09-19)
+
+
+### Features
+
+* introduce addAlias ([#75](https://github.com/ForestAdmin/context/issues/75)) ([c6f5cac](https://github.com/ForestAdmin/context/commit/c6f5caceb9c96689ba228d45d20027d2e5f1eace))
+
+## [1.41.3](https://github.com/ForestAdmin/context/compare/v1.41.2...v1.41.3) (2024-09-19)
+
+
+### Bug Fixes
+
+* **security:** patch body-parser dependency vulnerabilities ([#74](https://github.com/ForestAdmin/context/issues/74)) ([b140c6a](https://github.com/ForestAdmin/context/commit/b140c6a77867a177c6fde1859329b5d30be0a3f0))
+
+## [1.41.2](https://github.com/ForestAdmin/context/compare/v1.41.1...v1.41.2) (2024-09-16)
+
+## [1.41.1](https://github.com/ForestAdmin/context/compare/v1.41.0...v1.41.1) (2024-09-05)
+
+
+### Bug Fixes
+
+* **security:** patch micromatch dependency vulnerabilities ([#72](https://github.com/ForestAdmin/context/issues/72)) ([f7af2c6](https://github.com/ForestAdmin/context/commit/f7af2c6f42fea802cbf059b3c401ef73c4ce8b3c))
+
+# [1.41.0](https://github.com/ForestAdmin/context/compare/v1.40.13...v1.41.0) (2024-07-25)
+
+
+### Features
+
+* introduce conditional packages ([#71](https://github.com/ForestAdmin/context/issues/71)) ([b8fab9c](https://github.com/ForestAdmin/context/commit/b8fab9cc301ded5b752bf6c20b15263a9faf9d32))
+
 ## [1.40.13](https://github.com/ForestAdmin/context/compare/v1.40.12...v1.40.13) (2024-07-17)
 
 ## [1.40.12](https://github.com/ForestAdmin/context/compare/v1.40.11...v1.40.12) (2024-06-24)

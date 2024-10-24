@@ -173,12 +173,18 @@ module.exports = class Plan {
     const {
       path, type, name, value, options,
     } = entry;
+
+    if (context.isEntryIgnorable(entry)) return;
+
     switch (type) {
       case 'replacement':
         context.addReplacement(path, name, value, options);
         break;
       case 'value':
         context.addValue(path, name, value, options);
+        break;
+      case 'alias':
+        context.addAlias(path, name, value, options);
         break;
       case 'number':
         context.addNumber(path, name, value, options);
@@ -205,7 +211,7 @@ module.exports = class Plan {
         context.addModule(path, name, value, options);
         break;
       case 'work':
-        context.with(value.name, value.work, options);
+        context.with(path, value.name, value.work, options);
         break;
       case 'step-in':
         context.openStep(path, value, options);
@@ -295,7 +301,15 @@ module.exports = class Plan {
   }
 
   addPackage(name, item, options) {
+    if (!item) throw new Error('Using addPackage: missing package definition');
     return this.addStep(name, item, options);
+  }
+
+  addAlias(name, aliasOf, options) {
+    if (!name) throw new Error(`name is falsy: ${name}`);
+    if (!aliasOf) throw new Error(`alias is falsy: ${name}`);
+    this._addEntry(name, 'alias', aliasOf, options);
+    return this;
   }
 
   addStep(name, item, options) {

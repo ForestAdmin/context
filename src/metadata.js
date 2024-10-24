@@ -19,7 +19,11 @@ module.exports = class Metadata {
   }
 
   getCurrentPath() {
-    const requisite = this._getRequisite(this._lastAdded);
+    return this.getPath(this._lastAdded);
+  }
+
+  getPath(name) {
+    const requisite = this._getRequisite(name);
     return `${requisite.path}/${requisite.name}`;
   }
 
@@ -75,7 +79,7 @@ module.exports = class Metadata {
   findNamesInStepsPaths(stepsPaths) {
     return this._data
       .filter(({ type }) => type !== 'step')
-      .filter(({ path }) => stepsPaths.includes(path))
+      .filter(({ path }) => stepsPaths.some(stepPath => path.startsWith(stepPath)))
       .map(({ name }) => name);
   }
 };

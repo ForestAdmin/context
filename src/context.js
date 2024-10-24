@@ -5,6 +5,7 @@ module.exports = class Context {
     this._bag = {};
     this._bag.assertPresent = this._makeAssertPresent(this._bag).bind(this);
     this._metadata = new Metadata();
+    this._currentStepIgnorable = null;
   }
 
   seal() {
@@ -37,11 +38,38 @@ module.exports = class Context {
   }
 
   openStep(path, name, options) {
+    if (this._tryMarkCurrentStepAsIgnored(path, options)) return;
     this._metadata.add(path, name, 'step', null, options);
   }
 
   closeStep(path) {
+    this._currentStepIgnorable = null;
     this.flushPrivates(path);
+  }
+
+  _tryMarkCurrentStepAsIgnored(path, options) {
+    if (options) {
+      const optionsIfIsFalse = typeof options.if === 'boolean' && !options.if;
+      const contextValueDoesNotExists = typeof options.if === 'string' && this.get()[options.if] === undefined;
+      const contextValueIsFalsy = typeof options.if === 'string' && !this.get()[options.if];
+
+      if (contextValueDoesNotExists) throw new Error(`Adding package on path '${path}': Invalid option 'if': Key '${options.if}' does not exist in the context`);
+
+      if (optionsIfIsFalse || contextValueIsFalsy) {
+        this._currentStepIgnorable = path;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  isEntryIgnorable({ path, type }) {
+    const currentStepIsIgnored = this._currentStepIgnorable !== null;
+    const entryIsStepOut = type === 'step-out';
+    const entryPathEqualsCurrentlyIgnoredPath = this._currentStepIgnorable === path;
+    const entryIsClosingCurrentIgnoredStep = entryIsStepOut && entryPathEqualsCurrentlyIgnoredPath;
+
+    return currentStepIsIgnored && !entryIsClosingCurrentIgnoredStep;
   }
 
   flushPrivates(path) {
@@ -57,26 +85,33 @@ module.exports = class Context {
   }
 
   _checkKeyAvailable(name) {
-    if (this._bag[name]) throw new Error(`Adding value on path "${this._metadata.getCurrentPath()}": Key already exists: "${name}"`);
+    if (this._bag[name]) throw new Error(`Key already exists on another path: "${this._metadata.getPath(name)}"`);
+  }
+
+  _checkKeyNotAvailable(name) {
+    (Array.isArray(name) ? name : [name]).forEach((key) => {
+      if (!this._bag[key]) throw new Error(`Key does not exists: ${key}`);
+    });
   }
 
   _setNewValue(name, value, options = {}) {
-    this._checkKeyAvailable(name);
     this._setValue(name, value, options);
   }
 
   addReplacement(path, name, value, options) {
     try {
+      this._checkKeyAvailable(name);
       this._metadata.add(path, name, 'replacement', value, options);
       this._setNewValue(name, value, options);
       return this;
     } catch (cause) {
-      throw new Error(`Adding replacement on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+      throw new Error(`Adding replacement on path "${path}/${name}": ${cause.message}`, { cause });
     }
   }
 
   addValue(path, name, value, options) {
     try {
+      this._checkKeyAvailable(name);
       this._metadata.add(path, name, 'value', value, options);
 
       const realValue = (typeof value === 'function') ? value(this.get()) : value;
@@ -90,22 +125,36 @@ module.exports = class Context {
       );
       return this;
     } catch (cause) {
-      throw new Error(`Adding value on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+      throw new Error(`Adding value on path "${path}/${name}": ${cause.message}`, { cause });
+    }
+  }
+
+  addAlias(path, name, value, options) {
+    try {
+      this._checkKeyAvailable(name);
+      this._checkKeyNotAvailable(value);
+      this._metadata.add(path, name, 'alias', value, options);
+      this._setNewValue(name, this._bag[value], options);
+      return this;
+    } catch (cause) {
+      throw new Error(`Adding alias on path "${path}/${name}": ${cause.message}`, { cause });
     }
   }
 
   addRawValue(path, name, value, options) {
     try {
+      this._checkKeyAvailable(name);
       this._metadata.add(path, name, 'value', value, options);
       this._setNewValue(name, value, options);
       return this;
     } catch (cause) {
-      throw new Error(`Adding raw value on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+      throw new Error(`Adding raw value on path "${path}/${name}": ${cause.message}`, { cause });
     }
   }
 
   addNumber(path, name, value, options = {}) {
     try {
+      this._checkKeyAvailable(name);
       this._metadata.add(path, name, 'number', value, options);
       const {
         min = Number.NEGATIVE_INFINITY,
@@ -137,12 +186,13 @@ module.exports = class Context {
       this._setNewValue(name, expectedNumber, options);
       return this;
     } catch (cause) {
-      throw new Error(`Adding number on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+      throw new Error(`Adding number on path "${path}/${name}": ${cause.message}`, { cause });
     }
   }
 
   addInstance(path, name, instance, options) {
     try {
+      this._checkKeyAvailable(name);
       this._metadata.add(path, name, 'instance', instance, options);
       this._setNewValue(
         name,
@@ -151,22 +201,24 @@ module.exports = class Context {
       );
       return this;
     } catch (cause) {
-      throw new Error(`Adding instance on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+      throw new Error(`Adding instance on path "${path}/${name}": ${cause.message}`, { cause });
     }
   }
 
   addFunction(path, name, theFunction, options) {
     try {
+      this._checkKeyAvailable(name);
       this._metadata.add(path, name, 'function', theFunction, options);
       this._setNewValue(name, theFunction, options);
       return this;
     } catch (cause) {
-      throw new Error(`Adding function on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+      throw new Error(`Adding function on path "${path}/${name}": ${cause.message}`, { cause });
     }
   }
 
   addUsingFunction(path, name, factoryFunction, options) {
     try {
+      this._checkKeyAvailable(name);
       this._metadata.add(path, name, 'function*', factoryFunction, options);
       const bag = this.get();
       const value = factoryFunction(bag);
@@ -178,14 +230,14 @@ module.exports = class Context {
       this._setNewValue(name, value, options);
       return this;
     } catch (cause) {
-      throw new Error(`Using factory function on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+      throw new Error(`Using factory function on path "${path}/${name}": ${cause.message}`, { cause });
     }
   }
 
   addUsingFunctionStack(path, name, factoryFunctionList, options) {
     try {
-      this._metadata.add(path, name, 'function**', factoryFunctionList, options);
       this._checkKeyAvailable(name);
+      this._metadata.add(path, name, 'function**', factoryFunctionList, options);
       factoryFunctionList.forEach((factoryFunction) => {
         const bag = this.get();
         const value = factoryFunction(bag);
@@ -199,23 +251,25 @@ module.exports = class Context {
 
       return this;
     } catch (cause) {
-      throw new Error(`Using factory function stack on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+      throw new Error(`Using factory function stack on path "${path}/${name}": ${cause.message}`, { cause });
     }
   }
 
   addUsingClass(path, name, Class, options) {
     try {
+      this._checkKeyAvailable(name);
       this._metadata.add(path, name, 'class', Class, options);
       const instance = this._instanciate(path, name, Class, options);
       this._setNewValue(name, instance, options);
       return this;
     } catch (cause) {
-      throw new Error(`Using class on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+      throw new Error(`Using class on path "${path}/${name}": ${cause.message}`, { cause });
     }
   }
 
   addModule(path, name, module, options) {
     try {
+      this._checkKeyAvailable(name);
       this._metadata.add(path, name, 'module', module, options);
       this._setNewValue(
         name,
@@ -224,16 +278,17 @@ module.exports = class Context {
       );
       return this;
     } catch (cause) {
-      throw new Error(`Using module on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+      throw new Error(`Using module on path "${path}/${name}": ${cause.message}`, { cause });
     }
   }
 
-  with(name, work) {
+  with(path, name, work) {
     try {
+      this._checkKeyNotAvailable(name);
       work(this._lookup(name));
       return this;
     } catch (cause) {
-      throw new Error(`Using with on path "${this._metadata.getCurrentPath()}": ${cause.message}`, { cause });
+      throw new Error(`Using with on path "${path}/${name}": ${cause.message}`, { cause });
     }
   }
 
@@ -244,7 +299,7 @@ module.exports = class Context {
       const localContext = map ? this._mapContext(map) : this.get();
       return new ClassToInstanciate(localContext);
     } catch (cause) {
-      throw new Error(`Instanciating class on path "${this._metadata.getCurrentPath()}" - ${cause.message}`, { cause });
+      throw new Error(`Instanciating class on path "${path}/${name}" - ${cause.message}`, { cause });
     }
   }
 
