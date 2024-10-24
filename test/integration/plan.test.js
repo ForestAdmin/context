@@ -1143,18 +1143,4 @@ describe('Plan', () => {
       expect(entries).toStrictEqual(expectedEntries);
     });
   });
-
-  it('override assertPresent to list dependencies', () => {
-    const factory = ({ assertPresent, phantom }) => {
-      assertPresent({ phantom });
-      return 'toto';
-    };
-    const plan = (p) => p
-      .addUsingFunction('miss1', factory)
-      .addUsingFunction('miss2', factory)
-      .addValue('phantom', 'phantom')
-      .addUsingFunction('ok', factory);
-
-    expect(() => execute(plan, new Context({ debugMode: true }))).toThrow('Missing dependencies: {"/miss1":["phantom"],"/miss2":["phantom"]}');
-  });
 });

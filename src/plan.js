@@ -5,7 +5,7 @@ const Context = require('./context');
 
 const METADATA_HOOK = 'metadata-hook';
 
-class Plan {
+module.exports = class Plan {
   constructor(_entries = [], verbose = false) {
     this._entries = _entries;
     this._stepsWalk = [];
@@ -400,7 +400,4 @@ class Plan {
     this._addEntry(Symbol(METADATA_HOOK), METADATA_HOOK, hook);
     return this;
   }
-}
-
-module.exports = Plan;
-module.exports.Context = Context;
+};
