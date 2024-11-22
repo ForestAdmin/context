@@ -1,3 +1,10 @@
+## [1.42.8](https://github.com/ForestAdmin/context/compare/v1.42.7...v1.42.8) (2024-11-22)
+
+
+### Bug Fixes
+
+* **security:** patch micromatch dependency vulnerabilities ([#83](https://github.com/ForestAdmin/context/issues/83)) ([d7b7f8b](https://github.com/ForestAdmin/context/commit/d7b7f8b5a6884b8e81eda660e4ffa65d0c5bb6f2))
+
 ## [1.42.7](https://github.com/ForestAdmin/context/compare/v1.42.6...v1.42.7) (2024-10-24)
 
 
