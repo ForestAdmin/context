@@ -1,3 +1,10 @@
+## [1.42.9](https://github.com/ForestAdmin/context/compare/v1.42.8...v1.42.9) (2024-11-22)
+
+
+### Bug Fixes
+
+* **security:** patch cross-spawn dependency vulnerabilities ([#84](https://github.com/ForestAdmin/context/issues/84)) ([8c392f6](https://github.com/ForestAdmin/context/commit/8c392f6d40223c52bfe26d8e57ec70396506716e))
+
 ## [1.42.8](https://github.com/ForestAdmin/context/compare/v1.42.7...v1.42.8) (2024-11-22)
 
 
