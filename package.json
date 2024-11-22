@@ -53,5 +53,8 @@
     "semantic-release-slack-bot": "3.5.2",
     "sequelize": "6.29.0",
     "simple-git": "3.17.0"
+  },
+  "resolutions": {
+    "semantic-release-slack-bot/**/micromatch": "^4.0.8"
   }
 }
