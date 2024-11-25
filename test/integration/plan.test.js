@@ -765,12 +765,12 @@ describe('Plan', () => {
 
     it('private-key is not exposed outside', () => {
       expect(execute(newPlan()
-        .addValue('key', 'value', {private: true})).key).toBeUndefined();
+        .addValue('key', 'value', { private: true })).key).toBeUndefined();
     });
 
     it('private-key is exposed to package1', () => {
       expect(() => execute(newPlan()
-        .addValue('key', 'value', {private: true})
+        .addValue('key', 'value', { private: true })
         .addPackage('p1', p1 => p1.with('key', jest.fn()))))
         .not.toThrow();
     });
@@ -778,13 +778,13 @@ describe('Plan', () => {
     it('private-package1/value is exposed to outside', () => {
       expect(execute(newPlan()
         .addPackage('p1', p1 => p1
-          .addValue('key', 'value'), {private: true})).key)
+          .addValue('key', 'value'), { private: true })).key)
         .toBe('value');
     });
 
     it('private-package1/value is exposed to root', () => {
       expect(() => execute(newPlan()
-        .addPackage('p1', (p1) => p1.addValue('key', 'value'), {private: true})
+        .addPackage('p1', (p1) => p1.addValue('key', 'value'), { private: true })
         .with('key', jest.fn())))
         .not.toThrow();
     });
@@ -792,7 +792,7 @@ describe('Plan', () => {
     it('private-package1/value is exposed to package2', () => {
       expect(() => execute(newPlan()
         .addPackage('p1', (p1) => p1
-          .addValue('key', 'value'), {private: true})
+          .addValue('key', 'value'), { private: true })
         .addPackage('p2', (p2) => p2
           .with('key', jest.fn()))))
         .not.toThrow();
@@ -800,14 +800,14 @@ describe('Plan', () => {
 
     it('package1/private-key is not exposed to outside', () => {
       expect(execute(newPlan()
-        .addPackage('p1', p1 => p1.addValue('key', 'value', {private: true}))).key)
+        .addPackage('p1', p1 => p1.addValue('key', 'value', { private: true }))).key)
         .toBeUndefined();
     });
 
     it('package1/private-key is exposed to package1', () => {
       expect(() => execute(newPlan()
         .addPackage('p1', p1 => p1
-          .addValue('key', 'value', {private: true})
+          .addValue('key', 'value', { private: true })
           .with('key', jest.fn()))))
         .not.toThrow();
     });
@@ -816,7 +816,7 @@ describe('Plan', () => {
       expect(execute(newPlan()
         .addPackage('p1', p1 => p1
           .addPackage('p2', p2 => p2
-            .addValue('key', 'value'), {private: true}))).key)
+            .addValue('key', 'value'), { private: true }))).key)
         .toBeUndefined();
     });
 
@@ -824,7 +824,7 @@ describe('Plan', () => {
       expect(() => expect(execute(newPlan()
         .addPackage('p1', p1 => p1
           .addPackage('p2', p2 => p2
-            .addValue('key', 'value'), {private: true})
+            .addValue('key', 'value'), { private: true })
           .with('key', jest.fn())))))
         .not.toThrow();
     });
@@ -833,9 +833,9 @@ describe('Plan', () => {
       expect(() => expect(execute(newPlan()
         .addPackage('p1', p1 => p1
           .addPackage('p2', p2 => p2
-            .addValue('key', 'value'), {private: true})
+            .addValue('key', 'value'), { private: true })
           .addPackage('p3', p3 => p3
-            .with('key', jest.fn()), {private: true})))))
+            .with('key', jest.fn()), { private: true })))))
         .not.toThrow();
     });
 
@@ -844,14 +844,14 @@ describe('Plan', () => {
         .addPackage('p1', p1 => p1
           .addPackage('private-p2', p2 => p2
             .addValue('key', 'value')
-            .with('key', jest.fn()), {private: true})))))
+            .with('key', jest.fn()), { private: true })))))
         .not.toThrow();
     });
 
     it('package1/private-value is not exposed to package2', () => {
       expect(() => execute(newPlan()
         .addPackage('p1', (p1) => p1
-          .addValue('key', 'value', {private: true}))
+          .addValue('key', 'value', { private: true }))
         .addPackage('p2', (step2Context) => step2Context
           .with('key', jest.fn()))))
         .toThrow('Using with on path "p2/key": Key does not exists: key');
