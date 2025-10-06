@@ -41,6 +41,9 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
     needs: [lint]
     steps:
       - uses: actions/checkout@v4
@@ -54,12 +57,13 @@ jobs:
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+      - name: Run tests
+        run: yarn test:coverage
       - name: Send coverage
-        uses: paambaati/codeclimate-action@ac3f177ece9928d220a8bd1c2f1957926fd3b67e
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        uses: qltysh/qlty-action/coverage@8d5c844f32f80364ccc135534671640466e7f610 #v1.1
         with:
-          coverageCommand: yarn test:coverage
+          oidc: true
+          files: ${{github.workspace}}/reports/**/clover.xml
 
   deploy:
     name: Release package
